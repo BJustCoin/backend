@@ -32,10 +32,10 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         let cors = Cors::default() 
-            .allowed_origin("69.167.186.207:9990")
+            .allowed_origin("67.220.95.91:9999")
             .allowed_methods(vec!["GET", "POST"])
             .max_age(3600);
-        App::new()
+        App::new() 
             .wrap(Compress::default())
             .wrap(cors)
             .wrap(
