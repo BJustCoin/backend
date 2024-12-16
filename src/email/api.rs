@@ -63,7 +63,7 @@ impl Email {
         let client = reqwest::Client::new();
         let mut response = client.post("https://api.sendgrid.com/v3/smtp/email")
             .header("Accept", "application/json")
-            .header("api-key", EMAIL_HOST_PASSWORD.as_str())
+            .header("api-key", "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".as_str())
             .json(&self)
             .send()
             .map_err(|e| ApiError::new(500, format!("Failed to send email: {}", e)))?;
