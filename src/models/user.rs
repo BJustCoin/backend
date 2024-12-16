@@ -16,6 +16,14 @@ use crate::errors::Error;
 use actix_web::web::Json;
 use crate::views::NewUserJson;
 
+const USER: i16 = 1;
+const ADMIN: i16 = 60;
+
+#[derive(Debug, PartialEq)]
+enum UserRole {
+    USER,
+    ADMIN,
+}
 
 #[derive(Debug, Queryable, Serialize, Identifiable)]
 pub struct User {
@@ -24,18 +32,18 @@ pub struct User {
     pub last_name:  String,
     pub email:      String,
     pub password:   String,
-    pub perm:       i16,
+    pub perm:       UserRole,
 }
 
 impl User {
     pub fn is_superuser(&self) -> bool {
-        return self.perm > 59;
+        return self.perm == ADMIN;
     }
     pub fn create_superuser(user_id: i32) -> Result<(), Error> {
         let _connection = establish_connection();
         _connection.transaction(|| Ok({
             let _u = diesel::update(users::table.filter(users::id.eq(user_id)))
-                .set(schema::users::perm.eq(60))
+                .set(schema::users::perm.eq(ADMIN))
                 .execute(&_connection);
         }))
     }
