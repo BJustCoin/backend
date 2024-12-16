@@ -8,6 +8,9 @@ use actix_web::{
     dev::ConnectionInfo,
     web::Json,
 };
+use crate::api_error::ApiError;
+use crate::email::{Email, Contact};
+use crate::email_verification_token::{EmailVerificationToken, EmailVerificationTokenMessage};
 use serde::{Deserialize, Serialize};
 use crate::utils::{
     is_signed_in,
@@ -17,13 +20,32 @@ use futures::StreamExt;
 use crate::models::{User, SessionUser};
 use actix_session::Session;
 use crate::errors::AuthError;
+use chrono::Utc;
+use uuid::Uuid;
+
 
 
 pub fn auth_routes(config: &mut web::ServiceConfig) {
     config.route("/signup/", web::post().to(process_signup));
     config.route("/login/", web::post().to(login));
+    config.route("/invite/", web::post().to(invite));
     config.route("/logout/", web::get().to(logout));
 }
+
+async fn invite(body: web::Json<EmailVerificationTokenMessage>) -> Result<HttpResponse, ApiError> {
+    let body = body.into_inner();
+    let token = EmailVerificationToken::create(body.clone())?;
+    let token_string = hex::encode(token.id);
+
+    Email::new(Contact::new("info@BJustCoin.com", "BJustCoin"))
+        .add_recipient(body.email)
+        .set_subject("Confirm your email")
+        .set_html(format!("Your confirmation code is: {}", &token_string))
+        .send()?;
+
+    Ok(HttpResponse::Ok().json(json!({"message": "Verification email sent"})))
+}
+
 
 pub async fn logout(session: Session) -> Result<HttpResponse, AuthError> {
     session.clear();
@@ -42,6 +64,7 @@ pub struct NewUserJson {
     pub last_name:  String,
     pub email:      String,
     pub password:   String,
+    pub token:      String,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -146,6 +169,25 @@ pub async fn process_signup(session: Session, data: Json<NewUserJson>) -> Json<A
         });
     }
     else { 
+        let token_id = hex::decode(data.token.clone())
+        .map_err(|_| ApiError::new(403, "Invalid token"))?;
+    
+        let token = EmailVerificationToken::find(&token_id)
+            .map_err(|e| {
+                match e.status_code {
+                    404 => ApiError::new(403, "Invalid token"),
+                    _ => e,
+                }
+            })?;
+
+        if token.email != data.email {
+            return Err(ApiError::new(403, "Invalid token"));
+        }
+
+        if token.expires_at < Utc::now().naive_utc() {
+            return Err(ApiError::new(403, "Token expired"));
+        }
+
         let _new_user = User::create(data);
 
         let _session_user = SessionUser {
