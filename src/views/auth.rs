@@ -9,12 +9,13 @@ use actix_web::{
     web::Json,
 };
 use crate::api_error::ApiError;
-use crate::email::{Email, Contact};
 use crate::email_verification_token::{EmailVerificationToken, EmailVerificationTokenMessage};
 use serde::{Deserialize, Serialize};
 use crate::utils::{
     is_signed_in,
     verify,
+    send_email,
+    EmailF,
 };
 use futures::StreamExt;
 use crate::models::{User, SessionUser};
@@ -27,21 +28,35 @@ use uuid::Uuid;
 
 pub fn auth_routes(config: &mut web::ServiceConfig) {
     config.route("/signup/", web::post().to(process_signup));
+    config.route("/reset/", web::post().to(process_reset));
     config.route("/login/", web::post().to(login));
     config.route("/invite/", web::post().to(invite));
     config.route("/logout/", web::get().to(logout));
 }
 
-async fn invite(body: web::Json<EmailVerificationTokenMessage>) -> Result<HttpResponse, ApiError> {
+#[derive(Deserialize, Serialize)]
+struct EmailUser {
+    name:  String,
+    email: String,
+}
+
+async fn invite(body: web::Json<EmailUser>) -> Result<HttpResponse, ApiError> {
     let body = body.into_inner();
-    let token = EmailVerificationToken::create(body.clone())?;
+
+    let token_data = EmailVerificationTokenMessage {
+        id:  None,
+        email: body.email.clone(),
+    }
+    let token = EmailVerificationToken::create(token_data.clone())?;
     let token_string = hex::encode(token.id);
 
-    Email::new(Contact::new("info@BJustCoin.com", "BJustCoin"))
-        .add_recipient(body.email)
-        .set_subject("Confirm your email")
-        .set_html(format!("Your confirmation code is: {}", &token_string))
-        .send()?;
+    let data = EmailF {
+        recipient_name:  body.name.clone(),
+        recipient_email: body.email.clone(),
+        subject:         "Email confirmation code".to_string(),
+        text:            "Here is your code - <strong>".to_string() + &token.id.to_string() + &"</strong>".to_string(),
+    }
+    send_email(data);
 
     Ok(HttpResponse::Ok().json(json!({"message": "Verification email sent"})))
 }
@@ -65,6 +80,12 @@ pub struct NewUserJson {
     pub email:      String,
     pub password:   String,
     pub token:      String,
+}
+#[derive(Deserialize, Serialize, Debug)]
+pub struct NewPasswordJson {
+    pub email:    String,
+    pub password: String,
+    pub token:    String,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -159,6 +180,54 @@ pub async fn login(req: HttpRequest, session: Session, data: Json<LoginUser2>) -
 }
 
 pub async fn process_signup(session: Session, data: Json<NewUserJson>) -> Json<AuthResp> {
+    if is_signed_in(&session) {
+        return Json(AuthResp {
+            id:         0,
+            first_name: "".to_string(),
+            last_name:  "".to_string(),
+            email:      "".to_string(),
+            perm:       0,
+        });
+    }
+    else { 
+        let token_id = hex::decode(data.token.clone())
+        .map_err(|_| ApiError::new(403, "Invalid token"))?;
+    
+        let token = EmailVerificationToken::find(&token_id)
+            .map_err(|e| {
+                match e.status_code {
+                    404 => ApiError::new(403, "Invalid token"),
+                    _ => e,
+                }
+            })?;
+
+        if token.email != data.email {
+            return Err(ApiError::new(403, "Invalid token"));
+        }
+
+        if token.expires_at < Utc::now().naive_utc() {
+            return Err(ApiError::new(403, "Token expired"));
+        }
+
+        let _new_user = User::create(data);
+
+        let _session_user = SessionUser {
+            id:    _new_user.id,
+            email: _new_user.email.clone(),
+        };
+
+        crate::utils::set_current_user(&session, &_session_user);
+        return Json(AuthResp {
+            id:         _new_user.id,
+            first_name: _new_user.first_name.clone(),
+            last_name:  _new_user.last_name.clone(),
+            email:      _new_user.email.clone(),
+            perm:       _new_user.perm,
+        })
+    }
+}
+
+pub async fn process_reset(session: Session, data: Json<NewPasswordJson>) -> Json<AuthResp> {
     if is_signed_in(&session) {
         return Json(AuthResp {
             id:         0,
