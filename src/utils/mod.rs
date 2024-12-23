@@ -46,7 +46,7 @@ struct EmailUser {
     email: String,
 }
 
-use reqwest::{blocking::Client, Error};
+use reqwest::Client;
 use reqwest::header;
 use serde_json::json;
 

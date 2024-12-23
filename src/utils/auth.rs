@@ -9,7 +9,7 @@ use crate::models::SessionUser;
 
 
 pub fn hash_password(password: &str) -> String {
-  Hasher::default()
+  Hasher::default() 
       .with_password(password)
       .with_secret_key(vars::secret_key().as_str())
       .hash()

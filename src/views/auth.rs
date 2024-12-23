@@ -19,7 +19,7 @@ use crate::utils::{
 use crate::models::{User, SessionUser, EmailVerificationToken, EmailVerificationTokenMessage};
 use actix_session::Session;
 use crate::errors::AuthError;
-use chrono::Utc;
+use chrono::Utc; 
 use uuid::Uuid;
 
 
@@ -44,8 +44,8 @@ async fn invite(body: web::Json<EmailUser>) -> Result<HttpResponse, ApiError> {
     let token_data = EmailVerificationTokenMessage {
         id:  None,
         email: body.email.clone(),
-    }
-    let token = EmailVerificationToken::create(token_data.clone())?;
+    };
+    let token = EmailVerificationToken::create(token_data.clone()).expect("E.");
     let token_string = hex::encode(token.id);
 
     let data = EmailF {
@@ -53,10 +53,10 @@ async fn invite(body: web::Json<EmailUser>) -> Result<HttpResponse, ApiError> {
         recipient_email: body.email.clone(),
         subject:         "Bjustcoin - Email confirmation code".to_string(),
         text:            "Here is your code - <strong>".to_string() + &token.id.to_string() + &"</strong>".to_string(),
-    }
+    };
     send_email(data);
 
-    Ok(HttpResponse::Ok().json(json!({"message": "Verification email sent"})))
+    Ok(HttpResponse::Ok().json(serde_json::json!({"message": "Verification email sent"})))
 }
 
 
@@ -188,23 +188,38 @@ pub async fn process_signup(session: Session, data: Json<NewUserJson>) -> Json<A
         });
     }
     else { 
-        let token_id = hex::decode(data.token.clone())
-        .map_err(|_| ApiError::new(403, "Invalid token"))?;
-    
-        let token = EmailVerificationToken::find(&token_id)
-            .map_err(|e| {
-                match e.status_code {
-                    404 => ApiError::new(403, "Invalid token"),
-                    _ => e,
-                }
-            })?;
-
-        if token.email != data.email {
-            return Err(ApiError::new(403, "Invalid token"));
+        let token_id_res = hex::decode(data.token.clone());
+        if token_id_res.is_err() {
+            return Json(AuthResp {
+                id:         0,
+                first_name: "".to_string(),
+                last_name:  "".to_string(),
+                email:      "".to_string(),
+                perm:       0,
+            });
         }
+        let token_id = token_id_res.expect("E.");
+        
+        let token_res = EmailVerificationToken::find(&token_id);
+        if token_res.is_err() {
+            return Json(AuthResp {
+                id:         0,
+                first_name: "".to_string(),
+                last_name:  "".to_string(),
+                email:      "".to_string(),
+                perm:       0,
+            });
+        }
+        let token = token_res.expect("E.");
 
         if token.expires_at < Utc::now().naive_utc() {
-            return Err(ApiError::new(403, "Token expired"));
+            return Json(AuthResp {
+                id:         0,
+                first_name: "".to_string(),
+                last_name:  "".to_string(),
+                email:      "".to_string(),
+                perm:       0,
+            });
         }
 
         let _new_user = User::create(data);
@@ -236,39 +251,65 @@ pub async fn process_reset(session: Session, data: Json<NewPasswordJson>) -> Jso
         }); 
     }
     else { 
-        let token_id = hex::decode(data.token.clone())
-        .map_err(|_| ApiError::new(403, "Invalid token"))?;
-    
-        let token = EmailVerificationToken::find(&token_id)
-            .map_err(|e| {
-                match e.status_code {
-                    404 => ApiError::new(403, "Invalid token"),
-                    _ => e,
-                }
-            })?;
+        let token_id_res = hex::decode(data.token.clone());
+        if token_id_res.is_err() {
+            return Json(AuthResp {
+                id:         0,
+                first_name: "".to_string(),
+                last_name:  "".to_string(),
+                email:      "".to_string(),
+                perm:       0,
+            });
+        }
+        let token_id = token_id_res.expect("E.");
+        
+        let token_res = EmailVerificationToken::find(&token_id);
+        if token_res.is_err() {
+            return Json(AuthResp {
+                id:         0,
+                first_name: "".to_string(),
+                last_name:  "".to_string(),
+                email:      "".to_string(),
+                perm:       0,
+            });
+        }
+        let token = token_res.expect("E.");
 
         if token.email != data.email {
-            return Err(ApiError::new(403, "Invalid token"));
+            return Json(AuthResp {
+                id:         0,
+                first_name: "".to_string(),
+                last_name:  "".to_string(),
+                email:      "".to_string(),
+                perm:       0,
+            });
         }
 
         if token.expires_at < Utc::now().naive_utc() {
-            return Err(ApiError::new(403, "Token expired"));
+            return Json(AuthResp {
+                id:         0,
+                first_name: "".to_string(),
+                last_name:  "".to_string(),
+                email:      "".to_string(),
+                perm:       0,
+            });
         }
 
-        let _new_user = User::get_user_with_email(data.email.clone());
-        if _new_user.is_ok() {
+        let _user_res = User::get_user_with_email(data.email.clone());
+        if _user_res.is_ok() {
+            let _user = _user_res.expect("E.");
             let _session_user = SessionUser {
-                id:    _new_user.id,
-                email: _new_user.email.clone(),
+                id:    _user.id,
+                email: _user.email.clone(),
             };
 
             crate::utils::set_current_user(&session, &_session_user);
             return Json(AuthResp {
-                id:         _new_user.id,
-                first_name: _new_user.first_name.clone(),
-                last_name:  _new_user.last_name.clone(),
-                email:      _new_user.email.clone(),
-                perm:       _new_user.perm,
+                id:         _user.id,
+                first_name: _user.first_name.clone(),
+                last_name:  _user.last_name.clone(),
+                email:      _user.email.clone(),
+                perm:       _user.perm,
             })
         }
         else {
