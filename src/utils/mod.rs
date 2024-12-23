@@ -100,7 +100,7 @@ pub fn send_email(data: EmailF) -> i16 {
         );
 
     let response = client.send();
-    if response.is_ok() {
+    if response.await.is_ok() {
         return 1;
     }
     else {
