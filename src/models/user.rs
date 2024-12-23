@@ -23,15 +23,6 @@ const ADMIN: i16 = 50;
 const ADMINISBLOCK: i16 = 55;
 const SUPERUSER: i16 = 60;
 
-#[derive(Debug, Queryable, PartialEq)]
-enum UserRole {
-    USER,
-    USERCANBUYTOCKEN,
-    USERISBLOCK,
-    ADMINISBLOCK,
-    ADMIN,
-    SUPERUSER,
-}
 
 #[derive(Debug, Queryable, Serialize, Identifiable)]
 pub struct User {
@@ -40,25 +31,25 @@ pub struct User {
     pub last_name:  String,
     pub email:      String,
     pub password:   String,
-    pub perm:       UserRole,
+    pub perm:       i16,
     pub phone:      Option<String>,
 }
 
 impl User {
     pub fn is_superuser(&self) -> bool {
-        return self.perm == UserRole::SUPERUSER;
+        return self.perm == SUPERUSER;
     }
     pub fn is_admin(&self) -> bool {
-        return self.perm == UserRole::ADMIN;
+        return self.perm == ADMIN;
     }
     pub fn is_user_in_block(&self) -> bool {
-        return self.perm == UserRole::USERISBLOCK;
+        return self.perm == USERISBLOCK;
     }
     pub fn is_admin_in_block(&self) -> bool {
-        return self.perm == UserRole::ADMINISBLOCK;
+        return self.perm == ADMINISBLOCK;
     }
     pub fn is_user_can_buy_tockens(&self) -> bool {
-        return self.perm == UserRole::USERCANBUYTOCKEN;
+        return self.perm == USERCANBUYTOCKEN;
     }
 
     pub fn create_admin_block(&self, user_id: i32) -> Result<(), Error> {
@@ -68,7 +59,7 @@ impl User {
         let _connection = establish_connection();
         _connection.transaction(|| Ok({
             let _u = diesel::update(users::table.filter(users::id.eq(user_id)))
-                .set(schema::users::perm.eq(UserRole::ADMINISBLOCK))
+                .set(schema::users::perm.eq(ADMINISBLOCK))
                 .execute(&_connection);
         }))
     }
@@ -79,7 +70,7 @@ impl User {
         let _connection = establish_connection();
         _connection.transaction(|| Ok({
             let _u = diesel::update(users::table.filter(users::id.eq(user_id)))
-                .set(schema::users::perm.eq(UserRole::ADMIN))
+                .set(schema::users::perm.eq(ADMIN))
                 .execute(&_connection);
         }))
     }
@@ -90,7 +81,7 @@ impl User {
         let _connection = establish_connection();
         _connection.transaction(|| Ok({
             let _u = diesel::update(users::table.filter(users::id.eq(user_id)))
-                .set(schema::users::perm.eq(UserRole::USERISBLOCK))
+                .set(schema::users::perm.eq(USERISBLOCK))
                 .execute(&_connection);
         }))
     }
@@ -101,7 +92,7 @@ impl User {
         let _connection = establish_connection();
         _connection.transaction(|| Ok({
             let _u = diesel::update(users::table.filter(users::id.eq(user_id)))
-                .set(schema::users::perm.eq(UserRole::USER))
+                .set(schema::users::perm.eq(USER))
                 .execute(&_connection);
         }))
     }
@@ -112,7 +103,7 @@ impl User {
         let _connection = establish_connection();
         _connection.transaction(|| Ok({
             let _u = diesel::update(users::table.filter(users::id.eq(user_id)))
-                .set(schema::users::perm.eq(UserRole::USERCANBUYTOCKEN))
+                .set(schema::users::perm.eq(USERCANBUYTOCKEN))
                 .execute(&_connection);
         }))
     }
@@ -123,7 +114,7 @@ impl User {
         let _connection = establish_connection();
         _connection.transaction(|| Ok({
             let _u = diesel::update(users::table.filter(users::id.eq(user_id)))
-                .set(schema::users::perm.eq(UserRole::USER))
+                .set(schema::users::perm.eq(USER))
                 .execute(&_connection);
         }))
     }
@@ -134,7 +125,7 @@ impl User {
         let _connection = establish_connection();
         _connection.transaction(|| Ok({
             let _u = diesel::update(users::table.filter(users::id.eq(user_id)))
-                .set(schema::users::perm.eq(UserRole::ADMIN))
+                .set(schema::users::perm.eq(ADMIN))
                 .execute(&_connection);
         }))
     }
@@ -145,7 +136,7 @@ impl User {
         let _connection = establish_connection();
         _connection.transaction(|| Ok({
             let _u = diesel::update(users::table.filter(users::id.eq(user_id)))
-                .set(schema::users::perm.eq(UserRole::USER))
+                .set(schema::users::perm.eq(USER))
                 .execute(&_connection);
         }))
     }
@@ -153,7 +144,7 @@ impl User {
         let _connection = establish_connection();
         _connection.transaction(|| Ok({
             let _u = diesel::update(users::table.filter(users::id.eq(user_id)))
-                .set(schema::users::perm.eq(UserRole::SUPERUSER))
+                .set(schema::users::perm.eq(SUPERUSER))
                 .execute(&_connection);
         }))
     }
