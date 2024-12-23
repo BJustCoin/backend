@@ -23,7 +23,7 @@ const ADMIN: i16 = 50;
 const ADMINISBLOCK: i16 = 55;
 const SUPERUSER: i16 = 60;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Queryable, PartialEq)]
 enum UserRole {
     USER,
     USERCANBUYTOCKEN,

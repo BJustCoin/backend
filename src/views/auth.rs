@@ -233,7 +233,7 @@ pub async fn process_reset(session: Session, data: Json<NewPasswordJson>) -> Jso
             last_name:  "".to_string(),
             email:      "".to_string(),
             perm:       0,
-        });
+        }); 
     }
     else { 
         let token_id = hex::decode(data.token.clone())
@@ -255,20 +255,30 @@ pub async fn process_reset(session: Session, data: Json<NewPasswordJson>) -> Jso
             return Err(ApiError::new(403, "Token expired"));
         }
 
-        let _new_user = User::create(data);
+        let _new_user = User::get_user_with_email(data.email.clone());
+        if _new_user.is_ok() {
+            let _session_user = SessionUser {
+                id:    _new_user.id,
+                email: _new_user.email.clone(),
+            };
 
-        let _session_user = SessionUser {
-            id:    _new_user.id,
-            email: _new_user.email.clone(),
-        };
-
-        crate::utils::set_current_user(&session, &_session_user);
-        return Json(AuthResp {
-            id:         _new_user.id,
-            first_name: _new_user.first_name.clone(),
-            last_name:  _new_user.last_name.clone(),
-            email:      _new_user.email.clone(),
-            perm:       _new_user.perm,
-        })
+            crate::utils::set_current_user(&session, &_session_user);
+            return Json(AuthResp {
+                id:         _new_user.id,
+                first_name: _new_user.first_name.clone(),
+                last_name:  _new_user.last_name.clone(),
+                email:      _new_user.email.clone(),
+                perm:       _new_user.perm,
+            })
+        }
+        else {
+            return Json(AuthResp {
+                id:         0,
+                first_name: "".to_string(),
+                last_name:  "".to_string(),
+                email:      "".to_string(),
+                perm:       0,
+            });
+        }
     }
 }
