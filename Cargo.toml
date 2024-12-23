@@ -4,7 +4,7 @@ version = "1.0.1"
 edition = "2021"
 
 [dependencies]
-actix-web = "4.0.1"
+actix-web = "4.0.1" 
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 dotenv = "0.15.0"
@@ -14,9 +14,6 @@ chrono = { version = "0.4", features = ["serde"] }
 actix-session = { version = "0.10.1", features = ["cookie-session"] }
 uuid = { version = "0.8.2", features = ["serde", "v4"] }
 derive_more = "0.99.5"
-futures-util = "0.3.5"
-futures = "0.3.21"
-actix-redis = { version = "0.8", features = ["web"] }
 hex = "0.4"
 rand = "0.7"
 reqwest = { version = "0.11.10", features = ["json"] }

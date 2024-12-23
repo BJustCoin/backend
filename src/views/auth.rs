@@ -16,7 +16,6 @@ use crate::utils::{
     send_email,
     EmailF,
 };
-use futures::StreamExt;
 use crate::models::{User, SessionUser, EmailVerificationToken, EmailVerificationTokenMessage};
 use actix_session::Session;
 use crate::errors::AuthError;
