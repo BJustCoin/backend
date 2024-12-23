@@ -8,8 +8,6 @@ pub mod routes;
 mod errors;
 mod api_error;
 mod vars;
-mod email;
-mod email_verification_token;
  
 use actix_web::{
     HttpServer,
