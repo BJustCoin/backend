@@ -52,7 +52,7 @@ async fn invite(body: web::Json<EmailUser>) -> Result<HttpResponse, ApiError> {
         recipient_name:  body.name.clone(),
         recipient_email: body.email.clone(),
         subject:         "Bjustcoin - Email confirmation code".to_string(),
-        text:            "Here is your code - <strong>".to_string() + &token.id.to_string() + &"</strong>".to_string(),
+        text:            "Here is your code - <strong>".to_string() + &token_string.to_string() + &"</strong>".to_string(),
     };
     send_email(data);
 
@@ -295,7 +295,7 @@ pub async fn process_reset(session: Session, data: Json<NewPasswordJson>) -> Jso
             });
         }
 
-        let _user_res = User::get_user_with_email(data.email.clone());
+        let _user_res = User::get_user_with_email(&data.email);
         if _user_res.is_ok() {
             let _user = _user_res.expect("E.");
             let _session_user = SessionUser {

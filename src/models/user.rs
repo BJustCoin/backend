@@ -54,7 +54,7 @@ impl User {
 
     pub fn create_admin_block(&self, user_id: i32) -> Result<(), Error> {
         if !self.is_superuser() {
-            return Err(Error::BadRequest("403"));
+            return Err(Error::BadRequest("403".to_string()));
         }
         let _connection = establish_connection();
         _connection.transaction(|| Ok({
@@ -65,7 +65,7 @@ impl User {
     }
     pub fn delete_admin_block(&self, user_id: i32) -> Result<(), Error> {
         if !self.is_superuser() {
-            return Err(Error::BadRequest("403"));
+            return Err(Error::BadRequest("403".to_string()));
         }
         let _connection = establish_connection();
         _connection.transaction(|| Ok({
@@ -76,7 +76,7 @@ impl User {
     }
     pub fn create_user_block(&self, user_id: i32) -> Result<(), Error> {
         if !self.is_admin() {
-            return Err(Error::BadRequest("403"));
+            return Err(Error::BadRequest("403".to_string()));
         }
         let _connection = establish_connection();
         _connection.transaction(|| Ok({
@@ -87,7 +87,7 @@ impl User {
     }
     pub fn delete_user_block(&self, user_id: i32) -> Result<(), Error> {
         if !self.is_admin() {
-            return Err(Error::BadRequest("403"));
+            return Err(Error::BadRequest("403".to_string()));
         }
         let _connection = establish_connection();
         _connection.transaction(|| Ok({
@@ -98,7 +98,7 @@ impl User {
     }
     pub fn create_can_buy_token(&self, user_id: i32) -> Result<(), Error> {
         if !self.is_superuser() {
-            return Err(Error::BadRequest("403"));
+            return Err(Error::BadRequest("403".to_string()));
         }
         let _connection = establish_connection();
         _connection.transaction(|| Ok({
@@ -109,7 +109,7 @@ impl User {
     }
     pub fn delete_can_buy_token(&self, user_id: i32) -> Result<(), Error> {
         if !self.is_superuser() {
-            return Err(Error::BadRequest("403"));
+            return Err(Error::BadRequest("403".to_string()));
         }
         let _connection = establish_connection();
         _connection.transaction(|| Ok({
@@ -120,7 +120,7 @@ impl User {
     }
     pub fn create_admin(&self, user_id: i32) -> Result<(), Error> {
         if !self.is_superuser() {
-            return Err(Error::BadRequest("403"));
+            return Err(Error::BadRequest("403".to_string()));
         }
         let _connection = establish_connection();
         _connection.transaction(|| Ok({
@@ -131,7 +131,7 @@ impl User {
     }
     pub fn delete_admin(&self, user_id: i32) -> Result<(), Error> {
         if !self.is_superuser() {
-            return Err(Error::BadRequest("403"));
+            return Err(Error::BadRequest("403".to_string()));
         }
         let _connection = establish_connection();
         _connection.transaction(|| Ok({
