@@ -25,12 +25,12 @@ const SUPERUSER: i16 = 60;
 
 #[derive(Debug, Queryable, PartialEq)]
 enum UserRole {
-    USER,
-    USERCANBUYTOCKEN,
-    USERISBLOCK,
-    ADMINISBLOCK,
-    ADMIN,
-    SUPERUSER,
+    USER(1),
+    USERCANBUYTOCKEN(2),
+    USERISBLOCK(5),
+    ADMINISBLOCK(55),
+    ADMIN(50),
+    SUPERUSER(60),
 }
 
 #[derive(Debug, Queryable, Serialize, Identifiable)]
