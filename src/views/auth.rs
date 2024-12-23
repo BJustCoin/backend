@@ -9,7 +9,6 @@ use actix_web::{
     web::Json,
 };
 use crate::api_error::ApiError;
-use crate::email_verification_token::{EmailVerificationToken, EmailVerificationTokenMessage};
 use serde::{Deserialize, Serialize};
 use crate::utils::{
     is_signed_in,
@@ -18,7 +17,7 @@ use crate::utils::{
     EmailF,
 };
 use futures::StreamExt;
-use crate::models::{User, SessionUser};
+use crate::models::{User, SessionUser, EmailVerificationToken, EmailVerificationTokenMessage};
 use actix_session::Session;
 use crate::errors::AuthError;
 use chrono::Utc;
@@ -53,7 +52,7 @@ async fn invite(body: web::Json<EmailUser>) -> Result<HttpResponse, ApiError> {
     let data = EmailF {
         recipient_name:  body.name.clone(),
         recipient_email: body.email.clone(),
-        subject:         "Email confirmation code".to_string(),
+        subject:         "Bjustcoin - Email confirmation code".to_string(),
         text:            "Here is your code - <strong>".to_string() + &token.id.to_string() + &"</strong>".to_string(),
     }
     send_email(data);

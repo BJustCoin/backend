@@ -39,6 +39,7 @@ pub struct User {
     pub first_name: String,
     pub last_name:  String,
     pub email:      String,
+    pub phone:      Option<String>,
     pub password:   String,
     pub perm:       UserRole,
 }
@@ -169,6 +170,7 @@ impl User {
             first_name: form.first_name.clone(),
             last_name:  form.last_name.clone(),
             email:      form.email.clone(),
+            phone:      None,
             password:   crate::utils::hash_password(&form.password),
             perm:       1,
         };
@@ -194,6 +196,7 @@ pub struct NewUser {
     pub first_name: String,
     pub last_name:  String,
     pub email:      String,
+    pub phone:      Option<String>,
     pub password:   String,
     pub perm:       i16,
 }
