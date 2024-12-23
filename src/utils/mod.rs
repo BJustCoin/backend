@@ -100,18 +100,10 @@ pub fn send_email(data: EmailF) -> i16 {
         );
 
     let response = client.send();
-    match response.status() {
-        StatusCode::OK | StatusCode::CREATED | StatusCode::ACCEPTED => {
-            //println!("Email sent!");
-            return 1;
-        },
-        _ => {
-            //println!(
-            //    "Unable to send your email. Status code was: {}. Body content was: {:?}",
-            //    response.status(),
-            //    response.text()
-            //),
-            return 0;
-        },
+    if response.is_ok() {
+        return 1;
+    }
+    else {
+        return 0;
     }
 }
