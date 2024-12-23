@@ -99,7 +99,7 @@ pub fn send_email(data: EmailF) -> i16 {
             header::HeaderValue::from_static("application/json")
         );
 
-    let response = client.send()?;
+    let response = client.send();
     match response.status() {
         StatusCode::OK | StatusCode::CREATED | StatusCode::ACCEPTED => {
             //println!("Email sent!");
