@@ -51,7 +51,7 @@ use reqwest::header;
 use serde_json::json;
 
 
-pub fn send_email(data: EmailF) -> i16 {
+pub async fn send_email(data: EmailF) -> i16 {
     dotenv::dotenv().ok();
     let api_key = std::env::var("EMAIL_KEY")
         .expect("EMAIL_KEY must be set");
