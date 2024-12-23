@@ -13,13 +13,13 @@ diesel = { version = "1.4.4", features = ["chrono", "postgres", "r2d2", "uuidv07
 chrono = { version = "0.4", features = ["serde"] }
 actix-session = { version = "0.10.1", features = ["cookie-session"] }
 uuid = { version = "0.8.2", features = ["serde", "v4"] }
-reqwest = "*"
 derive_more = "0.99.5"
 futures-util = "0.3.5"
 futures = "0.3.21"
 actix-redis = { version = "0.8", features = ["web"] }
 hex = "0.4"
 rand = "0.7"
+reqwest = { version = "0.11.10", features = ["json"] }
 
 
 [profile.release]
