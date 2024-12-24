@@ -43,8 +43,12 @@ pub struct UsersData {
     pub page:  i32,
     pub limit: Option<i64>,
 }
+#[derive(Deserialize, Serialize)]
+pub struct NextPage {
+    pub next:  i64,
+}
 
-pub async fn get_users(session: Session, data: Json<UsersData>) -> (Json<Vec<AuthResp>, i32>) {
+pub async fn get_users(session: Session, data: Json<UsersData>) -> (Json<Vec<AuthResp>, NextPage>) {
     if is_signed_in(&session) {
         let _request_user = get_request_user(&session);
         _request_user.get_users_list(data.page, data.limit)
@@ -58,11 +62,13 @@ pub async fn get_users(session: Session, data: Json<UsersData>) -> (Json<Vec<Aut
             perm:       0,
             image:      None,
             phone:      None,
-        }, 0)
+        }, NextPage {
+                next:  i64,
+        })
     }
     HttpResponse::Ok()
 }
-pub async fn get_admins(session: Session, data: Json<UsersData>) -> (Json<Vec<AuthResp>, i32>) {
+pub async fn get_admins(session: Session, data: Json<UsersData>) -> (Json<Vec<AuthResp>, NextPage>) {
     if is_signed_in(&session) {
         let _request_user = get_request_user(&session);
         _request_user.get_admins_list(data.page, data.limit)
@@ -76,11 +82,13 @@ pub async fn get_admins(session: Session, data: Json<UsersData>) -> (Json<Vec<Au
             perm:       0,
             image:      None,
             phone:      None,
-        }, 0)
+        }, NextPage {
+                next:  i64,
+        })
     }
     HttpResponse::Ok()
 }
-pub async fn get_banned_users(session: Session, data: Json<UsersData>) -> (Json<Vec<AuthResp>, i32>) {
+pub async fn get_banned_users(session: Session, data: Json<UsersData>) -> (Json<Vec<AuthResp>, NextPage>) {
     if is_signed_in(&session) {
         let _request_user = get_request_user(&session);
         _request_user.get_banned_users_list(data.page, data.limit)
@@ -94,11 +102,13 @@ pub async fn get_banned_users(session: Session, data: Json<UsersData>) -> (Json<
             perm:       0,
             image:      None,
             phone:      None,
-        }, 0)
+        }, NextPage {
+                next:  i64,
+        })
     }
     HttpResponse::Ok()
 }
-pub async fn get_banned_admins(session: Session, data: Json<UsersData>) -> (Json<Vec<AuthResp>, i32>) {
+pub async fn get_banned_admins(session: Session, data: Json<UsersData>) -> (Json<Vec<AuthResp>, NextPage>) {
     if is_signed_in(&session) {
         let _request_user = get_request_user(&session);
         _request_user.get_banned_admins_list(data.page, data.limit)
@@ -112,7 +122,9 @@ pub async fn get_banned_admins(session: Session, data: Json<UsersData>) -> (Json
             perm:       0,
             image:      None,
             phone:      None,
-        }, 0)
+        }, NextPage {
+                next:  i64,
+        })
     }
     HttpResponse::Ok()
 }
