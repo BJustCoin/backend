@@ -161,8 +161,8 @@ async fn invite(body: web::Json<EmailUser>) -> Result<HttpResponse, ApiError> {
         email: "no-reply@bjustcoin.com".to_string(),
     }; 
     let recipient = EmailUser {
-        name: data.recipient_name.clone(),
-        email: data.recipient_email.clone(),
+        name: body.recipient_name.clone(),
+        email: body.recipient_email.clone(),
     };
 
     let data = Personalization {
@@ -183,7 +183,7 @@ async fn invite(body: web::Json<EmailUser>) -> Result<HttpResponse, ApiError> {
         "subject": "Bjustcoin - Email confirmation code".to_string(),
         "content": ContentData {
             "type": "text/plain".to_string(),
-            "value": data.text.clone()
+            "value": body.text.clone()
         },
     }
     crate::utils::request_post("https://api.sendgrid.com/v3/mail/send".to_string(), &data, api_key);
