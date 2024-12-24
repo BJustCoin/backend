@@ -50,7 +50,7 @@ pub struct NextPage {
 
 #[derive(Deserialize, Serialize)]
 pub struct AuthRespData {
-    pub data: AuthResp,
+    pub data: Vec<AuthResp>,
     pub next: i64,
 }
 
