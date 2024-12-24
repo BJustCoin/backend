@@ -161,8 +161,7 @@ pub fn get_current_user(session: &Session) -> Result<User, AuthError> {
         Err(AuthError::AuthenticationError(String::from("Error")))
     }
     else {
-        let _user = some_user.expect("Error.");
-        get_user(_user.id)
+        Ok(get_user(some_user.expect("Error.").id))
     }
 
 }
