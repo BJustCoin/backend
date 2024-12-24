@@ -85,13 +85,13 @@ impl User {
         if page > 1 {
             let step = (page - 1) * _limit;
             have_next = page * _limit + 1;
-            object_list = User::get_users(_limit.into(), step.into())?;
+            object_list = User::get_users(_limit.into(), step.into());
         }
         else {
             have_next = _limit + 1;
-            object_list = User::get_users(_limit.into(), 0)?;
+            object_list = User::get_users(_limit.into(), 0);
         }
-        if User::get_users(1, have_next.into())?.len() > 0 {
+        if User::get_users(1, have_next.into()).len() > 0 {
             next_page_number = page + 1;
         }
         let _tuple = (object_list, next_page_number);

@@ -15,7 +15,14 @@ use crate::schema;
 use serde::{Deserialize, Serialize};
 use actix_session::Session;
 use crate::errors::AuthError;
-use diesel::{PgConnection, Connection, ExpressionMethods};
+use crate::diesel::{
+    Queryable,
+    Insertable,
+    QueryDsl,
+    ExpressionMethods,
+    RunQueryDsl,
+    Connection,
+};
 use crate::models::{SessionUser, User};
 
 
