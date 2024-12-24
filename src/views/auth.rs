@@ -127,14 +127,6 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
     dotenv::dotenv().ok();
     let api_key = std::env::var("EMAIL_KEY")
         .expect("EMAIL_KEY must be set");
-    let sender = EmailNameData {
-        email: "no-reply@bjustcoin.com".to_string(),
-        name: "BJustCoin Team".to_string(),
-    }; 
-    let recipient = EmailUserReq {
-        name: body.name.clone(),
-        email: body.email.clone(),
-    };
     let sg = sendgrid::SGClient::new(api_key); 
     let mut x_smtpapi = String::new();
     x_smtpapi.push_str(r#"{"unique_args":{"test":7}}"#);
@@ -144,7 +136,7 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
             address: "no-reply@bjustcoin.com",
             name: "BJustCoin Team",
         })
-        .add_from(body.email.clone())
+        .add_from(&body.email)
         .add_subject("Rust is rad")
         .add_html("<h1>Hello from SendGrid!</h1>")
         .add_from_name("Test")
