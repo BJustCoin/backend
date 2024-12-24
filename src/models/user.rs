@@ -47,7 +47,7 @@ impl User {
             .expect("E.")
             .len();
     }
-    pub fn get_users(&self, limit: i64, offset: i64) -> Json<Vec<AuthResp>> {
+    pub fn get_users(&self, limit: i64, offset: i64) -> Vec<AuthResp> {
         let _connection = establish_connection();
         return Json(schema::users::table
             .filter(schema::users::perm.eq_any(vec!(USER, USERCANBUYTOCKEN)))
@@ -65,7 +65,7 @@ impl User {
             .load::<AuthResp>(&_connection)
             .expect("E."));
     }
-    pub fn get_users_list(&self, page: i32, limit: Option<i64>) -> (Json<Vec<AuthResp>, i32>) {
+    pub fn get_users_list(&self, page: i32, limit: Option<i64>) -> (Vec<AuthResp>, i32) {
         let _limit = get_limit(limit, 20);
         if !self.is_admin() {
             return Ok(Json(AuthResp { 
@@ -95,7 +95,7 @@ impl User {
             next_page_number = page + 1;
         }
         let _tuple = (object_list, next_page_number);
-        Ok(Json(_tuple))
+        Ok(_tuple)
     }
 
     pub fn is_superuser(&self) -> bool {
