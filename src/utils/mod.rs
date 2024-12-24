@@ -132,8 +132,6 @@ pub async fn send_email(data: EmailF) -> bool {
             header::HeaderValue::from_static("application/json")
         );
 
-    return "200".to_string();
-
     let response = client.send();
     if response.await.is_ok() {
         println!("200");
