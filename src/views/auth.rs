@@ -106,13 +106,6 @@ pub async fn send_email(data: EmailF) -> bool {
         return false
     }
 }
-
-#[derive(Deserialize, Serialize)]
-struct EmailUser {
-    name:  String,
-    email: String,
-}
-
 async fn invite(body: web::Json<EmailUser>) -> Result<HttpResponse, ApiError> {
     let body = body.into_inner();
 
