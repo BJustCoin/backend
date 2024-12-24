@@ -56,9 +56,7 @@ async fn invite(body: web::Json<EmailUser>) -> Result<HttpResponse, ApiError> {
     };
     let status = send_email(data);
     //println!("{:?}", status);
-    if status == std::future::Future<Output = true> {
-        println!("ok");
-    }
+
     Ok(HttpResponse::Ok().json(serde_json::json!({
         "message": "Verification email sent",
     })))
