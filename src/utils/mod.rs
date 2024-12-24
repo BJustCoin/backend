@@ -98,7 +98,7 @@ pub async fn send_email(data: EmailF) -> bool {
         email: data.recipient_email.clone(),
     };
 
-    let body = {
+    let body = r#{
             "personalizations": [{
                 "from": {
                     "email": sender.email.clone(),
