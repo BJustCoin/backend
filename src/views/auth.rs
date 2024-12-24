@@ -13,8 +13,6 @@ use serde::{Deserialize, Serialize};
 use crate::utils::{
     is_signed_in,
     verify,
-    send_email,
-    EmailF,
 };
 use crate::models::{User, SessionUser, EmailVerificationToken, EmailVerificationTokenMessage};
 use actix_session::Session;
@@ -30,6 +28,83 @@ pub fn auth_routes(config: &mut web::ServiceConfig) {
     config.route("/login/", web::post().to(login));
     config.route("/invite/", web::post().to(invite));
     config.route("/logout/", web::get().to(logout));
+}
+
+
+#[derive(Deserialize, Serialize)]
+pub struct EmailF {
+    pub recipient_name:  String,
+    pub recipient_email: String,
+    pub subject:         String,
+    pub text:            String,
+}
+struct EmailUser {
+    name: String,
+    email: String,
+}
+use reqwest::Client;
+use reqwest::header;
+use serde_json::json;
+
+#[derive(Debug)]
+struct EmailResp {
+    status:  String,
+}
+pub async fn send_email(data: EmailF) -> bool {
+    dotenv::dotenv().ok();
+    let api_key = std::env::var("EMAIL_KEY")
+        .expect("EMAIL_KEY must be set");
+    let sender = EmailUser {
+        name: "BJustCoin Team".to_string(),
+        email: "no-reply@bjustcoin.com".to_string(),
+    };
+
+    let recipient = EmailUser {
+        name: data.recipient_name.clone(),
+        email: data.recipient_email.clone(),
+    };
+
+    let body = json!({
+            "personalizations": [{
+                "from": {
+                    "email": sender.email.clone(),
+                    "name": sender.name.clone()
+                },
+                "to": [{
+                    "email": recipient.email.clone(),
+                    "name": recipient.name.clone()
+                }]
+            }],
+            "from": {
+                "email": sender.email.clone(),
+                "name": sender.name.clone()
+            },
+            "subject": data.subject.clone(),
+            "content": [
+                {
+                    "type": "text/plain",
+                    "value": data.text.clone()
+                },
+            ]
+        });
+    let client = Client::new()
+        .post("https://api.sendgrid.com/v3/mail/send")
+        .json(&body)
+        .bearer_auth(api_key)
+        .header(
+            header::CONTENT_TYPE, 
+            header::HeaderValue::from_static("application/json")
+        );
+
+    let response = client.send();
+    if response.await.is_ok() {
+        println!("200");
+        return true
+    }
+    else {
+        println!("400");
+        return false
+    }
 }
 
 #[derive(Deserialize, Serialize)]
