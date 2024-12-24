@@ -15,7 +15,7 @@ use crate::schema;
 use serde::{Deserialize, Serialize};
 use actix_session::Session;
 use crate::errors::AuthError;
-use diesel::{PgConnection, Connection};
+use diesel::{PgConnection, Connection, ExpressionMethods};
 use crate::models::{SessionUser, User};
 
 
@@ -73,7 +73,7 @@ use reqwest::header;
 use serde_json::json;
 
 
-pub async fn send_email(data: EmailF) -> i16 {
+pub async fn send_email(data: EmailF) -> String {
     dotenv::dotenv().ok();
     let api_key = std::env::var("EMAIL_KEY")
         .expect("EMAIL_KEY must be set");
@@ -123,10 +123,10 @@ pub async fn send_email(data: EmailF) -> i16 {
 
     let response = client.send();
     if response.await.is_ok() {
-        return 200;
+        return "200".to_string();
     }
     else {
-        return 400;
+        return "400".to_string();
     }
 }
 
@@ -151,11 +151,11 @@ pub fn get_current_user(session: &Session) -> Result<User, AuthError> {
     );
 
     if some_user.is_err() {
-        AuthError::AuthenticationError(String::from("Error"))
+        Err(AuthError::AuthenticationError(String::from("Error")))
     }
     else {
         let _user = some_user.expect("Error.");
-        get_user(_user.id)
+        get_user(_user.id).expect("E.")
     }
 
 }

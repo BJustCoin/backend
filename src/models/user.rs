@@ -44,7 +44,8 @@ impl User {
             .filter(schema::users::perm.eq(vec!(USER, USERCANBUYTOCKEN)))
             .select(schema::users::id)
             .load::<i32>(&_connection)
-            .expect("E.");
+            .expect("E.")
+            .len();
     }
     pub fn get_users(&self, limit: i64, offset: i64) -> Json<Vec<AuthResp>> {
         let _connection = establish_connection();
@@ -64,7 +65,7 @@ impl User {
             .load::<AuthResp>(&_connection)
             .expect("E."));
     }
-    pub fn get_users_list(&self, page: i32, limit: Option<i64>) -> (Json<Vec<AuthResp>>, Json<i32>) {
+    pub fn get_users_list(&self, page: i32, limit: Option<i64>) -> (Json<Vec<AuthResp>, i32>) {
         let _limit = get_limit(limit, 20);
         if !self.is_admin() {
             return Ok(Json(AuthResp { 
