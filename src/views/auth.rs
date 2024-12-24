@@ -56,39 +56,6 @@ struct EmailUser {
     email: String,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
-struct Ddata {
-    personalizations:  PersonalizationsData,
-    from:              FromData,
-    subject:           String,
-    content:           ContentData,
-}
-#[derive(Deserialize, Serialize, Debug)]
-struct EmailNameData {
-    email:  String,
-    name:  String,
-}
-#[derive(Deserialize, Serialize, Debug)]
-struct TypeValueData {
-    r#type: String,
-    value:  String,
-}
-
-#[derive(Deserialize, Serialize, Debug)]
-struct PersonalizationsData {
-    from: EmailNameData,
-    to:   EmailNameData,
-}
-#[derive(Deserialize, Serialize, Debug)]
-struct FromData {
-    from: EmailNameData,
-}
-#[derive(Deserialize, Serialize, Debug)]
-struct ContentData {
-    r#type: String,
-    value:   String,
-}
-
 pub async fn send_email(data: EmailF) -> bool {
     dotenv::dotenv().ok();
     let api_key = std::env::var("EMAIL_KEY")
@@ -168,12 +135,12 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
         name: body.name.clone(),
         email: body.email.clone(),
     };
-    let sg = sendgrid-rs::SGClient::new(api_key); 
+    let sg = sendgrid::SGClient::new(api_key); 
     let mut x_smtpapi = String::new();
     x_smtpapi.push_str(r#"{"unique_args":{"test":7}}"#);
 
-    let mail_info = sendgrid-rs::Mail::new()
-        .add_to(sendgrid-rs::Destination {
+    let mail_info = sendgrid::Mail::new()
+        .add_to(sendgrid::Destination {
             address: "no-reply@bjustcoin.com",
             name: "BJustCoin Team",
         })
