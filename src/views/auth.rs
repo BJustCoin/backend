@@ -19,7 +19,8 @@ use actix_session::Session;
 use crate::errors::AuthError;
 use chrono::Utc; 
 use uuid::Uuid;
-
+use sendgrid::SGClient;
+use sendgrid::{Destination, Mail};
 
 
 pub fn auth_routes(config: &mut web::ServiceConfig) {
@@ -169,7 +170,27 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
         name: body.name.clone(),
         email: body.email.clone(),
     };
-    
+    let sg = SGClient::new(api_key);
+    let mut x_smtpapi = String::new();
+    x_smtpapi.push_str(r#"{"unique_args":{"test":7}}"#);
+
+    let mail_info = Mail::new()
+        .add_to(Destination {
+            address: "no-reply@bjustcoin.com",
+            name: "BJustCoin Team",
+        })
+        .add_from(body.email.clone())
+        .add_subject("Rust is rad")
+        .add_html("<h1>Hello from SendGrid!</h1>")
+        .add_from_name("Test")
+        .add_header("x-cool".to_string(), "indeed")
+        .add_x_smtpapi(&x_smtpapi);
+
+    match sg.blocking_send(mail_info) {
+        Err(err) => println!("Error: {}", err),
+        Ok(body) => println!("Response: {:?}", body),
+    };
+
 
     Ok(HttpResponse::Ok().json(serde_json::json!({
         "message": "Verification email sent",
