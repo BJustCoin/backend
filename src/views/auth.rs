@@ -63,12 +63,12 @@ struct Personalizations {
 #[derive(Deserialize, Serialize)]
 struct EmailNameData {
     email:  String,
-    name:  FromData,
+    name:  String,
 }
 #[derive(Deserialize, Serialize)]
 struct TypeValueData {
     r#type: String,
-    value:  FromData,
+    value:  String,
 }
 
 #[derive(Deserialize, Serialize)]
@@ -186,7 +186,7 @@ async fn invite(body: web::Json<EmailUser>) -> Result<HttpResponse, ApiError> {
             "value": data.text.clone()
         },
     }
-    crate::utils::request_post("https://api.sendgrid.com/v3/mail/send".to_string(), data, api_key);
+    crate::utils::request_post("https://api.sendgrid.com/v3/mail/send".to_string(), &data, api_key);
 
     Ok(HttpResponse::Ok().json(serde_json::json!({
         "message": "Verification email sent",
