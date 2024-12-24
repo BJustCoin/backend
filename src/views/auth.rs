@@ -19,8 +19,6 @@ use actix_session::Session;
 use crate::errors::AuthError;
 use chrono::Utc; 
 use uuid::Uuid;
-use sendgrid::SGClient;
-use sendgrid::{Destination, Mail};
 
 
 pub fn auth_routes(config: &mut web::ServiceConfig) {
@@ -170,12 +168,12 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
         name: body.name.clone(),
         email: body.email.clone(),
     };
-    let sg = SGClient::new(api_key);
+    let sg = sendgrid-rs::SGClient::new(api_key); 
     let mut x_smtpapi = String::new();
     x_smtpapi.push_str(r#"{"unique_args":{"test":7}}"#);
 
-    let mail_info = Mail::new()
-        .add_to(Destination {
+    let mail_info = sendgrid-rs::Mail::new()
+        .add_to(sendgrid-rs::Destination {
             address: "no-reply@bjustcoin.com",
             name: "BJustCoin Team",
         })
