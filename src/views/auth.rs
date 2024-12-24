@@ -143,15 +143,6 @@ pub async fn send_email(data: EmailF) -> bool {
     }
 }
 
-#[derive(Deserialize, Serialize)]
-pub struct EmailF {
-    pub recipient_name:  String,
-    pub recipient_email: String,
-    pub subject:         String,
-    pub text:            String,
-}
-
-
 
 async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError> {
     let body = body.into_inner();
@@ -170,9 +161,9 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
         name: "BJustCoin Team".to_string(),
         email: "no-reply@bjustcoin.com".to_string(),
     }; 
-    let recipient = EmailUser {
-        name: body.recipient_name.clone(),
-        email: body.recipient_email.clone(),
+    let recipient = EmailUserReq {
+        name: body.name.clone(),
+        email: body.email.clone(),
     };
 
     let data = Personalization {
