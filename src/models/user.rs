@@ -61,7 +61,7 @@ impl User {
     pub fn get_users_list(&self, page: i64, limit: Option<i64>) -> (Vec<AuthResp>, i64) {
         let _limit = get_limit(limit, 20);
         if !self.is_admin() {
-            return AuthResp { 
+            return (AuthResp { 
                 id:         0,
                 first_name: "".to_string(),
                 last_name:  "".to_string(),
@@ -69,7 +69,7 @@ impl User {
                 perm:       0,
                 image:      None,
                 phone:      None,
-            }, 0;
+            }, 0);
         }
         let mut next_page_number = 0;
         let have_next: i64;

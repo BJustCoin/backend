@@ -131,11 +131,11 @@ pub async fn send_email(data: EmailF) -> String {
 
     let response = client.send();
     if response.await.is_ok() {
-        println!("200")
+        println!("200");
         return "200".to_string();
     }
     else {
-        println!("400")
+        println!("400");
         return "400".to_string();
     }
 }
