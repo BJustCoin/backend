@@ -110,14 +110,14 @@ pub struct ItemId {
 }
 pub async fn block_user(session: Session, data: Json<ItemId>) -> impl Responder {
     if is_signed_in(&session) {
-        let _request_user = get_request_user(&session);
+        let _request_user = get_current_user(&session);
         _request_user.create_user_block(data.id);
     }
     HttpResponse::Ok()
 }
 pub async fn unblock_user(session: Session, data: Json<ItemId>) -> impl Responder {
     if is_signed_in(&session) {
-        let _request_user = get_request_user(&session);
+        let _request_user = get_current_user(&session);
         _request_user.delete_user_block(data.id);
     }
     HttpResponse::Ok()
@@ -125,14 +125,14 @@ pub async fn unblock_user(session: Session, data: Json<ItemId>) -> impl Responde
 
 pub async fn block_admin(session: Session, data: Json<ItemId>) -> impl Responder {
     if is_signed_in(&session) {
-        let _request_user = get_request_user(&session);
+        let _request_user = get_current_user(&session);
         _request_user.create_admin_block(data.id);
     }
     HttpResponse::Ok()
 }
 pub async fn unblock_admin(session: Session, data: Json<ItemId>) -> impl Responder {
     if is_signed_in(&session) {
-        let _request_user = get_request_user(&session);
+        let _request_user = get_current_user(&session);
         _request_user.delete_admin_block(data.id);
     }
     HttpResponse::Ok()
@@ -140,14 +140,14 @@ pub async fn unblock_admin(session: Session, data: Json<ItemId>) -> impl Respond
 
 pub async fn create_admin(session: Session, data: Json<ItemId>) -> impl Responder {
     if is_signed_in(&session) {
-        let _request_user = get_request_user(&session);
+        let _request_user = get_current_user(&session);
         _request_user.create_admin(data.id);
     }
     HttpResponse::Ok()
 }
 pub async fn drop_admin(session: Session, data: Json<ItemId>) -> impl Responder {
     if is_signed_in(&session) {
-        let _request_user = get_request_user(&session);
+        let _request_user = get_current_user(&session);
         _request_user.delete_admin_block(data.id);
     }
     HttpResponse::Ok()
@@ -155,14 +155,14 @@ pub async fn drop_admin(session: Session, data: Json<ItemId>) -> impl Responder 
 
 pub async fn create_can_buy(session: Session, data: Json<ItemId>) -> impl Responder {
     if is_signed_in(&session) {
-        let _request_user = get_request_user(&session);
+        let _request_user = get_current_user(&session);
         _request_user.create_can_buy_token(data.id);
     }
     HttpResponse::Ok()
 }
 pub async fn delete_can_buy(session: Session, data: Json<ItemId>) -> impl Responder {
     if is_signed_in(&session) {
-        let _request_user = get_request_user(&session);
+        let _request_user = get_current_user(&session);
         _request_user.delete_can_buy_token(data.id);
     }
     HttpResponse::Ok()
