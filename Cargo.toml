@@ -18,7 +18,7 @@ hex = "0.4"
 rand = "0.7"
 reqwest = { version = "0.11.10", features = ["json"] }
 argonautica = "0.2.0"
-
+sendgrid-rs = "*"
 
 [profile.release]
 opt-level = 3

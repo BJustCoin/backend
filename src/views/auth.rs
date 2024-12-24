@@ -169,31 +169,7 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
         name: body.name.clone(),
         email: body.email.clone(),
     };
-
-    let personalization = PersonalizationsData {
-            "from": EmailNameData {
-                "email": sender.email.clone(),
-                "name": sender.name.clone()
-            },
-            "to": EmailNameData {
-                "email": recipient.email.clone(),
-                "name": recipient.name.clone()
-            },
-        };
-
-    let data = Ddata {
-        "personalizations": personalization,
-        "from": EmailNameData {
-            "email": sender.email.clone(),
-            "name": sender.name.clone()
-        },
-        "subject": "Bjustcoin - Email confirmation code".to_string(),
-        "content": ContentData {
-            "type": "text/plain".to_string(),
-            "value": token_string.to_string()
-        },
-    };
-    crate::utils::request_post("https://api.sendgrid.com/v3/mail/send".to_string(), &data, api_key);
+    
 
     Ok(HttpResponse::Ok().json(serde_json::json!({
         "message": "Verification email sent",
