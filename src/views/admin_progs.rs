@@ -60,19 +60,11 @@ pub async fn get_users(session: Session, data: Json<UsersData>) -> (Json<AuthRes
         _request_user.get_users_list(data.page, data.limit)
     }
     else {
-        Json(AuthResp { 
-            id:         0,
-            first_name: "".to_string(),
-            last_name:  "".to_string(),
-            email:      "".to_string(),
-            perm:       0,
-            image:      None,
-            phone:      None,
-        }, NextPage {
-                next:  i64,
+        Json(AuthRespData {
+            data: Vec::new(),
+            next: 0,
         })
     }
-    HttpResponse::Ok()
 }
 pub async fn get_admins(session: Session, data: Json<UsersData>) -> (Json<AuthRespData>) {
     if is_signed_in(&session) {
@@ -80,19 +72,11 @@ pub async fn get_admins(session: Session, data: Json<UsersData>) -> (Json<AuthRe
         _request_user.get_admins_list(data.page, data.limit)
     }
     else {
-        Json(AuthResp { 
-            id:         0,
-            first_name: "".to_string(),
-            last_name:  "".to_string(),
-            email:      "".to_string(),
-            perm:       0,
-            image:      None,
-            phone:      None,
-        }, NextPage {
-                next:  i64,
+        Json(AuthRespData {
+            data: Vec::new(),
+            next: 0,
         })
     }
-    HttpResponse::Ok()
 }
 pub async fn get_banned_users(session: Session, data: Json<UsersData>) -> (Json<AuthRespData>) {
     if is_signed_in(&session) {
@@ -100,19 +84,11 @@ pub async fn get_banned_users(session: Session, data: Json<UsersData>) -> (Json<
         _request_user.get_banned_users_list(data.page, data.limit)
     }
     else {
-        Json(AuthResp { 
-            id:         0,
-            first_name: "".to_string(),
-            last_name:  "".to_string(),
-            email:      "".to_string(),
-            perm:       0,
-            image:      None,
-            phone:      None,
-        }, NextPage {
-                next:  i64,
+        Json(AuthRespData {
+            data: Vec::new(),
+            next: 0,
         })
     }
-    HttpResponse::Ok()
 }
 pub async fn get_banned_admins(session: Session, data: Json<UsersData>) -> (Json<AuthRespData>) {
     if is_signed_in(&session) {
@@ -120,19 +96,10 @@ pub async fn get_banned_admins(session: Session, data: Json<UsersData>) -> (Json
         _request_user.get_banned_admins_list(data.page, data.limit)
     }
     else {
-        Json(AuthResp { 
-            id:         0,
-            first_name: "".to_string(),
-            last_name:  "".to_string(),
-            email:      "".to_string(),
-            perm:       0,
-            image:      None,
-            phone:      None,
-        }, NextPage {
-                next:  i64,
+        Json(AuthRespData {
+            data: Vec::new(),
+            next: 0,
         })
-    }
-    HttpResponse::Ok()
 }
 
 
