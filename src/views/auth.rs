@@ -51,6 +51,41 @@ use serde_json::json;
 struct EmailResp {
     status:  String,
 }
+
+
+#[derive(Deserialize, Serialize)]
+struct Personalizations {
+    personalizations:  PersonalizationsData,
+    from:              FromData,
+    subject:           String,
+    content:           ContentData,
+}
+#[derive(Deserialize, Serialize)]
+struct EmailNameData {
+    email:  String,
+    name:  FromData,
+}
+#[derive(Deserialize, Serialize)]
+struct TypeValueData {
+    r#type: String,
+    value:  FromData,
+}
+
+#[derive(Deserialize, Serialize)]
+struct PersonalizationsData {
+    from: EmailNameData,
+    to:   EmailNameData,
+}
+#[derive(Deserialize, Serialize)]
+struct FromData {
+    from: EmailNameData,
+}
+#[derive(Deserialize, Serialize)]
+struct ContentData {
+    r#type: String,
+    value:   String,
+}
+
 pub async fn send_email(data: EmailF) -> bool {
     dotenv::dotenv().ok();
     let api_key = std::env::var("EMAIL_KEY")
@@ -58,7 +93,7 @@ pub async fn send_email(data: EmailF) -> bool {
     let sender = EmailUser {
         name: "BJustCoin Team".to_string(),
         email: "no-reply@bjustcoin.com".to_string(),
-    };
+    }; 
 
     let recipient = EmailUser {
         name: data.recipient_name.clone(),
@@ -107,6 +142,41 @@ pub async fn send_email(data: EmailF) -> bool {
         return false
     }
 }
+
+
+#[derive(Deserialize, Serialize)]
+struct Personalizations {
+    personalizations:  PersonalizationsData,
+    from:              FromData,
+    subject:           String,
+    content:           ContentData,
+}
+#[derive(Deserialize, Serialize)]
+struct EmailNameData {
+    email:  String,
+    name:  FromData,
+}
+#[derive(Deserialize, Serialize)]
+struct TypeValueData {
+    r#type: String,
+    value:  FromData,
+}
+
+#[derive(Deserialize, Serialize)]
+struct PersonalizationsData {
+    from: EmailNameData,
+    to:   EmailNameData,
+}
+#[derive(Deserialize, Serialize)]
+struct FromData {
+    from: EmailNameData,
+}
+#[derive(Deserialize, Serialize)]
+struct ContentData {
+    r#type: String,
+    value:   String,
+}
+
 async fn invite(body: web::Json<EmailUser>) -> Result<HttpResponse, ApiError> {
     let body = body.into_inner();
 
@@ -117,20 +187,45 @@ async fn invite(body: web::Json<EmailUser>) -> Result<HttpResponse, ApiError> {
     let token = EmailVerificationToken::create(token_data.clone()).expect("E.");
     let token_string = hex::encode(token.id);
 
-    let data = EmailF {
-        recipient_name:  body.name.clone(),
-        recipient_email: body.email.clone(),
-        subject:         "Bjustcoin - Email confirmation code".to_string(),
-        text:            "Here is your code - <strong>".to_string() + &token_string.to_string() + &"</strong>".to_string(),
+    dotenv::dotenv().ok();
+    let api_key = std::env::var("EMAIL_KEY")
+        .expect("EMAIL_KEY must be set");
+    let sender = EmailUser {
+        name: "BJustCoin Team".to_string(),
+        email: "no-reply@bjustcoin.com".to_string(),
+    }; 
+    let recipient = EmailUser {
+        name: data.recipient_name.clone(),
+        email: data.recipient_email.clone(),
     };
-    let status = send_email(data);
-    //println!("{:?}", status);
+
+    let data = Personalizations {
+        "personalizations": PersonalizationsData {
+            "from": EmailNameData {
+                "email": sender.email.clone(),
+                "name": sender.name.clone()
+            },
+            "to": EmailNameData {
+                "email": recipient.email.clone(),
+                "name": recipient.name.clone()
+            },
+        },
+        "from": EmailNameData {
+            "email": sender.email.clone(),
+            "name": sender.name.clone()
+        },
+        "subject": "Bjustcoin - Email confirmation code".to_string(),
+        "content": ContentData {
+            "type": "text/plain".to_string(),
+            "value": data.text.clone()
+        },
+    }
+    crate::utils::request_post("https://api.sendgrid.com/v3/mail/send".to_string(), data, api_key);
 
     Ok(HttpResponse::Ok().json(serde_json::json!({
         "message": "Verification email sent",
     })))
 }
-
 
 pub async fn logout(session: Session) -> Result<HttpResponse, AuthError> {
     session.clear();

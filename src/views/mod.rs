@@ -1,9 +1,9 @@
 pub mod auth;
-//pub mod superuser_progs;
+pub mod admin_progs;
 //pub mod user_progs;
 
 pub use self::{
     auth::*,
-    //superuser_progs::*,
+    admin_progs::*,
     //user_progs::*,
 };

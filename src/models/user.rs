@@ -83,6 +83,138 @@ impl User {
         _tuple
     }
 
+    pub fn get_admins(limit: i64, offset: i64) -> Vec<AuthResp> {
+        let _connection = establish_connection();
+        return schema::users::table
+            .filter(schema::users::perm.eq(ADMIN))
+            .order(schema::users::created.desc())
+            .limit(limit)
+            .offset(offset)
+            .select((
+                schema::users::id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::email,
+                schema::users::perm,
+                schema::users::image,
+                schema::users::phone,
+            )) 
+            .load::<AuthResp>(&_connection)
+            .expect("E.");
+    }
+    pub fn get_users_list(&self, page: i64, limit: Option<i64>) -> (Vec<AuthResp>, i64) {
+        let _limit = get_limit(limit, 20);
+        if !self.is_superuser() {
+            return (Vec::new(), 0);
+        }
+        let mut next_page_number = 0;
+        let have_next: i64;
+        let object_list: Vec<AuthResp>;
+
+        if page > 1 {
+            let step = (page - 1) * _limit;
+            have_next = page * _limit + 1;
+            object_list = User::get_admins(_limit.into(), step.into());
+        }
+        else {
+            have_next = _limit + 1;
+            object_list = User::get_admins(_limit.into(), 0);
+        }
+        if User::get_admins(1, have_next.into()).len() > 0 {
+            next_page_number = page + 1;
+        }
+        let _tuple = (object_list, next_page_number);
+        _tuple
+    }
+
+    pub fn get_banned_users(limit: i64, offset: i64) -> Vec<AuthResp> {
+        let _connection = establish_connection();
+        return schema::users::table
+            .filter(schema::users::perm.eq(USERISBLOCK))
+            .order(schema::users::created.desc())
+            .limit(limit)
+            .offset(offset)
+            .select((
+                schema::users::id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::email,
+                schema::users::perm,
+                schema::users::image,
+                schema::users::phone,
+            )) 
+            .load::<AuthResp>(&_connection)
+            .expect("E.");
+    }
+    pub fn get_banned_users_list(&self, page: i64, limit: Option<i64>) -> (Vec<AuthResp>, i64) {
+        let _limit = get_limit(limit, 20);
+        if !self.is_admin() {
+            return (Vec::new(), 0);
+        }
+        let mut next_page_number = 0;
+        let have_next: i64;
+        let object_list: Vec<AuthResp>;
+
+        if page > 1 {
+            let step = (page - 1) * _limit;
+            have_next = page * _limit + 1;
+            object_list = User::get_admins(_limit.into(), step.into());
+        }
+        else {
+            have_next = _limit + 1;
+            object_list = User::get_admins(_limit.into(), 0);
+        }
+        if User::get_admins(1, have_next.into()).len() > 0 {
+            next_page_number = page + 1;
+        }
+        let _tuple = (object_list, next_page_number);
+        _tuple
+    }
+
+    pub fn get_banned_admins(limit: i64, offset: i64) -> Vec<AuthResp> {
+        let _connection = establish_connection();
+        return schema::users::table
+            .filter(schema::users::perm.eq(ADMINISBLOCK))
+            .order(schema::users::created.desc())
+            .limit(limit)
+            .offset(offset)
+            .select((
+                schema::users::id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::email,
+                schema::users::perm,
+                schema::users::image,
+                schema::users::phone,
+            )) 
+            .load::<AuthResp>(&_connection)
+            .expect("E.");
+    }
+    pub fn get_banned_admins_list(&self, page: i64, limit: Option<i64>) -> (Vec<AuthResp>, i64) {
+        let _limit = get_limit(limit, 20);
+        if !self.is_superuser() {
+            return (Vec::new(), 0);
+        }
+        let mut next_page_number = 0;
+        let have_next: i64;
+        let object_list: Vec<AuthResp>;
+
+        if page > 1 {
+            let step = (page - 1) * _limit;
+            have_next = page * _limit + 1;
+            object_list = User::get_admins(_limit.into(), step.into());
+        }
+        else {
+            have_next = _limit + 1;
+            object_list = User::get_admins(_limit.into(), 0);
+        }
+        if User::get_admins(1, have_next.into()).len() > 0 {
+            next_page_number = page + 1;
+        }
+        let _tuple = (object_list, next_page_number);
+        _tuple
+    }
+
     pub fn is_superuser(&self) -> bool {
         return self.perm == SUPERUSER;
     }
@@ -120,7 +252,7 @@ impl User {
                 .set(schema::users::perm.eq(ADMIN))
                 .execute(&_connection);
         }))
-    }
+    } 
     pub fn create_user_block(&self, user_id: i32) -> Result<(), Error> {
         if !self.is_admin() {
             return Err(Error::BadRequest("403".to_string()));

@@ -1,7 +1,9 @@
 mod auth;
+mod reqwest;
 
 pub use self::{
     auth::*,
+    reqwest::*,
 };
 use actix_web::{
     HttpRequest,
@@ -62,6 +64,28 @@ pub fn get_limit (
         _limit = default_limit;
     }
     _limit
+}
+
+pub fn get_page(req: &HttpRequest) -> i32 {
+    #[derive(Debug, Deserialize)]
+    struct Params {
+        pub page: Option<i32>,
+    }
+    let params_some = web::Query::<Params>::from_query(&req.query_string());
+    let page: i32;
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        if params.page.is_some() {
+            page = params.page.unwrap();
+        }
+        else {
+            page = 1;
+        }
+    }
+    else {
+        page = 1;
+    }
+    page
 }
 
 
