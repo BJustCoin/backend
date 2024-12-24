@@ -38,6 +38,7 @@ pub struct EmailF {
     pub subject:         String,
     pub text:            String,
 }
+#[derive(Deserialize, Serialize)]
 struct EmailUser {
     name: String,
     email: String,
