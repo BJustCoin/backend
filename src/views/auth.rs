@@ -39,7 +39,7 @@ pub struct EmailF {
     pub text:            String,
 }
 #[derive(Deserialize, Serialize)]
-struct EmailUser {
+struct EmailUserReq {
     name: String,
     email: String,
 }
@@ -143,7 +143,17 @@ pub async fn send_email(data: EmailF) -> bool {
     }
 }
 
-async fn invite(body: web::Json<EmailUser>) -> Result<HttpResponse, ApiError> {
+#[derive(Deserialize, Serialize)]
+pub struct EmailF {
+    pub recipient_name:  String,
+    pub recipient_email: String,
+    pub subject:         String,
+    pub text:            String,
+}
+
+
+
+async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError> {
     let body = body.into_inner();
 
     let token_data = EmailVerificationTokenMessage {
@@ -183,7 +193,7 @@ async fn invite(body: web::Json<EmailUser>) -> Result<HttpResponse, ApiError> {
         "subject": "Bjustcoin - Email confirmation code".to_string(),
         "content": ContentData {
             "type": "text/plain".to_string(),
-            "value": body.text.clone()
+            "value": token_string.to_string()
         },
     }
     crate::utils::request_post("https://api.sendgrid.com/v3/mail/send".to_string(), &data, api_key);
