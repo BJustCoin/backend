@@ -9,6 +9,7 @@ use crate::diesel::{
     ExpressionMethods,
     RunQueryDsl,
     Connection,
+    NullableExpressionMethods,
 };
 use serde::{Serialize, Deserialize};
 use crate::utils::{establish_connection, get_limit, NewUserForm};
@@ -38,18 +39,9 @@ pub struct User {
 }
 
 impl User {
-    pub fn get_count_users() -> usize {
-        let _connection = establish_connection();
-        return schema::users::table
-            .filter(schema::users::perm.eq(vec!(USER, USERCANBUYTOCKEN)))
-            .select(schema::users::id)
-            .load::<i32>(&_connection)
-            .expect("E.")
-            .len();
-    }
     pub fn get_users(limit: i64, offset: i64) -> Vec<AuthResp> {
         let _connection = establish_connection();
-        return Json(schema::users::table
+        return schema::users::table
             .filter(schema::users::perm.eq_any(vec!(USER, USERCANBUYTOCKEN)))
             .order(schema::users::created.desc())
             .limit(limit)
@@ -63,12 +55,12 @@ impl User {
                 schema::users::phone.nullable(),
             ))
             .load::<AuthResp>(&_connection)
-            .expect("E."));
+            .expect("E.");
     }
     pub fn get_users_list(&self, page: i64, limit: Option<i64>) -> (Vec<AuthResp>, i64) {
         let _limit = get_limit(limit, 20);
         if !self.is_admin() {
-            return Json(AuthResp { 
+            return AuthResp { 
                 id:         0,
                 first_name: "".to_string(),
                 last_name:  "".to_string(),
@@ -76,7 +68,7 @@ impl User {
                 perm:       0,
                 image:      None,
                 phone:      None,
-            }, 0);
+            }, 0;
         }
         let mut next_page_number = 0;
         let have_next: i64;

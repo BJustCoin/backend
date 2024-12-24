@@ -22,6 +22,7 @@ use crate::diesel::{
     ExpressionMethods,
     RunQueryDsl,
     Connection,
+    PgConnection,
 };
 use crate::models::{SessionUser, User};
 
