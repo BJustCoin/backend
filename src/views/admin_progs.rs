@@ -100,6 +100,7 @@ pub async fn get_banned_admins(session: Session, data: Json<UsersData>) -> (Json
             data: Vec::new(),
             next: 0,
         })
+    }
 }
 
 
