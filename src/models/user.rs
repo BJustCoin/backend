@@ -102,7 +102,7 @@ impl User {
             .load::<AuthResp>(&_connection)
             .expect("E.");
     }
-    pub fn get_users_list(&self, page: i64, limit: Option<i64>) -> (Vec<AuthResp>, i64) {
+    pub fn get_admins_list(&self, page: i64, limit: Option<i64>) -> (Vec<AuthResp>, i64) {
         let _limit = get_limit(limit, 20);
         if !self.is_superuser() {
             return (Vec::new(), 0);

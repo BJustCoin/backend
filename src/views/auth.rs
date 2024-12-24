@@ -143,40 +143,6 @@ pub async fn send_email(data: EmailF) -> bool {
     }
 }
 
-
-#[derive(Deserialize, Serialize)]
-struct Personalizations {
-    personalizations:  PersonalizationsData,
-    from:              FromData,
-    subject:           String,
-    content:           ContentData,
-}
-#[derive(Deserialize, Serialize)]
-struct EmailNameData {
-    email:  String,
-    name:  FromData,
-}
-#[derive(Deserialize, Serialize)]
-struct TypeValueData {
-    r#type: String,
-    value:  FromData,
-}
-
-#[derive(Deserialize, Serialize)]
-struct PersonalizationsData {
-    from: EmailNameData,
-    to:   EmailNameData,
-}
-#[derive(Deserialize, Serialize)]
-struct FromData {
-    from: EmailNameData,
-}
-#[derive(Deserialize, Serialize)]
-struct ContentData {
-    r#type: String,
-    value:   String,
-}
-
 async fn invite(body: web::Json<EmailUser>) -> Result<HttpResponse, ApiError> {
     let body = body.into_inner();
 
