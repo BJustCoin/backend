@@ -15,7 +15,7 @@ use serde::{Serialize, Deserialize};
 use crate::utils::{establish_connection, get_limit, NewUserForm};
 use crate::errors::Error;
 use actix_web::web::Json;
-use crate::views::{NewUserJson, AuthResp};
+use crate::views::{NewUserJson, AuthResp, AuthRespData};
 
 const USER: i16 = 1;
 const USERCANBUYTOCKEN: i16 = 2;
@@ -58,7 +58,7 @@ impl User {
             .load::<AuthResp>(&_connection)
             .expect("E.");
     }
-    pub fn get_users_list(&self, page: i64, limit: Option<i64>) -> (Vec<AuthResp>, i64) {
+    pub fn get_users_list(&self, page: i64, limit: Option<i64>) -> AuthRespData {
         let _limit = get_limit(limit, 20);
         if !self.is_admin() {
             return (Vec::new(), 0);
@@ -79,8 +79,10 @@ impl User {
         if User::get_users(1, have_next.into()).len() > 0 {
             next_page_number = page + 1;
         }
-        let _tuple = (object_list, next_page_number);
-        _tuple
+        AuthRespData {
+            data: object_list,
+            next: next_page_number,
+        }
     }
 
     pub fn get_admins(limit: i64, offset: i64) -> Vec<AuthResp> {
@@ -102,7 +104,7 @@ impl User {
             .load::<AuthResp>(&_connection)
             .expect("E.");
     }
-    pub fn get_admins_list(&self, page: i64, limit: Option<i64>) -> (Vec<AuthResp>, i64) {
+    pub fn get_admins_list(&self, page: i64, limit: Option<i64>) -> AuthRespData {
         let _limit = get_limit(limit, 20);
         if !self.is_superuser() {
             return (Vec::new(), 0);
@@ -123,8 +125,10 @@ impl User {
         if User::get_admins(1, have_next.into()).len() > 0 {
             next_page_number = page + 1;
         }
-        let _tuple = (object_list, next_page_number);
-        _tuple
+        AuthRespData {
+            data: object_list,
+            next: next_page_number,
+        }
     }
 
     pub fn get_banned_users(limit: i64, offset: i64) -> Vec<AuthResp> {
@@ -146,7 +150,7 @@ impl User {
             .load::<AuthResp>(&_connection)
             .expect("E.");
     }
-    pub fn get_banned_users_list(&self, page: i64, limit: Option<i64>) -> (Vec<AuthResp>, i64) {
+    pub fn get_banned_users_list(&self, page: i64, limit: Option<i64>) -> AuthRespData {
         let _limit = get_limit(limit, 20);
         if !self.is_admin() {
             return (Vec::new(), 0);
@@ -167,8 +171,10 @@ impl User {
         if User::get_admins(1, have_next.into()).len() > 0 {
             next_page_number = page + 1;
         }
-        let _tuple = (object_list, next_page_number);
-        _tuple
+        AuthRespData {
+            data: object_list,
+            next: next_page_number,
+        }
     }
 
     pub fn get_banned_admins(limit: i64, offset: i64) -> Vec<AuthResp> {
@@ -190,7 +196,7 @@ impl User {
             .load::<AuthResp>(&_connection)
             .expect("E.");
     }
-    pub fn get_banned_admins_list(&self, page: i64, limit: Option<i64>) -> (Vec<AuthResp>, i64) {
+    pub fn get_banned_admins_list(&self, page: i64, limit: Option<i64>) -> AuthRespData {
         let _limit = get_limit(limit, 20);
         if !self.is_superuser() {
             return (Vec::new(), 0);
@@ -211,8 +217,10 @@ impl User {
         if User::get_admins(1, have_next.into()).len() > 0 {
             next_page_number = page + 1;
         }
-        let _tuple = (object_list, next_page_number);
-        _tuple
+        AuthRespData {
+            data: object_list,
+            next: next_page_number,
+        }
     }
 
     pub fn is_superuser(&self) -> bool {
