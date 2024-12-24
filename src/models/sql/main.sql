@@ -6,6 +6,8 @@ CREATE TABLE users (
     phone      VARCHAR(100),
     password   VARCHAR(1000) NOT NULL,
     perm       SMALLINT NOT NULL,
+    created    TIMESTAMP NOT NULL,
+    image      VARCHAR(500),
     UNIQUE(email)
 );
 

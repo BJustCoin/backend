@@ -54,9 +54,13 @@ async fn invite(body: web::Json<EmailUser>) -> Result<HttpResponse, ApiError> {
         subject:         "Bjustcoin - Email confirmation code".to_string(),
         text:            "Here is your code - <strong>".to_string() + &token_string.to_string() + &"</strong>".to_string(),
     };
-    send_email(data);
+    let status = send_email(data);
 
-    Ok(HttpResponse::Ok().json(serde_json::json!({"message": "Verification email sent"})))
+
+    Ok(HttpResponse::Ok().json(serde_json::json!({
+        "message": "Verification email sent",
+        "status": status,
+    })))
 }
 
 
@@ -93,11 +97,13 @@ pub struct AuthResp {
     pub last_name:  String,
     pub email:      String,
     pub perm:       i16,
-}
+    pub image:      Option<String>,
+    pub phone:      Option<String>,
+} 
 
 fn find_user(data: Json<LoginUser2>) -> Result<SessionUser, AuthError> {
     let user_some = User::get_user_with_email(&data.email); 
-    if user_some.is_ok() {
+    if user_some.is_ok() { 
         let _user = user_some.expect("Error.");
         if let Ok(matching) = verify(&_user.password, &data.password) {
             if matching {
@@ -144,12 +150,14 @@ fn handle_sign_in (
 
 pub async fn login(req: HttpRequest, session: Session, data: Json<LoginUser2>) -> Json<AuthResp> {
     if is_signed_in(&session) {
-        return Json(AuthResp {
+        return Json(AuthResp { 
             id:         0,
             first_name: "".to_string(),
             last_name:  "".to_string(),
             email:      "".to_string(),
             perm:       0,
+            image:      None,
+            phone:      None,
         });
     }
     else {
@@ -163,6 +171,8 @@ pub async fn login(req: HttpRequest, session: Session, data: Json<LoginUser2>) -
                 last_name:  _new_user.last_name.clone(),
                 email:      _new_user.email.clone(),
                 perm:       _new_user.perm,
+                image:      _new_user.image.clone(),
+                phone:      _user.phone,
             });
         }
         else {
@@ -172,6 +182,8 @@ pub async fn login(req: HttpRequest, session: Session, data: Json<LoginUser2>) -
                 last_name:  "".to_string(),
                 email:      "".to_string(),
                 perm:       0,
+                image:      None,
+                phone:      None,
             });
         }
     }
@@ -185,6 +197,8 @@ pub async fn process_signup(session: Session, data: Json<NewUserJson>) -> Json<A
             last_name:  "".to_string(),
             email:      "".to_string(),
             perm:       0,
+            image:      None,
+            phone:      None,
         });
     }
     else { 
@@ -196,6 +210,8 @@ pub async fn process_signup(session: Session, data: Json<NewUserJson>) -> Json<A
                 last_name:  "".to_string(),
                 email:      "".to_string(),
                 perm:       0,
+                image:      None,
+                phone:      None,
             });
         }
         let token_id = token_id_res.expect("E.");
@@ -208,6 +224,8 @@ pub async fn process_signup(session: Session, data: Json<NewUserJson>) -> Json<A
                 last_name:  "".to_string(),
                 email:      "".to_string(),
                 perm:       0,
+                image:      None,
+                phone:      None,
             });
         }
         let token = token_res.expect("E.");
@@ -219,6 +237,8 @@ pub async fn process_signup(session: Session, data: Json<NewUserJson>) -> Json<A
                 last_name:  "".to_string(),
                 email:      "".to_string(),
                 perm:       0,
+                image:      None,
+                phone:      None,
             });
         }
 
@@ -236,6 +256,8 @@ pub async fn process_signup(session: Session, data: Json<NewUserJson>) -> Json<A
             last_name:  _new_user.last_name.clone(),
             email:      _new_user.email.clone(),
             perm:       _new_user.perm,
+            image:      _new_user.image,
+            phone:      None,
         })
     }
 }
@@ -248,6 +270,8 @@ pub async fn process_reset(session: Session, data: Json<NewPasswordJson>) -> Jso
             last_name:  "".to_string(),
             email:      "".to_string(),
             perm:       0,
+            image:      None,
+            phone:      None,
         }); 
     }
     else { 
@@ -259,6 +283,8 @@ pub async fn process_reset(session: Session, data: Json<NewPasswordJson>) -> Jso
                 last_name:  "".to_string(),
                 email:      "".to_string(),
                 perm:       0,
+                image:      None,
+                phone:      None,
             });
         }
         let token_id = token_id_res.expect("E.");
@@ -271,6 +297,8 @@ pub async fn process_reset(session: Session, data: Json<NewPasswordJson>) -> Jso
                 last_name:  "".to_string(),
                 email:      "".to_string(),
                 perm:       0,
+                image:      None,
+                phone:      None,
             });
         }
         let token = token_res.expect("E.");
@@ -282,6 +310,8 @@ pub async fn process_reset(session: Session, data: Json<NewPasswordJson>) -> Jso
                 last_name:  "".to_string(),
                 email:      "".to_string(),
                 perm:       0,
+                image:      None,
+                phone:      None,
             });
         }
 
@@ -292,6 +322,8 @@ pub async fn process_reset(session: Session, data: Json<NewPasswordJson>) -> Jso
                 last_name:  "".to_string(),
                 email:      "".to_string(),
                 perm:       0,
+                image:      None,
+                phone:      None,
             });
         }
 
@@ -310,6 +342,8 @@ pub async fn process_reset(session: Session, data: Json<NewPasswordJson>) -> Jso
                 last_name:  _user.last_name.clone(),
                 email:      _user.email.clone(),
                 perm:       _user.perm,
+                image:      _user.image.clone(),
+                phone:      _user.phone,
             })
         }
         else {
@@ -319,6 +353,8 @@ pub async fn process_reset(session: Session, data: Json<NewPasswordJson>) -> Jso
                 last_name:  "".to_string(),
                 email:      "".to_string(),
                 perm:       0,
+                image:      None,
+                phone:      None,
             });
         }
     }

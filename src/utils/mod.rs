@@ -16,6 +16,7 @@ use serde::{Deserialize, Serialize};
 use actix_session::Session;
 use crate::errors::AuthError;
 use diesel::{PgConnection, Connection};
+use crate::models::{SessionUser, User};
 
 
 #[derive(Deserialize, Serialize)]
@@ -32,6 +33,27 @@ pub fn establish_connection() -> PgConnection {
         .expect("DATABASE_URL must be set");
     PgConnection::establish(&database_url)
         .expect(&format!("Error connecting to {}", database_url))
+}
+
+
+pub fn get_limit (
+    limit: Option<i64>,
+    default_limit: i64
+) -> i64 {
+    let _limit: i64;
+    if limit.is_some() {
+        let l_unwrap = limit.unwrap();
+        if l_unwrap > 100 {
+            _limit = default_limit;
+        }
+        else {
+            _limit = l_unwrap;
+        }
+    }
+    else {
+        _limit = default_limit;
+    }
+    _limit
 }
 
 #[derive(Deserialize, Serialize)]
@@ -101,9 +123,39 @@ pub async fn send_email(data: EmailF) -> i16 {
 
     let response = client.send();
     if response.await.is_ok() {
-        return 1;
+        return 200;
     }
     else {
-        return 0;
+        return 400;
     }
+}
+
+pub fn get_user(id: i32) -> User {
+    let _connection = establish_connection();
+    return schema::users::table
+        .filter(schema::users::id.eq(id))
+        .first::<User>(&_connection)
+        .expect("Error.");
+}
+
+pub fn get_current_user(session: &Session) -> Result<User, AuthError> {
+    let msg = "Не удалось извлечь пользователя из сеанса"; 
+
+    let some_user = session
+        .get::<String>("user")
+        .map_err(|_| AuthError::AuthenticationError(String::from(msg)))
+        .unwrap() 
+        .map_or(
+          Err(AuthError::AuthenticationError(String::from(msg))),
+          |user| serde_json::from_str(&user).or_else(|_| Err(AuthError::AuthenticationError(String::from(msg))))
+    );
+
+    if some_user.is_err() {
+        AuthError::AuthenticationError(String::from("Error"))
+    }
+    else {
+        let _user = some_user.expect("Error.");
+        get_user(_user.id)
+    }
+
 }

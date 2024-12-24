@@ -11,10 +11,10 @@ use crate::diesel::{
     Connection,
 };
 use serde::{Serialize, Deserialize};
-use crate::utils::{establish_connection, NewUserForm};
+use crate::utils::{establish_connection, get_limit_offset, NewUserForm};
 use crate::errors::Error;
 use actix_web::web::Json;
-use crate::views::NewUserJson;
+use crate::views::{NewUserJson, AuthResp};
 
 const USER: i16 = 1;
 const USERCANBUYTOCKEN: i16 = 2;
@@ -33,14 +33,73 @@ pub struct User {
     pub password:   String,
     pub perm:       i16,
     pub phone:      Option<String>,
+    pub created:    NaiveDateTime,
+    pub image:      Option<String>,
 }
 
 impl User {
+    pub fn get_count_users(&self) -> usize {
+        return schema::users::table
+            .filter(schema::users::perm.eq(vec!(USER, USERCANBUYTOCKEN)))
+            .select(schema::users::id)
+            .load::<i32>(&_connection)
+            .expect("E.");
+    }
+    pub fn get_users(&self, limit: i64, offset: i64) -> Json<Vec<AuthResp>> {
+        return Json(schema::users::table
+            .filter(schema::users::perm.eq_any(vec!(USER, USERCANBUYTOCKEN)))
+            .order(schema::users::created.desc())
+            .limit(limit)
+            .offset(offset)
+            .select((
+                schema::users::id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::email,
+                schema::users::image.nullable(),
+                schema::users::phone.nullable(),
+            ))
+            .load::<AuthResp>(&_connection)
+            .expect("E."));
+    }
+    pub fn get_users_list(&self, page: i32, limit: Option<i64>) -> (Json<Vec<AuthResp>, i32) {
+        let _limit = get_limit(limit, 20);
+        if !self.is_admin() {
+            return Ok(Json(AuthResp { 
+                id:         0,
+                first_name: "".to_string(),
+                last_name:  "".to_string(),
+                email:      "".to_string(),
+                perm:       0,
+                image:      None,
+                phone:      None,
+            }), 0);
+        }
+        let mut next_page_number = 0;
+        let have_next: i32;
+        let object_list: Vec<AuthResp>;
+
+        if page > 1 {
+            let step = (page - 1) * _limit;
+            have_next = page * _limit + 1;
+            object_list = User::get_users(_limit.into(), step.into())?;
+        }
+        else {
+            have_next = _limit + 1;
+            object_list = User::get_users(_limit.into(), 0)?;
+        }
+        if User::get_users(1, have_next.into())?.len() > 0 {
+            next_page_number = page + 1;
+        }
+        let _tuple = (object_list, next_page_number);
+        Ok(Json(_tuple))
+    }
+
     pub fn is_superuser(&self) -> bool {
         return self.perm == SUPERUSER;
     }
     pub fn is_admin(&self) -> bool {
-        return self.perm == ADMIN;
+        return self.perm == ADMIN | self.perm == SUPERUSER;
     }
     pub fn is_user_in_block(&self) -> bool {
         return self.perm == USERISBLOCK;
@@ -164,6 +223,8 @@ impl User {
             password:   crate::utils::hash_password(&form.password),
             perm:       1,
             phone:      None,
+            created:    chrono::Utc::now().naive_utc(),
+            image:      None,
         };
 
         let _new_user = diesel::insert_into(schema::users::table)
@@ -190,6 +251,8 @@ pub struct NewUser {
     pub password:   String,
     pub perm:       i16,
     pub phone:      Option<String>,
+    pub created:    NaiveDateTime,
+    pub image:      Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
