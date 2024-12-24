@@ -84,7 +84,7 @@ use serde_json::json;
 struct EmailResp {
     status:  String,
 }
-pub async fn send_email(data: EmailF) -> EmailResp {
+pub async fn send_email(data: EmailF) -> bool {
     dotenv::dotenv().ok();
     let api_key = std::env::var("EMAIL_KEY")
         .expect("EMAIL_KEY must be set");
@@ -137,15 +137,11 @@ pub async fn send_email(data: EmailF) -> EmailResp {
     let response = client.send();
     if response.await.is_ok() {
         println!("200");
-        return EmailResp {
-            status:  "200".to_string(),
-        }
+        return true
     }
     else {
         println!("400");
-        return EmailResp {
-            status:  "400".to_string(),
-        }
+        return false
     }
 }
 
