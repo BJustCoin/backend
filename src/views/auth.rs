@@ -143,7 +143,7 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
         .add_header("x-cool".to_string(), "indeed")
         .add_x_smtpapi(&x_smtpapi);
 
-    match sg.blocking_send(mail_info) {
+    match sg.send(mail_info) {
         Err(err) => println!("Error: {}", err),
         Ok(body) => println!("Response: {:?}", body),
     };
