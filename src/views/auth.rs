@@ -89,7 +89,7 @@ pub struct NewPasswordJson {
     pub token:    String,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Queryable)]
 pub struct AuthResp {
     pub id:         i32,
     pub first_name: String,
