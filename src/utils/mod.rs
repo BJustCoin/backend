@@ -162,7 +162,7 @@ pub fn get_current_user(session: &Session) -> Result<User, AuthError> {
     }
     else {
         let _user = some_user.expect("Error.");
-        get_user(_user.id).expect("E.")
+        get_user(_user.id)
     }
 
 }

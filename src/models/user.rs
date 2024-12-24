@@ -38,7 +38,7 @@ pub struct User {
 }
 
 impl User {
-    pub fn get_count_users(&self) -> usize {
+    pub fn get_count_users() -> usize {
         let _connection = establish_connection();
         return schema::users::table
             .filter(schema::users::perm.eq(vec!(USER, USERCANBUYTOCKEN)))
@@ -47,7 +47,7 @@ impl User {
             .expect("E.")
             .len();
     }
-    pub fn get_users(&self, limit: i64, offset: i64) -> Vec<AuthResp> {
+    pub fn get_users(limit: i64, offset: i64) -> Vec<AuthResp> {
         let _connection = establish_connection();
         return Json(schema::users::table
             .filter(schema::users::perm.eq_any(vec!(USER, USERCANBUYTOCKEN)))
@@ -79,7 +79,7 @@ impl User {
             }), 0);
         }
         let mut next_page_number = 0;
-        let have_next: i32;
+        let have_next: i64;
         let object_list: Vec<AuthResp>;
 
         if page > 1 {
@@ -95,7 +95,7 @@ impl User {
             next_page_number = page + 1;
         }
         let _tuple = (object_list, next_page_number);
-        Ok(_tuple)
+        _tuple
     }
 
     pub fn is_superuser(&self) -> bool {
