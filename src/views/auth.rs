@@ -133,7 +133,7 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
 
     let mail_info = sendgrid::Mail::new()
         .add_to(sendgrid::Destination {
-            address: body.email,
+            address: &body.email,
             name: "BJustCoin Team",
         })
         .add_from("no-reply@bjustcoin.com")
