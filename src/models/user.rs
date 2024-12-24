@@ -11,7 +11,7 @@ use crate::diesel::{
     Connection,
 };
 use serde::{Serialize, Deserialize};
-use crate::utils::{establish_connection, get_limit_offset, NewUserForm};
+use crate::utils::{establish_connection, get_limit, NewUserForm};
 use crate::errors::Error;
 use actix_web::web::Json;
 use crate::views::{NewUserJson, AuthResp};
@@ -34,11 +34,12 @@ pub struct User {
     pub password:   String,
     pub perm:       i16,
     pub image:      Option<String>,
-    pub created:    NaiveDateTime,
+    pub created:    chrono::NaiveDateTime,
 }
 
 impl User {
     pub fn get_count_users(&self) -> usize {
+        let _connection = establish_connection();
         return schema::users::table
             .filter(schema::users::perm.eq(vec!(USER, USERCANBUYTOCKEN)))
             .select(schema::users::id)
@@ -46,6 +47,7 @@ impl User {
             .expect("E.");
     }
     pub fn get_users(&self, limit: i64, offset: i64) -> Json<Vec<AuthResp>> {
+        let _connection = establish_connection();
         return Json(schema::users::table
             .filter(schema::users::perm.eq_any(vec!(USER, USERCANBUYTOCKEN)))
             .order(schema::users::created.desc())
@@ -62,7 +64,7 @@ impl User {
             .load::<AuthResp>(&_connection)
             .expect("E."));
     }
-    pub fn get_users_list(&self, page: i32, limit: Option<i64>) -> (Json<Vec<AuthResp>, i32) {
+    pub fn get_users_list(&self, page: i32, limit: Option<i64>) -> (Json<Vec<AuthResp>, i32>) {
         let _limit = get_limit(limit, 20);
         if !self.is_admin() {
             return Ok(Json(AuthResp { 
@@ -252,7 +254,7 @@ pub struct NewUser {
     pub password:   String,
     pub perm:       i16,
     pub image:      Option<String>,
-    pub created:    NaiveDateTime,
+    pub created:    chrono::NaiveDateTime,
 }
 
 #[derive(Debug, Deserialize)]

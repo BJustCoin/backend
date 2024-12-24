@@ -59,7 +59,7 @@ async fn invite(body: web::Json<EmailUser>) -> Result<HttpResponse, ApiError> {
 
     Ok(HttpResponse::Ok().json(serde_json::json!({
         "message": "Verification email sent",
-        "status": status,
+        "status": status.to_string(),
     })))
 }
 
@@ -172,7 +172,7 @@ pub async fn login(req: HttpRequest, session: Session, data: Json<LoginUser2>) -
                 email:      _new_user.email.clone(),
                 perm:       _new_user.perm,
                 image:      _new_user.image.clone(),
-                phone:      _user.phone,
+                phone:      _new_user.phone,
             });
         }
         else {
