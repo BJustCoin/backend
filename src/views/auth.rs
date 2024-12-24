@@ -55,7 +55,7 @@ async fn invite(body: web::Json<EmailUser>) -> Result<HttpResponse, ApiError> {
         text:            "Here is your code - <strong>".to_string() + &token_string.to_string() + &"</strong>".to_string(),
     };
     let status = send_email(data);
-    println!(status);
+    println!("{}", status);
 
     Ok(HttpResponse::Ok().json(serde_json::json!({
         "message": "Verification email sent",
