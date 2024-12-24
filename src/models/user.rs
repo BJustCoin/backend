@@ -64,7 +64,7 @@ impl User {
             .load::<AuthResp>(&_connection)
             .expect("E."));
     }
-    pub fn get_users_list(&self, page: i32, limit: Option<i64>) -> (Json<Vec<AuthResp>, i32>) {
+    pub fn get_users_list(&self, page: i32, limit: Option<i64>) -> (Json<Vec<AuthResp>>, Json<i32>) {
         let _limit = get_limit(limit, 20);
         if !self.is_admin() {
             return Ok(Json(AuthResp { 
@@ -101,7 +101,7 @@ impl User {
         return self.perm == SUPERUSER;
     }
     pub fn is_admin(&self) -> bool {
-        return self.perm == ADMIN | self.perm == SUPERUSER;
+        return self.perm == ADMIN || self.perm == SUPERUSER;
     }
     pub fn is_user_in_block(&self) -> bool {
         return self.perm == USERISBLOCK;
