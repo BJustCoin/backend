@@ -14,8 +14,8 @@ use crate::utils::{
     is_signed_in,
     get_request_user,
     send_email,
-    EmailF,
 }; 
+use crate::views::EmailF;
 use actix_session::Session;
 use actix_web::dev::ConnectionInfo;
 use crate::errors::Error;
@@ -54,7 +54,7 @@ pub struct AuthRespData {
     pub next: i64,
 }
 
-pub async fn get_users(session: Session, data: Json<UsersData>) -> (Json<AuthRespData>) {
+pub async fn get_users(session: Session, data: Json<UsersData>) -> Json<AuthRespData> {
     if is_signed_in(&session) {
         let _request_user = get_request_user(&session);
         _request_user.get_users_list(data.page, data.limit)
@@ -66,7 +66,7 @@ pub async fn get_users(session: Session, data: Json<UsersData>) -> (Json<AuthRes
         })
     }
 }
-pub async fn get_admins(session: Session, data: Json<UsersData>) -> (Json<AuthRespData>) {
+pub async fn get_admins(session: Session, data: Json<UsersData>) -> Json<AuthRespData> {
     if is_signed_in(&session) {
         let _request_user = get_request_user(&session);
         _request_user.get_admins_list(data.page, data.limit)
@@ -78,7 +78,7 @@ pub async fn get_admins(session: Session, data: Json<UsersData>) -> (Json<AuthRe
         })
     }
 }
-pub async fn get_banned_users(session: Session, data: Json<UsersData>) -> (Json<AuthRespData>) {
+pub async fn get_banned_users(session: Session, data: Json<UsersData>) -> Json<AuthRespData> {
     if is_signed_in(&session) {
         let _request_user = get_request_user(&session);
         _request_user.get_banned_users_list(data.page, data.limit)
@@ -90,7 +90,7 @@ pub async fn get_banned_users(session: Session, data: Json<UsersData>) -> (Json<
         })
     }
 }
-pub async fn get_banned_admins(session: Session, data: Json<UsersData>) -> (Json<AuthRespData>) {
+pub async fn get_banned_admins(session: Session, data: Json<UsersData>) -> Json<AuthRespData> {
     if is_signed_in(&session) {
         let _request_user = get_request_user(&session);
         _request_user.get_banned_admins_list(data.page, data.limit)
@@ -145,7 +145,7 @@ pub async fn create_admin(session: Session, data: Json<ItemId>) -> impl Responde
     }
     HttpResponse::Ok()
 }
-pub async fn delete_admin(session: Session, data: Json<ItemId>) -> impl Responder {
+pub async fn drop_admin(session: Session, data: Json<ItemId>) -> impl Responder {
     if is_signed_in(&session) {
         let _request_user = get_request_user(&session);
         _request_user.delete_admin_block(data.id);
