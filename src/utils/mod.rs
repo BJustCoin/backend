@@ -98,7 +98,7 @@ pub async fn send_email(data: EmailF) -> bool {
         email: data.recipient_email.clone(),
     };
 
-    let body = r#{
+    let body = json!({
             "personalizations": [{
                 "from": {
                     "email": sender.email.clone(),
@@ -120,7 +120,7 @@ pub async fn send_email(data: EmailF) -> bool {
                     "value": data.text.clone()
                 },
             ]
-        };
+        });
     let client = Client::new()
         .post("https://api.sendgrid.com/v3/mail/send")
         .json(&body)
