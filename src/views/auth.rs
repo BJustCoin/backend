@@ -54,7 +54,7 @@ struct EmailResp {
 
 
 #[derive(Deserialize, Serialize, Debug)]
-struct Personalizations {
+struct Personalization {
     personalizations:  PersonalizationsData,
     from:              FromData,
     subject:           String,
@@ -165,7 +165,7 @@ async fn invite(body: web::Json<EmailUser>) -> Result<HttpResponse, ApiError> {
         email: data.recipient_email.clone(),
     };
 
-    let data = Personalizations {
+    let data = Personalization {
         "personalizations": PersonalizationsData {
             "from": EmailNameData {
                 "email": sender.email.clone(),
