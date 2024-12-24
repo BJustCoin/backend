@@ -43,7 +43,8 @@ pub struct UsersData {
     pub page:  i32,
     pub limit: Option<i64>,
 }
-pub async fn get_users(session: Session, data: Json<UsersData>) -> (Json<Vec<AuthResp>, i32) {
+
+pub async fn get_users(session: Session, data: Json<UsersData>) -> (Json<Vec<AuthResp>, i32>) {
     if is_signed_in(&session) {
         let _request_user = get_request_user(&session);
         _request_user.get_users_list(data.page, data.limit)
@@ -61,7 +62,7 @@ pub async fn get_users(session: Session, data: Json<UsersData>) -> (Json<Vec<Aut
     }
     HttpResponse::Ok()
 }
-pub async fn get_admins(session: Session, data: Json<UsersData>) -> (Json<Vec<AuthResp>, i32) {
+pub async fn get_admins(session: Session, data: Json<UsersData>) -> (Json<Vec<AuthResp>, i32>) {
     if is_signed_in(&session) {
         let _request_user = get_request_user(&session);
         _request_user.get_admins_list(data.page, data.limit)
@@ -79,7 +80,7 @@ pub async fn get_admins(session: Session, data: Json<UsersData>) -> (Json<Vec<Au
     }
     HttpResponse::Ok()
 }
-pub async fn get_banned_users(session: Session, data: Json<UsersData>) -> (Json<Vec<AuthResp>, i32) {
+pub async fn get_banned_users(session: Session, data: Json<UsersData>) -> (Json<Vec<AuthResp>, i32>) {
     if is_signed_in(&session) {
         let _request_user = get_request_user(&session);
         _request_user.get_banned_users_list(data.page, data.limit)
@@ -97,7 +98,7 @@ pub async fn get_banned_users(session: Session, data: Json<UsersData>) -> (Json<
     }
     HttpResponse::Ok()
 }
-pub async fn get_banned_admins(session: Session, data: Json<UsersData>) -> (Json<Vec<AuthResp>, i32) {
+pub async fn get_banned_admins(session: Session, data: Json<UsersData>) -> (Json<Vec<AuthResp>, i32>) {
     if is_signed_in(&session) {
         let _request_user = get_request_user(&session);
         _request_user.get_banned_admins_list(data.page, data.limit)

@@ -190,7 +190,7 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
             "type": "text/plain".to_string(),
             "value": token_string.to_string()
         },
-    }
+    };
     crate::utils::request_post("https://api.sendgrid.com/v3/mail/send".to_string(), &data, api_key);
 
     Ok(HttpResponse::Ok().json(serde_json::json!({
