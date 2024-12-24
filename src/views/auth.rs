@@ -53,34 +53,34 @@ struct EmailResp {
 }
 
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Debug)]
 struct Personalizations {
     personalizations:  PersonalizationsData,
     from:              FromData,
     subject:           String,
     content:           ContentData,
 }
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Debug)]
 struct EmailNameData {
     email:  String,
     name:  String,
 }
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Debug)]
 struct TypeValueData {
     r#type: String,
     value:  String,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Debug)]
 struct PersonalizationsData {
     from: EmailNameData,
     to:   EmailNameData,
 }
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Debug)]
 struct FromData {
     from: EmailNameData,
 }
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Debug)]
 struct ContentData {
     r#type: String,
     value:   String,
