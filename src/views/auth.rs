@@ -170,8 +170,7 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
         email: body.email.clone(),
     };
 
-    let data = Ddata {
-        "personalizations": PersonalizationsData {
+    let personalization = PersonalizationsData {
             "from": EmailNameData {
                 "email": sender.email.clone(),
                 "name": sender.name.clone()
@@ -180,7 +179,10 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
                 "email": recipient.email.clone(),
                 "name": recipient.name.clone()
             },
-        },
+        };
+
+    let data = Ddata {
+        "personalizations": personalization,
         "from": EmailNameData {
             "email": sender.email.clone(),
             "name": sender.name.clone()

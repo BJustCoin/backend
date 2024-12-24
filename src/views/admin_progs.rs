@@ -13,7 +13,6 @@ use serde::{Deserialize, Serialize};
 use crate::utils::{
     is_signed_in,
     get_current_user,
-    send_email, 
 }; 
 use crate::views::EmailF;
 use actix_session::Session;
