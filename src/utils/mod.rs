@@ -157,14 +157,15 @@ pub fn get_current_user(session: &Session) -> Result<User, AuthError> {
         .unwrap() 
         .map_or(
           Err(AuthError::AuthenticationError(String::from(msg))),
-          |user| serde_json::from_str(&user).or_else(|_| Err(AuthError::AuthenticationError(String::from(msg))))
+          |user| serde_json::from_str::<SessionUser>(&user).or_else(|_| Err(AuthError::AuthenticationError(String::from(msg))))
     );
 
     if some_user.is_err() {
         Err(AuthError::AuthenticationError(String::from("Error")))
     }
     else {
-        Ok(get_user(some_user.expect("Error.").id))
+        let _user = some_user.expect("Error.");
+        Ok(get_user(_user.id))
     }
 
 }
