@@ -51,7 +51,11 @@ use serde_json::json;
 struct EmailResp {
     status:  String,
 }
-
+#[derive(Deserialize, Serialize)]
+struct EmailUser {
+    name: String,
+    email: String,
+}
 
 #[derive(Deserialize, Serialize, Debug)]
 struct Personalization {
@@ -157,9 +161,9 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
     dotenv::dotenv().ok();
     let api_key = std::env::var("EMAIL_KEY")
         .expect("EMAIL_KEY must be set");
-    let sender = EmailUser {
-        name: "BJustCoin Team".to_string(),
+    let sender = EmailNameData {
         email: "no-reply@bjustcoin.com".to_string(),
+        name: "BJustCoin Team".to_string(),
     }; 
     let recipient = EmailUserReq {
         name: body.name.clone(),
