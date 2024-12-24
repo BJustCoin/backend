@@ -61,7 +61,10 @@ impl User {
     pub fn get_users_list(&self, page: i64, limit: Option<i64>) -> AuthRespData {
         let _limit = get_limit(limit, 20);
         if !self.is_admin() {
-            return (Vec::new(), 0);
+            AuthRespData {
+                data: Vec::new(),
+                next: 0,
+            };
         }
         let mut next_page_number = 0;
         let have_next: i64;
@@ -107,7 +110,10 @@ impl User {
     pub fn get_admins_list(&self, page: i64, limit: Option<i64>) -> AuthRespData {
         let _limit = get_limit(limit, 20);
         if !self.is_superuser() {
-            return (Vec::new(), 0);
+            return AuthRespData {
+                data: Vec::new(),
+                next: 0,
+            };
         }
         let mut next_page_number = 0;
         let have_next: i64;
@@ -153,7 +159,10 @@ impl User {
     pub fn get_banned_users_list(&self, page: i64, limit: Option<i64>) -> AuthRespData {
         let _limit = get_limit(limit, 20);
         if !self.is_admin() {
-            return (Vec::new(), 0);
+            return AuthRespData {
+                data: Vec::new(),
+                next: 0,
+            };
         }
         let mut next_page_number = 0;
         let have_next: i64;
@@ -199,7 +208,10 @@ impl User {
     pub fn get_banned_admins_list(&self, page: i64, limit: Option<i64>) -> AuthRespData {
         let _limit = get_limit(limit, 20);
         if !self.is_superuser() {
-            return (Vec::new(), 0);
+            return AuthRespData {
+                data: Vec::new(),
+                next: 0,
+            };
         }
         let mut next_page_number = 0;
         let have_next: i64;
