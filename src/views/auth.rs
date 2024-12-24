@@ -19,7 +19,6 @@ use actix_session::Session;
 use crate::errors::AuthError;
 use chrono::Utc; 
 use uuid::Uuid;
-use sendgrid::v3::*;
 
 
 pub fn auth_routes(config: &mut web::ServiceConfig) {
