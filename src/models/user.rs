@@ -52,8 +52,8 @@ impl User {
                 schema::users::last_name,
                 schema::users::email,
                 schema::users::perm,
-                schema::users::image.nullable(),
-                schema::users::phone.nullable(),
+                schema::users::image,
+                schema::users::phone,
             )) 
             .load::<AuthResp>(&_connection)
             .expect("E.");
