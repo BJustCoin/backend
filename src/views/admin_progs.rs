@@ -12,8 +12,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::utils::{
     is_signed_in,
-    get_request_user,
-    send_email,
+    get_current_user,
+    send_email, 
 }; 
 use crate::views::EmailF;
 use actix_session::Session;
@@ -56,7 +56,7 @@ pub struct AuthRespData {
 
 pub async fn get_users(session: Session, data: Json<UsersData>) -> Json<AuthRespData> {
     if is_signed_in(&session) {
-        let _request_user = get_request_user(&session);
+        let _request_user = get_current_user(&session);
         _request_user.get_users_list(data.page, data.limit)
     }
     else {
@@ -68,7 +68,7 @@ pub async fn get_users(session: Session, data: Json<UsersData>) -> Json<AuthResp
 }
 pub async fn get_admins(session: Session, data: Json<UsersData>) -> Json<AuthRespData> {
     if is_signed_in(&session) {
-        let _request_user = get_request_user(&session);
+        let _request_user = get_current_user(&session);
         _request_user.get_admins_list(data.page, data.limit)
     }
     else {
@@ -80,7 +80,7 @@ pub async fn get_admins(session: Session, data: Json<UsersData>) -> Json<AuthRes
 }
 pub async fn get_banned_users(session: Session, data: Json<UsersData>) -> Json<AuthRespData> {
     if is_signed_in(&session) {
-        let _request_user = get_request_user(&session);
+        let _request_user = get_current_user(&session);
         _request_user.get_banned_users_list(data.page, data.limit)
     }
     else {
@@ -92,7 +92,7 @@ pub async fn get_banned_users(session: Session, data: Json<UsersData>) -> Json<A
 }
 pub async fn get_banned_admins(session: Session, data: Json<UsersData>) -> Json<AuthRespData> {
     if is_signed_in(&session) {
-        let _request_user = get_request_user(&session);
+        let _request_user = get_current_user(&session);
         _request_user.get_banned_admins_list(data.page, data.limit)
     }
     else {
