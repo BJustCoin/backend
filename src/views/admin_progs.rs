@@ -57,7 +57,7 @@ pub struct AuthRespData {
 pub async fn get_users(session: Session, data: Json<UsersData>) -> Json<AuthRespData> {
     if is_signed_in(&session) {
         let _request_user = get_current_user(&session).expect("E.");
-        _request_user.get_users_list(data.page, data.limit)
+        Json(_request_user.get_users_list(data.page.into(), data.limit))
     }
     else {
         Json(AuthRespData {
@@ -69,7 +69,7 @@ pub async fn get_users(session: Session, data: Json<UsersData>) -> Json<AuthResp
 pub async fn get_admins(session: Session, data: Json<UsersData>) -> Json<AuthRespData> {
     if is_signed_in(&session) {
         let _request_user = get_current_user(&session).expect("E.");
-        _request_user.get_admins_list(data.page, data.limit)
+        Json(_request_user.get_admins_list(data.page.into(), data.limit))
     }
     else {
         Json(AuthRespData {
@@ -81,7 +81,7 @@ pub async fn get_admins(session: Session, data: Json<UsersData>) -> Json<AuthRes
 pub async fn get_banned_users(session: Session, data: Json<UsersData>) -> Json<AuthRespData> {
     if is_signed_in(&session) {
         let _request_user = get_current_user(&session).expect("E.");
-        _request_user.get_banned_users_list(data.page, data.limit)
+        Json(_request_user.get_banned_users_list(data.page.into(), data.limit))
     }
     else {
         Json(AuthRespData {
@@ -93,7 +93,7 @@ pub async fn get_banned_users(session: Session, data: Json<UsersData>) -> Json<A
 pub async fn get_banned_admins(session: Session, data: Json<UsersData>) -> Json<AuthRespData> {
     if is_signed_in(&session) {
         let _request_user = get_current_user(&session).expect("E.");
-        _request_user.get_banned_admins_list(data.page, data.limit)
+        Json(_request_user.get_banned_admins_list(data.page.into(), data.limit))
     }
     else {
         Json(AuthRespData {
