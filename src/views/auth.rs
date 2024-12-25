@@ -66,10 +66,6 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
     let token = EmailVerificationToken::create(token_data.clone()).expect("E.");
     let token_string = hex::encode(token.id);
     println!("{}", token_string);
-    //let s = match std::str::from_utf8(&token.id) {
-    //    Ok(v) => v,
-    //    Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
-    //};
     dotenv::dotenv().ok();
     let api_key = std::env::var("EMAIL_KEY")
         .expect("EMAIL_KEY must be set");
@@ -78,7 +74,6 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
     x_smtpapi.push_str(r#"{"unique_args":{"test":7}}"#);
 
     let text = "Our confirmation code - <strong>".to_owned() + &token_string.to_string() + &"</strong>".to_string();
-    //let text = "Our confirmation code - <strong>".to_string();
     let mail_info = sendgrid::Mail::new()
         .add_to(sendgrid::Destination {
             address: &body.email,
@@ -288,6 +283,37 @@ pub async fn process_signup(session: Session, data: Json<NewUserJson>) -> Json<A
         };
 
         crate::utils::set_current_user(&session, &_session_user);
+
+        dotenv::dotenv().ok();
+        let api_key = std::env::var("EMAIL_KEY")
+            .expect("EMAIL_KEY must be set");
+        let sg = sendgrid::SGClient::new(api_key); 
+        let mut x_smtpapi = String::new();
+        x_smtpapi.push_str(r#"{"unique_args":{"test":7}}"#);
+
+        let text = "A new user - <strong>".to_owned() 
+            + &_new_user.first_name.clone() 
+            + &" ".to_string() 
+            + &_new_user.last_name.clone() 
+            + &"</strong> has signed up for BJustcoin. Link to the list of users - ".to_string()
+            + &"https://dashboard.bjustcoin.com/users/".to_string();
+        let mail_info = sendgrid::Mail::new()
+            .add_to(sendgrid::Destination {
+                address: "interesnijsim49293@gmail.com",
+                name: "Sergei Zubarev",
+            })
+            .add_from("no-reply@bjustcoin.com")
+            .add_subject("New user in BJustCoin")
+            .add_html(&text)
+            .add_from_name("BJustcoin Team")
+            .add_header("x-cool".to_string(), "indeed")
+            .add_x_smtpapi(&x_smtpapi);
+
+        match sg.send(mail_info).await {
+            Err(err) => println!("Error: {}", err),
+            Ok(body) => println!("Response: {:?}", body),
+        };
+
         return Json(AuthResp {
             id:         _new_user.id,
             first_name: _new_user.first_name.clone(),
