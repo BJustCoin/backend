@@ -183,6 +183,7 @@ fn handle_sign_in (
 
 pub async fn login(req: HttpRequest, session: Session, data: Json<LoginUser2>) -> Json<AuthResp> {
     if is_signed_in(&session) {
+        println!("not anon login");
         return Json(AuthResp { 
             id:         0,
             first_name: "".to_string(),
@@ -196,6 +197,7 @@ pub async fn login(req: HttpRequest, session: Session, data: Json<LoginUser2>) -
     else {
         let user_some = User::get_user_with_email(&data.email); 
         if user_some.is_ok() {
+            println!("user exists");
             let _new_user = user_some.expect("E.");
             handle_sign_in(data, &session, &req);
             return Json(AuthResp {
@@ -209,6 +211,7 @@ pub async fn login(req: HttpRequest, session: Session, data: Json<LoginUser2>) -
             });
         }
         else {
+            println!("user not found");
             return Json(AuthResp {
                 id:         0,
                 first_name: "".to_string(),
@@ -224,6 +227,7 @@ pub async fn login(req: HttpRequest, session: Session, data: Json<LoginUser2>) -
 
 pub async fn process_signup(session: Session, data: Json<NewUserJson>) -> Json<AuthResp> {
     if is_signed_in(&session) {
+        println!("you is not anon!");
         return Json(AuthResp {
             id:         0,
             first_name: "".to_string(),
@@ -237,6 +241,7 @@ pub async fn process_signup(session: Session, data: Json<NewUserJson>) -> Json<A
     else { 
         let token_id_res = hex::decode(data.token.clone());
         if token_id_res.is_err() {
+            println!("token decode not!");
             return Json(AuthResp {
                 id:         0,
                 first_name: "".to_string(),
@@ -251,6 +256,7 @@ pub async fn process_signup(session: Session, data: Json<NewUserJson>) -> Json<A
         
         let token_res = EmailVerificationToken::find(&token_id);
         if token_res.is_err() {
+            println!("token not found!");
             return Json(AuthResp {
                 id:         0,
                 first_name: "".to_string(),
@@ -264,6 +270,7 @@ pub async fn process_signup(session: Session, data: Json<NewUserJson>) -> Json<A
         let token = token_res.expect("E.");
 
         if token.expires_at < Utc::now().naive_utc() {
+            println!("token expires_at < Utc!");
             return Json(AuthResp {
                 id:         0,
                 first_name: "".to_string(),
@@ -283,6 +290,7 @@ pub async fn process_signup(session: Session, data: Json<NewUserJson>) -> Json<A
         };
 
         crate::utils::set_current_user(&session, &_session_user);
+        println!("Yes!!");
 
         dotenv::dotenv().ok();
         let api_key = std::env::var("EMAIL_KEY")
@@ -313,6 +321,7 @@ pub async fn process_signup(session: Session, data: Json<NewUserJson>) -> Json<A
             Err(err) => println!("Error: {}", err),
             Ok(body) => println!("Response: {:?}", body),
         };
+        println!("mail send!");
 
         return Json(AuthResp {
             id:         _new_user.id,
