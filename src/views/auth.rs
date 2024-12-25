@@ -134,12 +134,12 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
     let mail_info = sendgrid::Mail::new()
         .add_to(sendgrid::Destination {
             address: &body.email,
-            name: "BJustCoin Team",
+            name: &body.name,
         })
         .add_from("no-reply@bjustcoin.com")
-        .add_subject("Rust is rad")
-        .add_html("<h1>Hello from SendGrid!</h1>")
-        .add_from_name("Test")
+        .add_subject("Email confirmation")
+        .add_html("our confirmation code - <strong>" + &token_string + &"</strong>".to_string())
+        .add_from_name("BJustcoin Team")
         .add_header("x-cool".to_string(), "indeed")
         .add_x_smtpapi(&x_smtpapi);
 
