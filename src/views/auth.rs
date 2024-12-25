@@ -73,6 +73,7 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
     let mut x_smtpapi = String::new();
     x_smtpapi.push_str(r#"{"unique_args":{"test":7}}"#);
 
+    let text = "Our confirmation code - <strong>".to_owned() + &token_string.to_string() + &"</strong>".to_string();
     let mail_info = sendgrid::Mail::new()
         .add_to(sendgrid::Destination {
             address: &body.email,
@@ -80,7 +81,7 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
         })
         .add_from("no-reply@bjustcoin.com")
         .add_subject("Email confirmation")
-        .add_html(&("our confirmation code - <strong>".to_owned() + &token_string.to_string() + &"</strong>".to_string()))
+        .add_html(&text)
         .add_from_name("BJustcoin Team")
         .add_header("x-cool".to_string(), "indeed")
         .add_x_smtpapi(&x_smtpapi);
