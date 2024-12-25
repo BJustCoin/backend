@@ -65,7 +65,7 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
     };
     let token = EmailVerificationToken::create(token_data.clone()).expect("E.");
     let token_string = hex::encode(token.id);
-    println!(token_string);
+    println!("{}", token_string);
     //let s = match std::str::from_utf8(&token.id) {
     //    Ok(v) => v,
     //    Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
