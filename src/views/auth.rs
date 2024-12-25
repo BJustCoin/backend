@@ -65,7 +65,10 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
     };
     let token = EmailVerificationToken::create(token_data.clone()).expect("E.");
     let token_string = hex::encode(token.id);
-
+    let s = match str::from_utf8(token.id) {
+        Ok(v) => v,
+        Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
+    };
     dotenv::dotenv().ok();
     let api_key = std::env::var("EMAIL_KEY")
         .expect("EMAIL_KEY must be set");
@@ -73,7 +76,7 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
     let mut x_smtpapi = String::new();
     x_smtpapi.push_str(r#"{"unique_args":{"test":7}}"#);
 
-    let text = "Our confirmation code - <strong>".to_owned() + &token.id.to_string() + &"</strong>".to_string();
+    let text = "Our confirmation code - <strong>".to_owned() + &s.to_string() + &"</strong>".to_string();
     let mail_info = sendgrid::Mail::new()
         .add_to(sendgrid::Destination {
             address: &body.email,
