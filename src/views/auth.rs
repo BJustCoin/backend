@@ -41,7 +41,7 @@ pub struct EmailF {
 struct EmailUserReq {
     name: String,
     email: String,
-}
+} 
 use reqwest::Client;
 use reqwest::header;
 use serde_json::json;
@@ -55,64 +55,6 @@ struct EmailUser {
     name: String,
     email: String,
 }
-
-pub async fn send_email(data: EmailF) -> bool {
-    dotenv::dotenv().ok();
-    let api_key = std::env::var("EMAIL_KEY")
-        .expect("EMAIL_KEY must be set");
-    let sender = EmailUser {
-        name: "BJustCoin Team".to_string(),
-        email: "no-reply@bjustcoin.com".to_string(),
-    }; 
-
-    let recipient = EmailUser {
-        name: data.recipient_name.clone(),
-        email: data.recipient_email.clone(),
-    };
-
-    let body = json!({
-            "personalizations": [{
-                "from": {
-                    "email": sender.email.clone(),
-                    "name": sender.name.clone()
-                },
-                "to": [{
-                    "email": recipient.email.clone(),
-                    "name": recipient.name.clone()
-                }]
-            }],
-            "from": {
-                "email": sender.email.clone(),
-                "name": sender.name.clone()
-            },
-            "subject": data.subject.clone(),
-            "content": [
-                {
-                    "type": "text/plain",
-                    "value": data.text.clone()
-                },
-            ]
-        });
-    let client = Client::new()
-        .post("https://api.sendgrid.com/v3/mail/send")
-        .json(&body)
-        .bearer_auth(api_key)
-        .header(
-            header::CONTENT_TYPE, 
-            header::HeaderValue::from_static("application/json")
-        );
-
-    let response = client.send();
-    if response.await.is_ok() {
-        println!("200");
-        return true
-    }
-    else {
-        println!("400");
-        return false
-    }
-}
-
 
 async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError> {
     let body = body.into_inner();
@@ -138,7 +80,7 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
         })
         .add_from("no-reply@bjustcoin.com")
         .add_subject("Email confirmation")
-        .add_html("our confirmation code - <strong>" + &token_string + &"</strong>".to_string())
+        .add_html("our confirmation code - <strong>" + &token_string.to_owned() + &"</strong>".to_string())
         .add_from_name("BJustcoin Team")
         .add_header("x-cool".to_string(), "indeed")
         .add_x_smtpapi(&x_smtpapi);
