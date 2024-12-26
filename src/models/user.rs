@@ -356,6 +356,8 @@ impl User {
             .first::<User>(&_connection)?);
     }
     pub fn create(form: Json<NewUserJson>) -> User {
+        use rand::Rng;
+
         let id = rand::thread_rng().gen::<[u8; 32]>().to_vec();
         let uuid = hex::encode(id);
         let _connection = establish_connection();
