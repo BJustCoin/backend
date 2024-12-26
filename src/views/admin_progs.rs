@@ -22,7 +22,7 @@ use crate::views::AuthResp;
 
 
 pub fn admin_routes(config: &mut web::ServiceConfig) {
-    config.route("/get_users/", web::get().to(get_users));
+    config.route("/get_users/", web::get().to(get_users)); 
     config.route("/get_admins/", web::get().to(get_admins));
     config.route("/get_banned_users/", web::get().to(get_banned_users));
     config.route("/get_banned_admins/", web::get().to(get_banned_admins)); 
@@ -53,57 +53,57 @@ pub struct AuthRespData {
     pub next: i64,
 }
 
-pub async fn get_users(session: Session, req: HttpRequest) -> Json<AuthRespData> {
-    //if is_signed_in(&session) {
+pub async fn get_users(req: HttpRequest, req: HttpRequest) -> Json<AuthRespData> {
+    if is_signed_in(&req) {
         let page = crate::utils::get_page(&req);
-        //let _request_user = get_current_user(&session).expect("E.");
+        let _request_user = get_current_user(&req);
         Json(User::get_users_list(page.into(), Some(20)))
-    //}  
-    //else {
-    //    Json(AuthRespData {
-    //        data: Vec::new(),
-    //        next: 10,
-    //    })
-    //}
+    }  
+    else {
+        Json(AuthRespData {
+            data: Vec::new(),
+            next: 10,
+        })
+    }
 }
-pub async fn get_admins(session: Session, req: HttpRequest) -> Json<AuthRespData> {
-    //if is_signed_in(&session) {
+pub async fn get_admins(req: HttpRequest) -> Json<AuthRespData> {
+    if is_signed_in(&req) {
         let page = crate::utils::get_page(&req);
-        let _request_user = get_current_user(&session).expect("E.");
+        let _request_user = get_current_user(&req);
         Json(_request_user.get_admins_list(page.into(), Some(20)))
-    //}
-    //else {
-    //    Json(AuthRespData {
-    //        data: Vec::new(),
-    //        next: 0,
-    //    })
-    //}
+    }
+    else {
+        Json(AuthRespData {
+            data: Vec::new(),
+            next: 0,
+        })
+    }
 }
-pub async fn get_banned_users(session: Session, req: HttpRequest) -> Json<AuthRespData> {
-    //if is_signed_in(&session) {
+pub async fn get_banned_users(req: HttpRequest) -> Json<AuthRespData> {
+    if is_signed_in(&req) {
         let page = crate::utils::get_page(&req);
-        let _request_user = get_current_user(&session).expect("E.");
+        let _request_user = get_current_user(&req);
         Json(_request_user.get_banned_users_list(page.into(), Some(20)))
-    //}
-    //else {
-    //    Json(AuthRespData {
-    //        data: Vec::new(),
-    //        next: 0,
-    //    })
-    //}
+    }
+    else {
+        Json(AuthRespData {
+            data: Vec::new(),
+            next: 0,
+        })
+    }
 }
-pub async fn get_banned_admins(session: Session, req: HttpRequest) -> Json<AuthRespData> {
-    //if is_signed_in(&session) {
+pub async fn get_banned_admins(req: HttpRequest) -> Json<AuthRespData> {
+    if is_signed_in(&req) {
         let page = crate::utils::get_page(&req);
-        let _request_user = get_current_user(&session).expect("E.");
+        let _request_user = get_current_user(&req);
         Json(_request_user.get_banned_admins_list(page.into(), Some(20)))
-    //}
-    //else {
-    //    Json(AuthRespData {
-    //        data: Vec::new(),
-    //        next: 0,
-    //    })
-    //}
+    }
+    else {
+        Json(AuthRespData {
+            data: Vec::new(),
+            next: 0,
+        })
+    }
 }
 
 
@@ -111,61 +111,61 @@ pub async fn get_banned_admins(session: Session, req: HttpRequest) -> Json<AuthR
 pub struct ItemId {
     pub id:  i32,
 }
-pub async fn block_user(session: Session, data: Json<ItemId>) -> impl Responder {
-    if is_signed_in(&session) {
-        let _request_user = get_current_user(&session).expect("E.");
+pub async fn block_user(req: HttpRequest, data: Json<ItemId>) -> impl Responder {
+    if is_signed_in(&req) {
+        let _request_user = get_current_user(&req);
         _request_user.create_user_block(data.id);
     }
     HttpResponse::Ok()
 }
-pub async fn unblock_user(session: Session, data: Json<ItemId>) -> impl Responder {
-        let _request_user = get_current_user(&session).expect("E.");
+pub async fn unblock_user(req: HttpRequest, data: Json<ItemId>) -> impl Responder {
+        let _request_user = get_current_user(&req);
         if _request_user.perm == 60 {
             _request_user.delete_user_block(data.id);
     }
     HttpResponse::Ok()
 }
 
-pub async fn block_admin(session: Session, data: Json<ItemId>) -> impl Responder {
-    if is_signed_in(&session) {
-        let _request_user = get_current_user(&session).expect("E.");
+pub async fn block_admin(req: HttpRequest, data: Json<ItemId>) -> impl Responder {
+    if is_signed_in(&req) {
+        let _request_user = get_current_user(&req);
         _request_user.create_admin_block(data.id);
     }
     HttpResponse::Ok()
 }
-pub async fn unblock_admin(session: Session, data: Json<ItemId>) -> impl Responder {
-    if is_signed_in(&session) {
-        let _request_user = get_current_user(&session).expect("E.");
+pub async fn unblock_admin(req: HttpRequest, data: Json<ItemId>) -> impl Responder {
+    if is_signed_in(&req) {
+        let _request_user = get_current_user(&req);
         _request_user.delete_admin_block(data.id);
     }
     HttpResponse::Ok()
 }
 
-pub async fn create_admin(session: Session, data: Json<ItemId>) -> impl Responder {
-    if is_signed_in(&session) {
-        let _request_user = get_current_user(&session).expect("E.");
+pub async fn create_admin(req: HttpRequest, data: Json<ItemId>) -> impl Responder {
+    if is_signed_in(&req) {
+        let _request_user = get_current_user(&req);
         _request_user.create_admin(data.id);
     }
     HttpResponse::Ok()
 }
-pub async fn drop_admin(session: Session, data: Json<ItemId>) -> impl Responder {
-    if is_signed_in(&session) {
-        let _request_user = get_current_user(&session).expect("E.");
+pub async fn drop_admin(req: HttpRequest, data: Json<ItemId>) -> impl Responder {
+    if is_signed_in(&req) {
+        let _request_user = get_current_user(&req);
         _request_user.delete_admin_block(data.id);
     }
     HttpResponse::Ok()
 }
 
-pub async fn create_can_buy(session: Session, data: Json<ItemId>) -> impl Responder {
-    if is_signed_in(&session) {
-        let _request_user = get_current_user(&session).expect("E.");
+pub async fn create_can_buy(req: HttpRequest, data: Json<ItemId>) -> impl Responder {
+    if is_signed_in(&req) {
+        let _request_user = get_current_user(&req);
         _request_user.create_can_buy_token(data.id);
     }
     HttpResponse::Ok()
 }
-pub async fn delete_can_buy(session: Session, data: Json<ItemId>) -> impl Responder {
-    if is_signed_in(&session) {
-        let _request_user = get_current_user(&session).expect("E.");
+pub async fn delete_can_buy(req: HttpRequest, data: Json<ItemId>) -> impl Responder {
+    if is_signed_in(&req) {
+        let _request_user = get_current_user(&req);
         _request_user.delete_can_buy_token(data.id);
     }
     HttpResponse::Ok()

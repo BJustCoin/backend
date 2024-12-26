@@ -35,29 +35,19 @@ pub fn is_json_request(req: &HttpRequest) -> bool {
         |header| header.to_str().map_or(false, |content_type| "application/json" == content_type)
       )
 }
-
-pub fn is_signed_in(session: &Session) -> bool {
-  match get_current_user(session) {
-      Ok(_) => true,
-      _ => false,
-  }
+fn get_secret<'a>(req: &'a HttpRequest) -> Option<&'a str> {
+    return req.headers().get("secret")?.to_str().ok();
 }
 
-pub fn set_current_user(session: &Session, user: &SessionUser) -> () {
-    // сериализация в строку подходит для этого случая,
-    // но двоичный код был бы предпочтительнее в производственных вариантах использования.
-    session.insert("user", serde_json::to_string(user).unwrap()).unwrap();
+pub fn is_signed_in(req: &HttpRequest) -> bool {
+  get_secret.is_some()
 }
- 
-pub fn get_current_user(session: &Session) -> Result<SessionUser, AuthError> {
-    let msg = "Не удалось извлечь пользователя из сеанса";
 
-    session
-        .get::<String>("user")
-        .map_err(|_| AuthError::AuthenticationError(String::from(msg)))
-        .unwrap() 
-        .map_or(
-          Err(AuthError::AuthenticationError(String::from(msg))),
-          |user| serde_json::from_str(&user).or_else(|_| Err(AuthError::AuthenticationError(String::from(msg))))
-        )
+pub fn get_current_user(req: &HttpRequest) -> User {
+    let uuid = get_secret.unwrap();
+    let _connection = establish_connection();
+    return schema::users::table
+        .filter(schema::users::uuid.eq(uuid))
+        .first::<User>(&_connection)
+        .expect("Error.");
 }

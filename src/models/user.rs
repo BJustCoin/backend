@@ -36,6 +36,7 @@ pub struct User {
     pub perm:       i16,
     pub image:      Option<String>,
     pub created:    chrono::NaiveDateTime,
+    pub uuid:       String,
 }
 
 impl User {
@@ -355,6 +356,8 @@ impl User {
             .first::<User>(&_connection)?);
     }
     pub fn create(form: Json<NewUserJson>) -> User {
+        let id = rand::thread_rng().gen::<[u8; 32]>().to_vec();
+        let uuid = hex::encode(id);
         let _connection = establish_connection();
         let form_user = NewUser {
             first_name: form.first_name.clone(),
@@ -365,6 +368,7 @@ impl User {
             perm:       1,
             image:      None,
             created:    chrono::Utc::now().naive_utc(),
+            uuid:       uuid,
         };
 
         let _new_user = diesel::insert_into(schema::users::table)
@@ -393,6 +397,7 @@ pub struct NewUser {
     pub perm:       i16,
     pub image:      Option<String>,
     pub created:    chrono::NaiveDateTime,
+    pub uuid:       String,
 }
 
 #[derive(Debug, Deserialize)]

@@ -89,7 +89,7 @@ pub fn get_page(req: &HttpRequest) -> i32 {
 }
 
 
-pub fn get_user(id: i32) -> User {
+pub fn get_user(id: i32) -> User { 
     let _connection = establish_connection();
     return schema::users::table
         .filter(schema::users::id.eq(id))

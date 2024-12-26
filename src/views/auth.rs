@@ -134,6 +134,18 @@ pub struct AuthResp {
     pub phone:      Option<String>,
 } 
 
+#[derive(Deserialize, Serialize, Debug, Queryable)]
+pub struct AuthResp2 {
+    pub id:         i32,
+    pub first_name: String,
+    pub last_name:  String,
+    pub email:      String,
+    pub perm:       i16,
+    pub image:      Option<String>,
+    pub phone:      Option<String>,
+    pub uuid:       String,
+} 
+
 fn find_user(data: Json<LoginUser2>) -> Result<SessionUser, AuthError> {
     let user_some = User::get_user_with_email(&data.email); 
     if user_some.is_ok() { 
@@ -181,10 +193,10 @@ fn handle_sign_in (
 }
 
 
-pub async fn login(req: HttpRequest, session: Session, data: Json<LoginUser2>) -> Json<AuthResp> {
-    if is_signed_in(&session) {
+pub async fn login(req: HttpRequest, data: Json<LoginUser2>) -> Json<AuthResp2> {
+    if is_signed_in(&req) {
         println!("not anon login");
-        return Json(AuthResp { 
+        return Json(AuthResp2 { 
             id:         0,
             first_name: "".to_string(),
             last_name:  "".to_string(),
@@ -192,6 +204,7 @@ pub async fn login(req: HttpRequest, session: Session, data: Json<LoginUser2>) -
             perm:       0,
             image:      None,
             phone:      None,
+            uuid:      "".to_string(),
         });
     }
     else {
@@ -200,7 +213,7 @@ pub async fn login(req: HttpRequest, session: Session, data: Json<LoginUser2>) -
             println!("user exists");
             let _new_user = user_some.expect("E.");
             handle_sign_in(data, &session, &req);
-            return Json(AuthResp {
+            return Json(AuthResp2 {
                 id:         _new_user.id,
                 first_name: _new_user.first_name.clone(),
                 last_name:  _new_user.last_name.clone(),
@@ -208,11 +221,12 @@ pub async fn login(req: HttpRequest, session: Session, data: Json<LoginUser2>) -
                 perm:       _new_user.perm,
                 image:      _new_user.image.clone(),
                 phone:      _new_user.phone,
+                uuid:       _new_user.uuid,
             });
         }
         else {
             println!("user not found");
-            return Json(AuthResp {
+            return Json(AuthResp2 {
                 id:         0,
                 first_name: "".to_string(),
                 last_name:  "".to_string(),
@@ -220,15 +234,16 @@ pub async fn login(req: HttpRequest, session: Session, data: Json<LoginUser2>) -
                 perm:       0,
                 image:      None,
                 phone:      None,
+                uuid:       "".to_string(),
             });
         }
     }
 }
 
-pub async fn process_signup(session: Session, data: Json<NewUserJson>) -> Json<AuthResp> {
-    if is_signed_in(&session) {
+pub async fn process_signup(req: HttpRequest, data: Json<NewUserJson>) -> Json<AuthResp2> {
+    if is_signed_in(&req) {
         println!("you is not anon!");
-        return Json(AuthResp {
+        return Json(AuthResp2 {
             id:         0,
             first_name: "".to_string(),
             last_name:  "".to_string(),
@@ -236,13 +251,14 @@ pub async fn process_signup(session: Session, data: Json<NewUserJson>) -> Json<A
             perm:       0,
             image:      None,
             phone:      None,
+            uuid:       "".to_string(),
         });
     }
     else { 
         let token_id_res = hex::decode(data.token.clone());
         if token_id_res.is_err() {
             println!("token decode not!");
-            return Json(AuthResp {
+            return Json(AuthResp2 {
                 id:         0,
                 first_name: "".to_string(),
                 last_name:  "".to_string(),
@@ -250,6 +266,7 @@ pub async fn process_signup(session: Session, data: Json<NewUserJson>) -> Json<A
                 perm:       0,
                 image:      None,
                 phone:      None,
+                uuid:       "".to_string(),
             });
         }
         let token_id = token_id_res.expect("E.");
@@ -257,7 +274,7 @@ pub async fn process_signup(session: Session, data: Json<NewUserJson>) -> Json<A
         let token_res = EmailVerificationToken::find(&token_id);
         if token_res.is_err() {
             println!("token not found!");
-            return Json(AuthResp {
+            return Json(AuthResp2 {
                 id:         0,
                 first_name: "".to_string(),
                 last_name:  "".to_string(),
@@ -265,13 +282,14 @@ pub async fn process_signup(session: Session, data: Json<NewUserJson>) -> Json<A
                 perm:       0,
                 image:      None,
                 phone:      None,
+                uuid:       "".to_string(),
             });
         }
         let token = token_res.expect("E.");
 
         if token.expires_at < Utc::now().naive_utc() {
             println!("token expires_at < Utc!");
-            return Json(AuthResp {
+            return Json(AuthResp2 {
                 id:         0,
                 first_name: "".to_string(),
                 last_name:  "".to_string(),
@@ -279,6 +297,7 @@ pub async fn process_signup(session: Session, data: Json<NewUserJson>) -> Json<A
                 perm:       0,
                 image:      None,
                 phone:      None,
+                uuid:       "".to_string(),
             });
         }
 
@@ -323,7 +342,7 @@ pub async fn process_signup(session: Session, data: Json<NewUserJson>) -> Json<A
         };
         println!("mail send!");
 
-        return Json(AuthResp {
+        return Json(AuthResp2 {
             id:         _new_user.id,
             first_name: _new_user.first_name.clone(),
             last_name:  _new_user.last_name.clone(),
@@ -331,12 +350,13 @@ pub async fn process_signup(session: Session, data: Json<NewUserJson>) -> Json<A
             perm:       _new_user.perm,
             image:      _new_user.image,
             phone:      None,
+            uuid:       _new_user.uuid,
         })
     }
 }
 
-pub async fn process_reset(session: Session, data: Json<NewPasswordJson>) -> Json<AuthResp> {
-    if is_signed_in(&session) {
+pub async fn process_reset(req: HttpRequest, data: Json<NewPasswordJson>) -> Json<AuthResp> {
+    if is_signed_in(&req) {
         return Json(AuthResp {
             id:         0,
             first_name: "".to_string(),

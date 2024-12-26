@@ -8,6 +8,7 @@ CREATE TABLE users (
     perm       SMALLINT NOT NULL,
     image      VARCHAR(500),
     created    TIMESTAMP NOT NULL,
+    uuid       VARCHAR(100) NOT NULL,
     UNIQUE(email)
 );
 
