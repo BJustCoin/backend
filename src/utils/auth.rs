@@ -36,19 +36,3 @@ pub fn is_json_request(req: &HttpRequest) -> bool {
         |header| header.to_str().map_or(false, |content_type| "application/json" == content_type)
       )
 }
-fn get_secret<'a>(req: &'a HttpRequest) -> Option<&'a str> {
-    return req.headers().get("secret")?.to_str().ok();
-}
-
-pub fn is_signed_in(req: &HttpRequest) -> bool {
-  get_secret(&req).is_some()
-}
-
-pub fn get_current_user(req: &HttpRequest) -> User {
-    let uuid = get_secret(&req).unwrap();
-    let _connection = establish_connection();
-    return schema::users::table
-        .filter(schema::users::uuid.eq(uuid))
-        .first::<User>(&_connection)
-        .expect("Error.");
-}

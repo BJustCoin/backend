@@ -44,6 +44,22 @@ pub fn establish_connection() -> PgConnection {
         .expect(&format!("Error connecting to {}", database_url))
 }
 
+fn get_secret<'a>(req: &'a HttpRequest) -> Option<&'a str> {
+    return req.headers().get("secret")?.to_str().ok();
+}
+
+pub fn is_signed_in(req: &HttpRequest) -> bool {
+  get_secret(&req).is_some()
+}
+
+pub fn get_current_user(req: &HttpRequest) -> User {
+    let uuid = get_secret(&req).unwrap();
+    let _connection = establish_connection();
+    return schema::users::table
+        .filter(schema::users::uuid.eq(uuid))
+        .first::<User>(&_connection)
+        .expect("Error.");
+}
 
 pub fn get_limit (
     limit: Option<i64>,
