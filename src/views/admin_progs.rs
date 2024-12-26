@@ -71,8 +71,7 @@ pub async fn get_admins(req: HttpRequest) -> Json<AuthRespData> {
     if is_signed_in(&req) {
         let page = crate::utils::get_page(&req);
         let _request_user = get_current_user(&req);
-
-        Json(_request_user.get_admins_list(page.into(), Some(20)))
+        Json(User::get_admins_list(page.into(), Some(20)))
     }
     else {
         Json(AuthRespData {
@@ -85,7 +84,7 @@ pub async fn get_banned_users(req: HttpRequest) -> Json<AuthRespData> {
     if is_signed_in(&req) {
         let page = crate::utils::get_page(&req);
         let _request_user = get_current_user(&req);
-        Json(_request_user.get_banned_users_list(page.into(), Some(20)))
+        Json(User::get_banned_users_list(page.into(), Some(20)))
     }
     else {
         Json(AuthRespData {
@@ -98,7 +97,7 @@ pub async fn get_banned_admins(req: HttpRequest) -> Json<AuthRespData> {
     if is_signed_in(&req) {
         let page = crate::utils::get_page(&req);
         let _request_user = get_current_user(&req);
-        Json(_request_user.get_banned_admins_list(page.into(), Some(20)))
+        Json(User::get_banned_admins_list(page.into(), Some(20)))
     }
     else {
         Json(AuthRespData {

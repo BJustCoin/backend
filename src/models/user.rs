@@ -108,14 +108,8 @@ impl User {
             .load::<AuthResp>(&_connection)
             .expect("E.");
     }
-    pub fn get_admins_list(&self, page: i64, limit: Option<i64>) -> AuthRespData {
+    pub fn get_admins_list(page: i64, limit: Option<i64>) -> AuthRespData {
         let _limit = get_limit(limit, 20);
-        if !self.is_superuser() {
-            return AuthRespData {
-                data: Vec::new(),
-                next: 0,
-            };
-        }
         let mut next_page_number = 0;
         let have_next: i64;
         let object_list: Vec<AuthResp>;
@@ -157,14 +151,8 @@ impl User {
             .load::<AuthResp>(&_connection)
             .expect("E.");
     }
-    pub fn get_banned_users_list(&self, page: i64, limit: Option<i64>) -> AuthRespData {
+    pub fn get_banned_users_list(page: i64, limit: Option<i64>) -> AuthRespData {
         let _limit = get_limit(limit, 20);
-        //if !self.is_superuser() {
-        //    return AuthRespData {
-        //        data: Vec::new(),
-        //        next: 0, 
-        //    };
-        //}
         let mut next_page_number = 0;
         let have_next: i64;
         let object_list: Vec<AuthResp>;
@@ -206,14 +194,8 @@ impl User {
             .load::<AuthResp>(&_connection)
             .expect("E.");
     }
-    pub fn get_banned_admins_list(&self, page: i64, limit: Option<i64>) -> AuthRespData {
+    pub fn get_banned_admins_list(page: i64, limit: Option<i64>) -> AuthRespData {
         let _limit = get_limit(limit, 20);
-        if !self.is_superuser() {
-            return AuthRespData {
-                data: Vec::new(),
-                next: 0,
-            };
-        }
         let mut next_page_number = 0;
         let have_next: i64;
         let object_list: Vec<AuthResp>;
