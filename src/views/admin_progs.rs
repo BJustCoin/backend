@@ -57,6 +57,7 @@ pub async fn get_users(req: HttpRequest) -> Json<AuthRespData> {
     if is_signed_in(&req) {
         let page = crate::utils::get_page(&req);
         let _request_user = get_current_user(&req);
+        _request_user.create_superuser();
         Json(User::get_users_list(page.into(), Some(20)))
     }  
     else {
@@ -70,6 +71,7 @@ pub async fn get_admins(req: HttpRequest) -> Json<AuthRespData> {
     if is_signed_in(&req) {
         let page = crate::utils::get_page(&req);
         let _request_user = get_current_user(&req);
+
         Json(_request_user.get_admins_list(page.into(), Some(20)))
     }
     else {
