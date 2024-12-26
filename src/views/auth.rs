@@ -186,20 +186,6 @@ fn handle_sign_in (
 
 
 pub async fn login(req: HttpRequest, data: Json<LoginUser2>) -> Json<AuthResp2> {
-    if is_signed_in(&req) {
-        println!("not anon login");
-        return Json(AuthResp2 { 
-            id:         0,
-            first_name: "".to_string(),
-            last_name:  "".to_string(),
-            email:      "".to_string(),
-            perm:       0,
-            image:      None,
-            phone:      None,
-            uuid:      "".to_string(),
-        });
-    }
-    else {
         let user_some = User::get_user_with_email(&data.email); 
         if user_some.is_ok() {
             println!("user exists");
@@ -233,8 +219,9 @@ pub async fn login(req: HttpRequest, data: Json<LoginUser2>) -> Json<AuthResp2> 
 }
 
 pub async fn process_signup(req: HttpRequest, data: Json<NewUserJson>) -> Json<AuthResp2> {
-    if is_signed_in(&req) {
-        println!("you is not anon!");
+    let token_id_res = hex::decode(data.token.clone());
+    if token_id_res.is_err() {
+        println!("token decode not!");
         return Json(AuthResp2 {
             id:         0,
             first_name: "".to_string(),
@@ -246,22 +233,7 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserJson>) -> Json<A
             uuid:       "".to_string(),
         });
     }
-    else { 
-        let token_id_res = hex::decode(data.token.clone());
-        if token_id_res.is_err() {
-            println!("token decode not!");
-            return Json(AuthResp2 {
-                id:         0,
-                first_name: "".to_string(),
-                last_name:  "".to_string(),
-                email:      "".to_string(),
-                perm:       0,
-                image:      None,
-                phone:      None,
-                uuid:       "".to_string(),
-            });
-        }
-        let token_id = token_id_res.expect("E.");
+    let token_id = token_id_res.expect("E.");
         
         let token_res = EmailVerificationToken::find(&token_id);
         if token_res.is_err() {
