@@ -5,6 +5,8 @@ use actix_web::{
 };
 use crate::{errors::AuthError, vars};
 use crate::models::User;
+use crate::schema;
+use crate::utils::establish_connection;
 
 
 pub fn hash_password(password: &str) -> String {

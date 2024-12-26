@@ -204,7 +204,7 @@ pub async fn login(req: HttpRequest, data: Json<LoginUser2>) -> Json<AuthResp2> 
         if user_some.is_ok() {
             println!("user exists");
             let _new_user = user_some.expect("E.");
-            handle_sign_in(data, &session, &req);
+            handle_sign_in(data, &req);
             return Json(AuthResp2 {
                 id:         _new_user.id,
                 first_name: _new_user.first_name.clone(),
