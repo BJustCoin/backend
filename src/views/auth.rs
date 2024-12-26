@@ -215,7 +215,6 @@ pub async fn login(req: HttpRequest, data: Json<LoginUser2>) -> Json<AuthResp2> 
                 uuid:       "".to_string(),
             });
         }
-    }
 }
 
 pub async fn process_signup(req: HttpRequest, data: Json<NewUserJson>) -> Json<AuthResp2> {
@@ -315,7 +314,6 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserJson>) -> Json<A
             phone:      None,
             uuid:       _new_user.uuid,
         })
-    }
 }
 
 pub async fn process_reset(req: HttpRequest, data: Json<NewPasswordJson>) -> Json<AuthResp> {
