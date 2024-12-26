@@ -33,7 +33,10 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         let cors = Cors::default() 
-            .allowed_origin("67.220.95.91:9999")
+            .allowed_origin("https://bjustcoin.com")
+            .allowed_origin_fn(|origin, _req_head| {
+                origin.as_bytes().ends_with(b".bjustcoin.com")
+            })
             .allowed_methods(vec!["GET", "POST"])
             .max_age(3600);
         App::new() 
