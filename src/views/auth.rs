@@ -161,7 +161,7 @@ fn handle_sign_in (
     data: Json<LoginUser2>,
     req: &HttpRequest
 ) -> Result<HttpResponse, AuthError> {
-    use crate::utils::{is_json_request, set_current_user};
+    use crate::utils::is_json_request;
 
     let result = find_user(data);
     let is_json = is_json_request(req);

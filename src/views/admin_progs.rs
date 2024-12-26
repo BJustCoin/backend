@@ -53,7 +53,7 @@ pub struct AuthRespData {
     pub next: i64,
 }
 
-pub async fn get_users(req: HttpRequest, req: HttpRequest) -> Json<AuthRespData> {
+pub async fn get_users(req: HttpRequest) -> Json<AuthRespData> {
     if is_signed_in(&req) {
         let page = crate::utils::get_page(&req);
         let _request_user = get_current_user(&req);
