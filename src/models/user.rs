@@ -159,7 +159,7 @@ impl User {
     }
     pub fn get_banned_users_list(&self, page: i64, limit: Option<i64>) -> AuthRespData {
         let _limit = get_limit(limit, 20);
-        if !self.is_admin() {
+        if !self.is_superuser() {
             return AuthRespData {
                 data: Vec::new(),
                 next: 0,
