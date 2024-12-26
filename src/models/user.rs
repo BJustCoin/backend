@@ -58,7 +58,7 @@ impl User {
             .load::<AuthResp>(&_connection)
             .expect("E.");
     }
-    pub fn get_users_list(&self, page: i64, limit: Option<i64>) -> AuthRespData {
+    pub fn get_users_list(page: i64, limit: Option<i64>) -> AuthRespData {
         let _limit = get_limit(limit, 20);
         //if !self.is_admin() {
         //    AuthRespData {

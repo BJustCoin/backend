@@ -56,8 +56,8 @@ pub struct AuthRespData {
 pub async fn get_users(session: Session, req: HttpRequest) -> Json<AuthRespData> {
     //if is_signed_in(&session) {
         let page = crate::utils::get_page(&req);
-        let _request_user = get_current_user(&session).expect("E.");
-        Json(_request_user.get_users_list(page.into(), Some(20)))
+        //let _request_user = get_current_user(&session).expect("E.");
+        Json(User::get_users_list(page.into(), Some(20)))
     //}  
     //else {
     //    Json(AuthRespData {
