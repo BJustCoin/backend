@@ -42,7 +42,7 @@ impl User {
     pub fn get_users(limit: i64, offset: i64) -> Vec<AuthResp> {
         let _connection = establish_connection();
         return schema::users::table
-            .filter(schema::users::perm.eq_any(vec!(USER, USERCANBUYTOCKEN)))
+            //.filter(schema::users::perm.eq_any(vec!(USER, USERCANBUYTOCKEN)))
             .order(schema::users::created.desc())
             .limit(limit)
             .offset(offset)
