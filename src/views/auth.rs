@@ -26,7 +26,6 @@ pub fn auth_routes(config: &mut web::ServiceConfig) {
     config.route("/reset/", web::post().to(process_reset));
     config.route("/login/", web::post().to(login));
     config.route("/invite/", web::post().to(invite));
-    config.route("/logout/", web::get().to(logout));
 }
 
 
@@ -97,11 +96,6 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
     })))
 }
 
-pub async fn logout(session: Session) -> Result<HttpResponse, AuthError> {
-    session.clear();
-    Ok(HttpResponse::Ok().content_type("text/html; charset=utf-8").body("ok"))
-}
-
 #[derive(Deserialize, Serialize, Debug)]
 pub struct LoginUser2 {
     pub email:    String,
@@ -165,7 +159,6 @@ fn find_user(data: Json<LoginUser2>) -> Result<SessionUser, AuthError> {
 
 fn handle_sign_in (
     data: Json<LoginUser2>,
-    session: &Session,
     req: &HttpRequest
 ) -> Result<HttpResponse, AuthError> {
     use crate::utils::{is_json_request, set_current_user};
@@ -175,7 +168,6 @@ fn handle_sign_in (
 
     match result {
         Ok(user) => {
-            set_current_user(&session, &user);
             if is_json {
                 Ok(HttpResponse::Ok().json(user))
             } else {
@@ -308,7 +300,6 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserJson>) -> Json<A
             email: _new_user.email.clone(),
         };
 
-        crate::utils::set_current_user(&session, &_session_user);
         println!("Yes!!");
 
         dotenv::dotenv().ok();
@@ -428,7 +419,6 @@ pub async fn process_reset(req: HttpRequest, data: Json<NewPasswordJson>) -> Jso
                 email: _user.email.clone(),
             };
 
-            crate::utils::set_current_user(&session, &_session_user);
             return Json(AuthResp {
                 id:         _user.id,
                 first_name: _user.first_name.clone(),

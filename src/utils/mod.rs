@@ -15,7 +15,6 @@ use actix_web::{
 };
 use crate::schema;
 use serde::{Deserialize, Serialize};
-use actix_session::Session;
 use crate::errors::AuthError;
 use crate::diesel::{
     Queryable,

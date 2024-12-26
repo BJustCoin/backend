@@ -1,11 +1,10 @@
 use argonautica::{Hasher, Verifier};
-use actix_session::Session;
 use actix_web::{
   http::header::CONTENT_TYPE,
   HttpRequest,
 };
 use crate::{errors::AuthError, vars};
-use crate::models::SessionUser;
+use crate::models::User;
 
 
 pub fn hash_password(password: &str) -> String {
