@@ -240,7 +240,7 @@ impl User {
         return self.perm == SUPERUSER;
     }
     pub fn is_admin(&self) -> bool {
-        return self.perm == ADMIN || self.perm == SUPERUSER;
+        return self.perm == ADMIN || self.is_superuser();
     }
     pub fn is_user_in_block(&self) -> bool {
         return self.perm == USERISBLOCK;
