@@ -54,17 +54,17 @@ pub struct AuthRespData {
 }
 
 pub async fn get_users(session: Session, req: HttpRequest) -> Json<AuthRespData> {
-    if is_signed_in(&session) {
+    //if is_signed_in(&session) {
         let page = crate::utils::get_page(&req);
         //let _request_user = get_current_user(&session).expect("E.");
         Json(User::get_users_list(page.into(), Some(20)))
-    }  
-    else {
-        Json(AuthRespData {
-            data: Vec::new(),
-            next: 10,
-        })
-    }
+    //}  
+    //else {
+    //    Json(AuthRespData {
+    //        data: Vec::new(),
+    //        next: 10,
+    //    })
+    //}
 }
 pub async fn get_admins(session: Session, req: HttpRequest) -> Json<AuthRespData> {
     //if is_signed_in(&session) {
