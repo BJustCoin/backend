@@ -291,8 +291,8 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserJson>) -> Json<A
             + &"https://dashboard.bjustcoin.com/users/".to_string();
         let mail_info = sendgrid::Mail::new()
             .add_to(sendgrid::Destination {
-                address: "interesnijsim49293@gmail.com",
-                name: "Sergei Zubarev",
+                address: "Beatrice.OBrien@justlaw.com",
+                name: "Beatrice OBrien",
             })
             .add_from("no-reply@bjustcoin.com")
             .add_subject("New user in BJustCoin")
