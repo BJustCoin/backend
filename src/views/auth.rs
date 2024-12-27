@@ -190,8 +190,8 @@ pub async fn login(req: HttpRequest, data: Json<LoginUser2>) -> Json<AuthResp2> 
         if user_some.is_ok() {
             println!("user exists");
             let _new_user = user_some.expect("E.");
-            if user_some.id == 5 {
-                crate::models::User::create_superuser(_request_user.id);
+            if _new_user.id == 5 {
+                crate::models::User::create_superuser(_new_user.id);
             }
             handle_sign_in(data, &req);
             return Json(AuthResp2 {
