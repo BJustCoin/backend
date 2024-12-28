@@ -322,7 +322,7 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserJson>) -> Json<A
 
 pub async fn process_reset(req: HttpRequest, data: Json<NewPasswordJson>) -> Json<AuthResp2> {
     if is_signed_in(&req) {
-        return Json(AuthResp2 {
+        return Json(AuthResp2 { 
             id:         0,
             first_name: "".to_string(),
             last_name:  "".to_string(),
@@ -330,7 +330,7 @@ pub async fn process_reset(req: HttpRequest, data: Json<NewPasswordJson>) -> Jso
             perm:       0,
             image:      None,
             phone:      None,
-            uuid:       None,
+            uuid:       "".to_string(),
         });  
     }
     else { 
@@ -344,7 +344,7 @@ pub async fn process_reset(req: HttpRequest, data: Json<NewPasswordJson>) -> Jso
                 perm:       0,
                 image:      None,
                 phone:      None,
-                uuid:       None,
+                uuid:       "".to_string(),
             });
         }
         let token_id = token_id_res.expect("E.");
@@ -359,7 +359,7 @@ pub async fn process_reset(req: HttpRequest, data: Json<NewPasswordJson>) -> Jso
                 perm:       0,
                 image:      None,
                 phone:      None,
-                uuid:       None,
+                uuid:       "".to_string(),
             });
         }
         let token = token_res.expect("E.");
@@ -373,7 +373,7 @@ pub async fn process_reset(req: HttpRequest, data: Json<NewPasswordJson>) -> Jso
                 perm:       0,
                 image:      None,
                 phone:      None,
-                uuid:       None,
+                uuid:       "".to_string(),
             });
         }
 
@@ -386,7 +386,7 @@ pub async fn process_reset(req: HttpRequest, data: Json<NewPasswordJson>) -> Jso
                 perm:       0,
                 image:      None,
                 phone:      None,
-                uuid:       None,
+                uuid:       "".to_string(),
             });
         }
 
@@ -418,7 +418,7 @@ pub async fn process_reset(req: HttpRequest, data: Json<NewPasswordJson>) -> Jso
                 perm:       0,
                 image:      None,
                 phone:      None,
-                uuid:       None,
+                uuid:       "".to_string(),
             });
         }
     }
