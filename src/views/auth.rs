@@ -116,7 +116,7 @@ pub struct NewPasswordJson {
     pub email:    String,
     pub password: String,
     pub token:    String,
-}
+} 
 
 #[derive(Deserialize, Serialize, Debug, Queryable)]
 pub struct AuthResp {
@@ -321,19 +321,6 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserJson>) -> Json<A
 }
 
 pub async fn process_reset(req: HttpRequest, data: Json<NewPasswordJson>) -> Json<AuthResp2> {
-    if is_signed_in(&req) {
-        return Json(AuthResp2 { 
-            id:         0,
-            first_name: "".to_string(),
-            last_name:  "".to_string(),
-            email:      "".to_string(),
-            perm:       0,
-            image:      None,
-            phone:      None,
-            uuid:       "".to_string(),
-        });  
-    }
-    else { 
         let token_id_res = hex::decode(data.token.clone());
         if token_id_res.is_err() {
             return Json(AuthResp2 {
@@ -407,7 +394,7 @@ pub async fn process_reset(req: HttpRequest, data: Json<NewPasswordJson>) -> Jso
                 image:      _user.image.clone(),
                 phone:      _user.phone.clone(),
                 uuid:       _user.uuid,
-            })
+            }) 
         }
         else {
             return Json(AuthResp2 {
@@ -421,5 +408,4 @@ pub async fn process_reset(req: HttpRequest, data: Json<NewPasswordJson>) -> Jso
                 uuid:       "".to_string(),
             });
         }
-    }
 }
