@@ -59,7 +59,7 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
     let body = body.into_inner();
 
     let token_data = EmailVerificationTokenMessage {
-        id:  None,
+        id:    None,
         email: body.email.clone(),
     };
     let token = EmailVerificationToken::create(token_data.clone()).expect("E.");
@@ -95,6 +95,7 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
         "message": "Verification email sent",
     })))
 }
+
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct LoginUser2 {
@@ -319,9 +320,9 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserJson>) -> Json<A
         })
 }
 
-pub async fn process_reset(req: HttpRequest, data: Json<NewPasswordJson>) -> Json<AuthResp> {
+pub async fn process_reset(req: HttpRequest, data: Json<NewPasswordJson>) -> Json<AuthResp2> {
     if is_signed_in(&req) {
-        return Json(AuthResp {
+        return Json(AuthResp2 {
             id:         0,
             first_name: "".to_string(),
             last_name:  "".to_string(),
@@ -329,12 +330,13 @@ pub async fn process_reset(req: HttpRequest, data: Json<NewPasswordJson>) -> Jso
             perm:       0,
             image:      None,
             phone:      None,
-        }); 
+            uuid:       None,
+        });  
     }
     else { 
         let token_id_res = hex::decode(data.token.clone());
         if token_id_res.is_err() {
-            return Json(AuthResp {
+            return Json(AuthResp2 {
                 id:         0,
                 first_name: "".to_string(),
                 last_name:  "".to_string(),
@@ -342,13 +344,14 @@ pub async fn process_reset(req: HttpRequest, data: Json<NewPasswordJson>) -> Jso
                 perm:       0,
                 image:      None,
                 phone:      None,
+                uuid:       None,
             });
         }
         let token_id = token_id_res.expect("E.");
         
         let token_res = EmailVerificationToken::find(&token_id);
         if token_res.is_err() {
-            return Json(AuthResp {
+            return Json(AuthResp2 {
                 id:         0,
                 first_name: "".to_string(),
                 last_name:  "".to_string(),
@@ -356,12 +359,13 @@ pub async fn process_reset(req: HttpRequest, data: Json<NewPasswordJson>) -> Jso
                 perm:       0,
                 image:      None,
                 phone:      None,
+                uuid:       None,
             });
         }
         let token = token_res.expect("E.");
 
         if token.email != data.email {
-            return Json(AuthResp {
+            return Json(AuthResp2 {
                 id:         0,
                 first_name: "".to_string(),
                 last_name:  "".to_string(),
@@ -369,11 +373,12 @@ pub async fn process_reset(req: HttpRequest, data: Json<NewPasswordJson>) -> Jso
                 perm:       0,
                 image:      None,
                 phone:      None,
+                uuid:       None,
             });
         }
 
         if token.expires_at < Utc::now().naive_utc() {
-            return Json(AuthResp {
+            return Json(AuthResp2 {
                 id:         0,
                 first_name: "".to_string(),
                 last_name:  "".to_string(),
@@ -381,6 +386,7 @@ pub async fn process_reset(req: HttpRequest, data: Json<NewPasswordJson>) -> Jso
                 perm:       0,
                 image:      None,
                 phone:      None,
+                uuid:       None,
             });
         }
 
@@ -392,18 +398,19 @@ pub async fn process_reset(req: HttpRequest, data: Json<NewPasswordJson>) -> Jso
                 email: _user.email.clone(),
             };
 
-            return Json(AuthResp {
+            return Json(AuthResp2 {
                 id:         _user.id,
                 first_name: _user.first_name.clone(),
                 last_name:  _user.last_name.clone(),
                 email:      _user.email.clone(),
                 perm:       _user.perm,
                 image:      _user.image.clone(),
-                phone:      _user.phone,
+                phone:      _user.phone.clone(),
+                uuid:       _user.uuid,
             })
         }
         else {
-            return Json(AuthResp {
+            return Json(AuthResp2 {
                 id:         0,
                 first_name: "".to_string(),
                 last_name:  "".to_string(),
@@ -411,6 +418,7 @@ pub async fn process_reset(req: HttpRequest, data: Json<NewPasswordJson>) -> Jso
                 perm:       0,
                 image:      None,
                 phone:      None,
+                uuid:       None,
             });
         }
     }
