@@ -550,7 +550,7 @@ pub struct NewWallet {
 }
 
 impl NewWallet {
-    pub fn create(form: Json<NewWallet>) -> Wallet {
+    pub fn create(form: Json<NewWallet>) -> NewWallet {
         let _connection = establish_connection();
         let form_wallet = NewNewWallet {
             user_id: form.user_id,
@@ -614,7 +614,7 @@ pub struct NewWhiteList {
 }
 
 impl NewWhiteList {
-    pub fn create(form: Json<NewWhiteList>) -> WhiteList {
+    pub fn create(form: Json<NewWhiteList>) -> NewWhiteList {
         let _connection = establish_connection();
         let form_white_lists = NewNewWhiteList {
             user_id:    form.user_id,
