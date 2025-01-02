@@ -20,13 +20,13 @@ CREATE TABLE email_verification_token (
 );
 
 CREATE TABLE wallets (
-    id       BYTEA PRIMARY KEY,
+    id       SERIAL PRIMARY KEY,
     user_id  INT NOT NULL,
     link     VARCHAR(100) NOT NULL
 ); 
 
 CREATE TABLE white_lists (
-    id         BYTEA PRIMARY KEY,
+    id         SERIAL PRIMARY KEY,
     user_id    INT NOT NULL,
     token_type SMALLINT NOT NULL
 ); 

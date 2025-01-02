@@ -1,8 +1,8 @@
 use crate::schema;
 use crate::schema::{
     users,
-    wallets,
-    white_lists,
+    new_wallets,
+    new_white_lists,
 };
 use crate::diesel::{
     Queryable,
@@ -39,22 +39,22 @@ pub struct UserData {
 impl UserData {
     pub fn get_user_wallets(&self) -> Vec<UserWallet> {
         let _connection = establish_connection();
-        return schema::wallets::table
-            .filter(schema::wallets::user_id.eq(self.id))
+        return schema::new_wallets::table
+            .filter(schema::new_wallets::user_id.eq(self.id))
             .select((
-                schema::wallets::id,
-                schema::wallets::link
+                schema::new_wallets::id,
+                schema::new_wallets::link
             )) 
             .load::<UserWallet>(&_connection)
             .expect("E.");
     }
     pub fn get_user_white_list(&self) -> Vec<UserWhiteList> {
         let _connection = establish_connection();
-        return schema::white_lists::table
-            .filter(schema::white_lists::user_id.eq(self.id))
+        return schema::new_white_lists::table
+            .filter(schema::new_white_lists::user_id.eq(self.id))
             .select((
-                schema::white_lists::id,
-                schema::white_lists::token_type
+                schema::new_white_lists::id,
+                schema::new_white_lists::token_type
             )) 
             .load::<UserWhiteList>(&_connection)
             .expect("E.");
@@ -479,22 +479,22 @@ impl User {
 
     pub fn get_user_wallets(&self) -> Vec<UserWallet> {
         let _connection = establish_connection();
-        return schema::wallets::table
-            .filter(schema::wallets::user_id.eq(self.id))
+        return schema::new_wallets::table
+            .filter(schema::new_wallets::user_id.eq(self.id))
             .select((
-                schema::wallets::id,
-                schema::wallets::link
+                schema::new_wallets::id,
+                schema::new_wallets::link
             )) 
             .load::<UserWallet>(&_connection)
             .expect("E.");
     }
     pub fn get_user_white_list(&self) -> Vec<UserWhiteList> {
         let _connection = establish_connection();
-        return schema::white_lists::table
-            .filter(schema::white_lists::user_id.eq(self.id))
+        return schema::new_white_lists::table
+            .filter(schema::new_white_lists::user_id.eq(self.id))
             .select((
-                schema::white_lists::id,
-                schema::white_lists::token_type
+                schema::new_white_lists::id,
+                schema::new_white_lists::token_type
             )) 
             .load::<UserWhiteList>(&_connection)
             .expect("E.");
@@ -557,7 +557,7 @@ impl Wallet {
             link:    form.link.clone(),
         };
 
-        let _new_wallet = diesel::insert_into(schema::wallets::table)
+        let _new_wallet = diesel::insert_into(schema::new_wallets::table)
             .values(&form_wallet)
             .get_result::<Wallet>(&_connection)
             .expect("Error saving wallet.");
@@ -566,8 +566,8 @@ impl Wallet {
     pub fn delete(id: i32) -> () {
         let _connection = establish_connection();
         diesel::delete (
-            schema::wallets::table
-                .filter(schema::wallets::id.eq(id))
+            schema::new_wallets::table
+                .filter(schema::new_wallets::id.eq(id))
         )
         .execute(&_connection)
         .expect("E");
@@ -575,7 +575,7 @@ impl Wallet {
 }
 
 #[derive(Debug, Deserialize, Insertable)]
-#[table_name="wallets"]
+#[table_name="new_wallets"]
 pub struct NewWallet {
     pub user_id: i32,
     pub link:    String,
@@ -621,7 +621,7 @@ impl WhiteList {
             token_type: form.token_type.clone(),
         }; 
 
-        let _new_white_lists = diesel::insert_into(schema::white_lists::table)
+        let _new_white_lists = diesel::insert_into(schema::new_white_lists::table)
             .values(&form_white_lists)
             .get_result::<WhiteList>(&_connection)
             .expect("Error saving white list item.");
@@ -630,8 +630,8 @@ impl WhiteList {
     pub fn delete(id: i32) -> () {
         let _connection = establish_connection();
         diesel::delete (
-            schema::white_lists::table
-                .filter(schema::white_lists::id.eq(id))
+            schema::new_white_lists::table
+                .filter(schema::new_white_lists::id.eq(id))
         )
         .execute(&_connection)
         .expect("E");
@@ -639,7 +639,7 @@ impl WhiteList {
 }
 
 #[derive(Debug, Deserialize, Insertable)]
-#[table_name="white_lists"]
+#[table_name="new_white_lists"]
 pub struct NewWhiteList {
     pub user_id:    i32,
     pub token_type: i16,
