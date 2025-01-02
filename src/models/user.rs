@@ -17,7 +17,7 @@ use serde::{Serialize, Deserialize};
 use crate::utils::{establish_connection, get_limit, NewUserForm};
 use crate::errors::Error;
 use actix_web::web::Json;
-use crate::views::{NewUserJson, AuthResp, AuthRespData};
+use crate::views::{NewUserJson, AuthResp, AuthRespData, UserData};
 
 const USER: i16 = 1;
 const USERCANBUYTOCKEN: i16 = 2;
@@ -44,7 +44,7 @@ pub struct User {
 impl User {
     pub fn get_users(limit: i64, offset: i64) -> Vec<AuthResp> {
         let _connection = establish_connection();
-        return schema::users::table
+        let _users = schema::users::table
             .filter(schema::users::perm.eq_any(vec!(USER, USERCANBUYTOCKEN)))
             .order(schema::users::created.desc())
             .limit(limit)
@@ -58,8 +58,25 @@ impl User {
                 schema::users::image,
                 schema::users::phone,
             )) 
-            .load::<AuthResp>(&_connection)
+            .load::<UserData>(&_connection)
             .expect("E.");
+        let mut stack = Vec::new();
+        for u in _users.iter() {
+            stack.push {
+                AuthResp {
+                    id:         u.id,
+                    first_name: u.first_name.clone(),
+                    last_name:  u.last_name.clone(),
+                    email:      u.email.clone(),
+                    perm:       u.perm,
+                    image:      u.image.clone(),
+                    phone:      u.phone.clone(),
+                    wallets:    u.get_user_wallets(),
+                    white_list: u.get_user_white_list(),
+                }
+            }
+        };
+        return stack;
     }
     pub fn get_users_list(page: i64, limit: Option<i64>) -> AuthRespData {
         let _limit = get_limit(limit, 20);
@@ -93,7 +110,7 @@ impl User {
 
     pub fn get_admins(limit: i64, offset: i64) -> Vec<AuthResp> {
         let _connection = establish_connection();
-        return schema::users::table
+        let _users = schema::users::table
             .filter(schema::users::perm.eq(ADMIN))
             .order(schema::users::created.desc())
             .limit(limit)
@@ -107,8 +124,26 @@ impl User {
                 schema::users::image,
                 schema::users::phone,
             )) 
-            .load::<AuthResp>(&_connection)
+            .load::<UserData>(&_connection)
             .expect("E.");
+
+        let mut stack = Vec::new();
+        for u in _users.iter() {
+            stack.push {
+                AuthResp {
+                    id:         u.id,
+                    first_name: u.first_name.clone(),
+                    last_name:  u.last_name.clone(),
+                    email:      u.email.clone(),
+                    perm:       u.perm,
+                    image:      u.image.clone(),
+                    phone:      u.phone.clone(),
+                    wallets:    u.get_user_wallets(),
+                    white_list: u.get_user_white_list(),
+                }
+            }
+        };
+        return stack;
     }
     pub fn get_admins_list(page: i64, limit: Option<i64>) -> AuthRespData {
         let _limit = get_limit(limit, 20);
@@ -136,7 +171,7 @@ impl User {
 
     pub fn get_banned_users(limit: i64, offset: i64) -> Vec<AuthResp> {
         let _connection = establish_connection();
-        return schema::users::table
+        let _users = schema::users::table
             .filter(schema::users::perm.eq(USERISBLOCK))
             .order(schema::users::created.desc())
             .limit(limit)
@@ -150,8 +185,26 @@ impl User {
                 schema::users::image,
                 schema::users::phone,
             )) 
-            .load::<AuthResp>(&_connection)
+            .load::<UserData>(&_connection)
             .expect("E.");
+
+        let mut stack = Vec::new();
+        for u in _users.iter() {
+            stack.push {
+                AuthResp {
+                    id:         u.id,
+                    first_name: u.first_name.clone(),
+                    last_name:  u.last_name.clone(),
+                    email:      u.email.clone(),
+                    perm:       u.perm,
+                    image:      u.image.clone(),
+                    phone:      u.phone.clone(),
+                    wallets:    u.get_user_wallets(),
+                    white_list: u.get_user_white_list(),
+                }
+            }
+        };
+        return stack;
     }
     pub fn get_banned_users_list(page: i64, limit: Option<i64>) -> AuthRespData {
         let _limit = get_limit(limit, 20);
@@ -179,7 +232,7 @@ impl User {
 
     pub fn get_banned_admins(limit: i64, offset: i64) -> Vec<AuthResp> {
         let _connection = establish_connection();
-        return schema::users::table
+        let _users = schema::users::table
             .filter(schema::users::perm.eq(ADMINISBLOCK))
             .order(schema::users::created.desc())
             .limit(limit)
@@ -193,8 +246,26 @@ impl User {
                 schema::users::image,
                 schema::users::phone,
             )) 
-            .load::<AuthResp>(&_connection)
+            .load::<UserData>(&_connection)
             .expect("E.");
+
+        let mut stack = Vec::new();
+        for u in _users.iter() {
+            stack.push {
+                AuthResp {
+                    id:         u.id,
+                    first_name: u.first_name.clone(),
+                    last_name:  u.last_name.clone(),
+                    email:      u.email.clone(),
+                    perm:       u.perm,
+                    image:      u.image.clone(),
+                    phone:      u.phone.clone(),
+                    wallets:    u.get_user_wallets(),
+                    white_list: u.get_user_white_list(),
+                }
+            }
+        };
+        return stack;
     }
     pub fn get_banned_admins_list(page: i64, limit: Option<i64>) -> AuthRespData {
         let _limit = get_limit(limit, 20);
@@ -460,7 +531,7 @@ impl Wallet {
     pub fn delete(id: i32) -> () {
         let _connection = establish_connection();
         diesel::delete (
-            crate::wallets::table
+            schema::wallets::table
                 .filter(schema::wallets::id.eq(id))
         )
         .execute(&_connection)
