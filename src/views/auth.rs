@@ -213,8 +213,8 @@ pub async fn login(req: HttpRequest, data: Json<LoginUser2>) -> Json<AuthResp2> 
                 email:      _new_user.email.clone(),
                 perm:       _new_user.perm,
                 image:      _new_user.image.clone(),
-                phone:      _new_user.phone,
-                uuid:       _new_user.uuid,
+                phone:      _new_user.phone.clone(),
+                uuid:       _new_user.uuid.clone(),
                 wallets:    _new_user.get_user_wallets(),
                 white_list: _new_user.get_user_white_list(),
             });
@@ -335,9 +335,9 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserJson>) -> Json<A
             last_name:  _new_user.last_name.clone(),
             email:      _new_user.email.clone(),
             perm:       _new_user.perm,
-            image:      _new_user.image,
+            image:      _new_user.image.clone(),
             phone:      None,
-            uuid:       _new_user.uuid,
+            uuid:       _new_user.uuid.clone(),
             wallets:    _new_user.get_user_wallets(),
             white_list: _new_user.get_user_white_list(),
         })
@@ -424,7 +424,7 @@ pub async fn process_reset(req: HttpRequest, data: Json<NewPasswordJson>) -> Jso
                 perm:       _user.perm,
                 image:      _user.image.clone(),
                 phone:      _user.phone.clone(),
-                uuid:       _user.uuid,
+                uuid:       _user.uuid.clone(),
                 wallets:    _user.get_user_wallets(),
                 white_list: _user.get_user_white_list(),
             }) 

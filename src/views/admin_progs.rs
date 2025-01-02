@@ -191,7 +191,7 @@ pub async fn create_wallet(req: HttpRequest, data: Json<crate::models::NewWallet
     if is_signed_in(&req) {
         let _request_user = get_current_user(&req);
         if _request_user.is_superuser() {
-            Wallet::create(data);
+            crate::models::Wallet::create(data);
         }
     }
     HttpResponse::Ok()
@@ -200,7 +200,7 @@ pub async fn delete_wallet(req: HttpRequest, data: Json<ItemId>) -> impl Respond
     if is_signed_in(&req) {
         let _request_user = get_current_user(&req);
         if _request_user.is_superuser() {
-            Wallet::delete(data.id);
+            crate::models::Wallet::delete(data.id);
         }
     }
     HttpResponse::Ok()
@@ -210,7 +210,7 @@ pub async fn create_white_list(req: HttpRequest, data: Json<crate::models::NewWh
     if is_signed_in(&req) {
         let _request_user = get_current_user(&req);
         if _request_user.is_superuser() {
-            WhiteLis::create(data);
+            crate::models::WhiteList::create(data);
         }
     }
     HttpResponse::Ok()
@@ -219,7 +219,7 @@ pub async fn delete_white_list(req: HttpRequest, data: Json<ItemId>) -> impl Res
     if is_signed_in(&req) {
         let _request_user = get_current_user(&req);
         if _request_user.is_superuser() {
-            Wallet::delete(data.id);
+            crate::models::Wallet::delete(data.id);
         }
     }
     HttpResponse::Ok()
