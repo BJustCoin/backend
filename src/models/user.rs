@@ -543,23 +543,23 @@ pub struct UserWallet {
 } 
 
 #[derive(Debug, Queryable, Serialize, Identifiable)]
-pub struct Wallet {
+pub struct NewWallet {
     pub id:      i32,
     pub user_id: i32,
     pub link:    String,
 }
 
-impl Wallet {
+impl NewWallet {
     pub fn create(form: Json<NewWallet>) -> Wallet {
         let _connection = establish_connection();
-        let form_wallet = NewWallet {
+        let form_wallet = NewNewWallet {
             user_id: form.user_id,
             link:    form.link.clone(),
         };
 
         let _new_wallet = diesel::insert_into(schema::new_wallets::table)
             .values(&form_wallet)
-            .get_result::<Wallet>(&_connection)
+            .get_result::<NewWallet>(&_connection)
             .expect("Error saving wallet.");
         return _new_wallet;
     }
@@ -576,7 +576,7 @@ impl Wallet {
 
 #[derive(Debug, Deserialize, Insertable)]
 #[table_name="new_wallets"]
-pub struct NewWallet {
+pub struct NewNewWallet {
     pub user_id: i32,
     pub link:    String,
 }
@@ -607,23 +607,23 @@ pub struct UserWhiteList {
 } 
 
 #[derive(Debug, Queryable, Serialize, Identifiable)]
-pub struct WhiteList {
+pub struct NewWhiteList {
     pub id:         i32,
     pub user_id:    i32,
     pub token_type: i16,
 }
 
-impl WhiteList {
+impl NewWhiteList {
     pub fn create(form: Json<NewWhiteList>) -> WhiteList {
         let _connection = establish_connection();
-        let form_white_lists = NewWhiteList {
+        let form_white_lists = NewNewWhiteList {
             user_id:    form.user_id,
             token_type: form.token_type.clone(),
         }; 
 
         let _new_white_lists = diesel::insert_into(schema::new_white_lists::table)
             .values(&form_white_lists)
-            .get_result::<WhiteList>(&_connection)
+            .get_result::<NewWhiteList>(&_connection)
             .expect("Error saving white list item.");
         return _new_white_lists;
     }
@@ -640,7 +640,7 @@ impl WhiteList {
 
 #[derive(Debug, Deserialize, Insertable)]
 #[table_name="new_white_lists"]
-pub struct NewWhiteList {
+pub struct NewNewWhiteList {
     pub user_id:    i32,
     pub token_type: i16,
 }
