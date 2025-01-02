@@ -2,7 +2,7 @@ use crate::schema;
 use crate::schema::{
     users,
     wallets,
-    whitelists,
+    white_lists,
 };
 use crate::diesel::{
     Queryable,
@@ -458,8 +458,9 @@ impl Wallet {
         return _new_wallet;
     }
     pub fn delete(id: i32) -> i16 {
+        let _connection = establish_connection();
         diesel::delete (
-            wallets
+            crate::wallets::table
                 .filter(schema::wallets::id.eq(id))
         )
         .execute(&_connection)
@@ -521,8 +522,9 @@ impl WhiteList {
         return _new_white_lists;
     }
     pub fn delete(id: i32) -> i16 {
+        let _connection = establish_connection();
         diesel::delete (
-            white_lists
+            schema::white_lists::table
                 .filter(schema::white_lists::id.eq(id))
         )
         .execute(&_connection)
