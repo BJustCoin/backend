@@ -62,7 +62,7 @@ impl User {
             .expect("E.");
         let mut stack = Vec::new();
         for u in _users.iter() {
-            stack.push {
+            stack.push (
                 AuthResp {
                     id:         u.id,
                     first_name: u.first_name.clone(),
@@ -74,7 +74,7 @@ impl User {
                     wallets:    u.get_user_wallets(),
                     white_list: u.get_user_white_list(),
                 }
-            }
+            )
         };
         return stack;
     }
@@ -129,7 +129,7 @@ impl User {
 
         let mut stack = Vec::new();
         for u in _users.iter() {
-            stack.push {
+            stack.push (
                 AuthResp {
                     id:         u.id,
                     first_name: u.first_name.clone(),
@@ -141,7 +141,7 @@ impl User {
                     wallets:    u.get_user_wallets(),
                     white_list: u.get_user_white_list(),
                 }
-            }
+            )
         };
         return stack;
     }
@@ -190,7 +190,7 @@ impl User {
 
         let mut stack = Vec::new();
         for u in _users.iter() {
-            stack.push {
+            stack.push (
                 AuthResp {
                     id:         u.id,
                     first_name: u.first_name.clone(),
@@ -202,7 +202,7 @@ impl User {
                     wallets:    u.get_user_wallets(),
                     white_list: u.get_user_white_list(),
                 }
-            }
+            )
         };
         return stack;
     }
@@ -251,7 +251,7 @@ impl User {
 
         let mut stack = Vec::new();
         for u in _users.iter() {
-            stack.push {
+            stack.push (
                 AuthResp {
                     id:         u.id,
                     first_name: u.first_name.clone(),
@@ -263,7 +263,7 @@ impl User {
                     wallets:    u.get_user_wallets(),
                     white_list: u.get_user_white_list(),
                 }
-            }
+            )
         };
         return stack;
     }
