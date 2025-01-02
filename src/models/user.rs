@@ -457,7 +457,7 @@ impl Wallet {
             .expect("Error saving wallet.");
         return _new_wallet;
     }
-    pub fn delete(id: String) -> i16 {
+    pub fn delete(id: i32) -> i16 {
         diesel::delete (
             wallets
                 .filter(schema::wallets::id.eq(id))
@@ -520,7 +520,7 @@ impl WhiteList {
             .expect("Error saving white list item.");
         return _new_white_lists;
     }
-    pub fn delete(id: String) -> i16 {
+    pub fn delete(id: i32) -> i16 {
         diesel::delete (
             white_lists
                 .filter(schema::white_lists::id.eq(id))
