@@ -536,7 +536,7 @@ pub struct SessionUser {
 }
 
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Queryable, Serialize, Deserialize)]
 pub struct UserWallet {
     pub id:   i32,
     pub link: String,
@@ -600,7 +600,7 @@ token_type
 12.	Loyalty
 */
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Queryable, Deserialize)]
 pub struct UserWhiteList {
     pub id:         i32,
     pub token_type: i16,
