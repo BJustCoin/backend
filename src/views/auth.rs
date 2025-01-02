@@ -139,17 +139,6 @@ pub struct AuthResp {
 }
 
 #[derive(Deserialize, Serialize, Debug, Queryable)]
-pub struct UserData {
-    pub id:         i32,
-    pub first_name: String,
-    pub last_name:  String,
-    pub email:      String,
-    pub perm:       i16,
-    pub image:      Option<String>,
-    pub phone:      Option<String>,
-}
-
-#[derive(Deserialize, Serialize, Debug, Queryable)]
 pub struct AuthResp2 {
     pub id:         i32,
     pub first_name: String,

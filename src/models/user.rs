@@ -17,7 +17,7 @@ use serde::{Serialize, Deserialize};
 use crate::utils::{establish_connection, get_limit, NewUserForm};
 use crate::errors::Error;
 use actix_web::web::Json;
-use crate::views::{NewUserJson, AuthResp, AuthRespData, UserData};
+use crate::views::{NewUserJson, AuthResp, AuthRespData};
 
 const USER: i16 = 1;
 const USERCANBUYTOCKEN: i16 = 2;
@@ -25,6 +25,41 @@ const USERISBLOCK: i16 = 5;
 const ADMIN: i16 = 50;
 const ADMINISBLOCK: i16 = 55;
 const SUPERUSER: i16 = 60;
+
+#[derive(Deserialize, Serialize, Debug, Queryable)]
+pub struct UserData {
+    pub id:         i32,
+    pub first_name: String,
+    pub last_name:  String,
+    pub email:      String,
+    pub perm:       i16,
+    pub image:      Option<String>,
+    pub phone:      Option<String>,
+}
+impl UserData {
+    pub fn get_user_wallets(&self) -> Vec<UserWallet> {
+        let _connection = establish_connection();
+        return schema::wallets::table
+            .filter(schema::wallets::user_id.eq(self.id))
+            .select((
+                schema::wallets::id,
+                schema::wallets::link
+            )) 
+            .load::<UserWallet>(&_connection)
+            .expect("E.");
+    }
+    pub fn get_user_white_list(&self) -> Vec<UserWhiteList> {
+        let _connection = establish_connection();
+        return schema::white_lists::table
+            .filter(schema::white_lists::user_id.eq(self.id))
+            .select((
+                schema::white_lists::id,
+                schema::white_lists::token_type
+            )) 
+            .load::<UserWhiteList>(&_connection)
+            .expect("E.");
+    }
+}
 
 
 #[derive(Debug, Queryable, Serialize, Identifiable)]
