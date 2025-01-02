@@ -542,7 +542,7 @@ pub struct UserWallet {
     pub link: String,
 } 
 
-#[derive(Debug, Queryable, Serialize, Identifiable)]
+#[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
 pub struct NewWallet {
     pub id:      i32,
     pub user_id: i32,
@@ -606,7 +606,7 @@ pub struct UserWhiteList {
     pub token_type: i16,
 } 
 
-#[derive(Debug, Queryable, Serialize, Identifiable)]
+#[derive(Debug, Queryable, Deserialize, Serialize, Identifiable)]
 pub struct NewWhiteList {
     pub id:         i32,
     pub user_id:    i32,
