@@ -457,7 +457,7 @@ impl Wallet {
             .expect("Error saving wallet.");
         return _new_wallet;
     }
-    pub fn delete(id: i32) -> i16 {
+    pub fn delete(id: i32) -> () {
         let _connection = establish_connection();
         diesel::delete (
             crate::wallets::table
@@ -521,7 +521,7 @@ impl WhiteList {
             .expect("Error saving white list item.");
         return _new_white_lists;
     }
-    pub fn delete(id: i32) -> i16 {
+    pub fn delete(id: i32) -> () {
         let _connection = establish_connection();
         diesel::delete (
             schema::white_lists::table
