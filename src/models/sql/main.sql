@@ -18,3 +18,15 @@ CREATE TABLE email_verification_token (
     expires_at TIMESTAMP NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT current_timestamp
 );
+
+CREATE TABLE wallets (
+    id       BYTEA PRIMARY KEY,
+    user_id  INT NOT NULL,
+    link     VARCHAR(100) NOT NULL
+); 
+
+CREATE TABLE white_lists (
+    id         BYTEA PRIMARY KEY,
+    user_id    INT NOT NULL,
+    token_type SMALLINT NOT NULL
+); 

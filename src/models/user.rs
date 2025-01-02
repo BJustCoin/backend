@@ -1,6 +1,8 @@
 use crate::schema;
 use crate::schema::{
     users,
+    wallets,
+    whitelists,
 };
 use crate::diesel::{
     Queryable,
@@ -368,6 +370,29 @@ impl User {
         }
         return _new_user;
     }
+
+    pub fn get_user_wallets(&self) -> Vec<UserWallet> {
+        let _connection = establish_connection();
+        return schema::wallets::table
+            .filter(schema::wallets::user_id.eq(self.id))
+            .select((
+                schema::wallets::id,
+                schema::wallets::link
+            )) 
+            .load::<UserWallet>(&_connection)
+            .expect("E.");
+    }
+    pub fn get_user_white_list(&self) -> Vec<UserWhiteList> {
+        let _connection = establish_connection();
+        return schema::white_lists::table
+            .filter(schema::white_lists::user_id.eq(self.id))
+            .select((
+                schema::white_lists::id,
+                schema::white_lists::token_type
+            )) 
+            .load::<UserWhiteList>(&_connection)
+            .expect("E.");
+    }
 }
 
 #[derive(Debug, Deserialize, Insertable)]
@@ -402,4 +427,112 @@ pub struct UserChange {
 pub struct SessionUser {
     pub id:    i32,
     pub email: String,
+}
+
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UserWallet {
+    pub id:   i32,
+    pub link: String,
+} 
+
+#[derive(Debug, Queryable, Serialize, Identifiable)]
+pub struct Wallet {
+    pub id:      i32,
+    pub user_id: i32,
+    pub link:    String,
+}
+
+impl Wallet {
+    pub fn create(form: Json<NewWallet>) -> Wallet {
+        let _connection = establish_connection();
+        let form_wallet = NewWallet {
+            user_id: form.user_id,
+            link:    form.link.clone(),
+        };
+
+        let _new_wallet = diesel::insert_into(schema::wallets::table)
+            .values(&form_wallet)
+            .get_result::<Wallet>(&_connection)
+            .expect("Error saving wallet.");
+        return _new_wallet;
+    }
+    pub fn delete(id: String) -> i16 {
+        diesel::delete (
+            wallets
+                .filter(schema::wallets::id.eq(id))
+        )
+        .execute(&_connection)
+        .expect("E");
+    }
+}
+
+#[derive(Debug, Deserialize, Insertable)]
+#[table_name="wallets"]
+pub struct NewWallet {
+    pub user_id: i32,
+    pub link:    String,
+}
+
+
+
+/*
+token_type
+
+1.	Strategic
+2.	Seed
+3.	Private Sale
+4.	IDO
+5.	Public Sale
+6.	Advisors
+7.	Team
+8.	Future Team
+9.	Incetives
+10.	Liquidity
+11.	Ecosystem
+12.	Loyalty
+*/
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UserWhiteList {
+    pub id:         i32,
+    pub token_type: i16,
+} 
+
+#[derive(Debug, Queryable, Serialize, Identifiable)]
+pub struct WhiteList {
+    pub id:         i32,
+    pub user_id:    i32,
+    pub token_type: i16,
+}
+
+impl WhiteList {
+    pub fn create(form: Json<NewWhiteList>) -> WhiteList {
+        let _connection = establish_connection();
+        let form_white_lists = NewWhiteList {
+            user_id:    form.user_id,
+            token_type: form.token_type.clone(),
+        }; 
+
+        let _new_white_lists = diesel::insert_into(schema::white_lists::table)
+            .values(&form_white_lists)
+            .get_result::<WhiteList>(&_connection)
+            .expect("Error saving white list item.");
+        return _new_white_lists;
+    }
+    pub fn delete(id: String) -> i16 {
+        diesel::delete (
+            white_lists
+                .filter(schema::white_lists::id.eq(id))
+        )
+        .execute(&_connection)
+        .expect("E");
+    }
+}
+
+#[derive(Debug, Deserialize, Insertable)]
+#[table_name="white_lists"]
+pub struct NewWhiteList {
+    pub user_id:    i32,
+    pub token_type: i16,
 }

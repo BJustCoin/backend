@@ -14,7 +14,14 @@ use crate::utils::{
     is_signed_in,
     verify,
 };
-use crate::models::{User, SessionUser, EmailVerificationToken, EmailVerificationTokenMessage};
+use crate::models::{
+    User, 
+    SessionUser, 
+    UserWallet,
+    UserWhiteList,
+    EmailVerificationToken, 
+    EmailVerificationTokenMessage
+};
 use actix_session::Session;
 use crate::errors::AuthError;
 use chrono::Utc; 
@@ -127,7 +134,9 @@ pub struct AuthResp {
     pub perm:       i16,
     pub image:      Option<String>,
     pub phone:      Option<String>,
-} 
+    pub wallets:    Vec<UserWallet>,
+    pub white_list: Vec<UserWhiteList>,
+}
 
 #[derive(Deserialize, Serialize, Debug, Queryable)]
 pub struct AuthResp2 {
@@ -139,6 +148,8 @@ pub struct AuthResp2 {
     pub image:      Option<String>,
     pub phone:      Option<String>,
     pub uuid:       String,
+    pub wallets:    Vec<UserWallet>,
+    pub white_list: Vec<UserWhiteList>,
 } 
 
 fn find_user(data: Json<LoginUser2>) -> Result<SessionUser, AuthError> {
@@ -195,7 +206,7 @@ pub async fn login(req: HttpRequest, data: Json<LoginUser2>) -> Json<AuthResp2> 
                 crate::models::User::create_superuser(_new_user.id);
             }
             handle_sign_in(data, &req);
-            return Json(AuthResp2 {
+            return Json(AuthResp2 { 
                 id:         _new_user.id,
                 first_name: _new_user.first_name.clone(),
                 last_name:  _new_user.last_name.clone(),
@@ -204,6 +215,8 @@ pub async fn login(req: HttpRequest, data: Json<LoginUser2>) -> Json<AuthResp2> 
                 image:      _new_user.image.clone(),
                 phone:      _new_user.phone,
                 uuid:       _new_user.uuid,
+                wallets:    _new_user.get_user_wallets(),
+                white_list: _new_user.get_user_white_list(),
             });
         }
         else {
@@ -217,6 +230,8 @@ pub async fn login(req: HttpRequest, data: Json<LoginUser2>) -> Json<AuthResp2> 
                 image:      None,
                 phone:      None,
                 uuid:       "".to_string(),
+                wallets:    Vec::new(),
+                white_list: Vec::new(),
             });
         }
 }
@@ -234,6 +249,8 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserJson>) -> Json<A
             image:      None,
             phone:      None,
             uuid:       "".to_string(),
+            wallets:    Vec::new(),
+            white_list: Vec::new(),
         });
     }
     let token_id = token_id_res.expect("E.");
@@ -250,6 +267,8 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserJson>) -> Json<A
                 image:      None,
                 phone:      None,
                 uuid:       "".to_string(),
+                wallets:    Vec::new(),
+                white_list: Vec::new(),
             });
         }
         let token = token_res.expect("E.");
@@ -265,6 +284,8 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserJson>) -> Json<A
                 image:      None,
                 phone:      None,
                 uuid:       "".to_string(),
+                wallets:    Vec::new(),
+                white_list: Vec::new(),
             });
         }
 
@@ -317,6 +338,8 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserJson>) -> Json<A
             image:      _new_user.image,
             phone:      None,
             uuid:       _new_user.uuid,
+            wallets:    _new_user.get_user_wallets(),
+            white_list: _new_user.get_user_white_list(),
         })
 }
 
@@ -332,6 +355,8 @@ pub async fn process_reset(req: HttpRequest, data: Json<NewPasswordJson>) -> Jso
                 image:      None,
                 phone:      None,
                 uuid:       "".to_string(),
+                wallets:    Vec::new(),
+                white_list: Vec::new(),
             });
         }
         let token_id = token_id_res.expect("E.");
@@ -347,6 +372,8 @@ pub async fn process_reset(req: HttpRequest, data: Json<NewPasswordJson>) -> Jso
                 image:      None,
                 phone:      None,
                 uuid:       "".to_string(),
+                wallets:    Vec::new(),
+                white_list: Vec::new(),
             });
         }
         let token = token_res.expect("E.");
@@ -361,6 +388,8 @@ pub async fn process_reset(req: HttpRequest, data: Json<NewPasswordJson>) -> Jso
                 image:      None,
                 phone:      None,
                 uuid:       "".to_string(),
+                wallets:    Vec::new(),
+                white_list: Vec::new(),
             });
         }
 
@@ -374,6 +403,8 @@ pub async fn process_reset(req: HttpRequest, data: Json<NewPasswordJson>) -> Jso
                 image:      None,
                 phone:      None,
                 uuid:       "".to_string(),
+                wallets:    Vec::new(),
+                white_list: Vec::new(),
             });
         }
 
@@ -394,6 +425,8 @@ pub async fn process_reset(req: HttpRequest, data: Json<NewPasswordJson>) -> Jso
                 image:      _user.image.clone(),
                 phone:      _user.phone.clone(),
                 uuid:       _user.uuid,
+                wallets:    _user.get_user_wallets(),
+                white_list: _user.get_user_white_list(),
             }) 
         }
         else {
@@ -406,6 +439,8 @@ pub async fn process_reset(req: HttpRequest, data: Json<NewPasswordJson>) -> Jso
                 image:      None,
                 phone:      None,
                 uuid:       "".to_string(),
+                wallets:    Vec::new(),
+                white_list: Vec::new(),
             });
         }
 }
