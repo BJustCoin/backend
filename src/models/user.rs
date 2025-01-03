@@ -554,16 +554,16 @@ pub struct NewWallet {
 
 
 impl NewWallet {
-    pub fn create(form: crate::views::ReqWallet) -> () {
+    pub fn create(user_id: i32, link: String, token_type: i16) -> () {
         let _connection = establish_connection();
         if schema::new_wallets::table
-            .filter(schema::new_wallets::link.eq(&form.link))
+            .filter(schema::new_wallets::link.eq(&link))
             .select(schema::new_wallets::id) 
             .load::<i32>(&_connection)
             .is_err() {
                 let form_wallet = NewNewWallet {
-                    user_id: form.user_id,
-                    link:    form.link.clone(),
+                    user_id: user_id,
+                    link:    link.clone(),
                 };
         
                 let _new_wallet = diesel::insert_into(schema::new_wallets::table)
@@ -571,7 +571,7 @@ impl NewWallet {
                     .get_result::<NewWallet>(&_connection)
                     .expect("Error saving wallet.");
         }
-        NewWhiteList::create(form.user_id, form.ico_stage);
+        NewWhiteList::create(user_id, token_type);
     }
     pub fn delete(id: i32) -> () {
         let _connection = establish_connection();

@@ -202,7 +202,7 @@ pub async fn create_wallet(req: HttpRequest, data: Json<ReqWallet>) -> impl Resp
     if is_signed_in(&req) {
         let _request_user = get_current_user(&req);
         if _request_user.is_superuser() {
-            crate::models::NewWallet::create(data);
+            crate::models::NewWallet::create(data.user_id, data.link.clone(), data.ico_stage);
         }
     }
     HttpResponse::Ok()
