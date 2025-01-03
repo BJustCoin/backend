@@ -221,7 +221,7 @@ pub async fn create_white_list(req: HttpRequest, data: Json<crate::models::NewNe
     if is_signed_in(&req) {
         let _request_user = get_current_user(&req);
         if _request_user.is_superuser() {
-            crate::models::NewWhiteList::create(data);
+            crate::models::NewWhiteList::create(data.user_id, data.token_type);
         }
     }
     HttpResponse::Ok()
