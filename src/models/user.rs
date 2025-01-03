@@ -554,7 +554,7 @@ pub struct NewWallet {
 
 
 impl NewWallet {
-    pub fn create(form: Json<crate:views::ReqWallet>) -> () {
+    pub fn create(form: crate:views::ReqWallet) -> () {
         let _connection = establish_connection();
         if schema::new_wallets::table
             .filter(schema::new_wallets::link.eq(&form.link))
