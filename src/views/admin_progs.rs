@@ -168,26 +168,37 @@ pub async fn drop_admin(req: HttpRequest, data: Json<ItemId>) -> impl Responder 
     HttpResponse::Ok()
 }
 
-pub async fn create_can_buy(req: HttpRequest, data: Json<ItemId>) -> impl Responder {
+#[derive(Deserialize, Serialize, Debug)]
+pub struct ItemIdTypes {
+    pub id:    i32,
+    pub types: i32,
+}
+pub async fn create_can_buy(req: HttpRequest, data: Json<ItemIdTypes>) -> impl Responder {
     if is_signed_in(&req) {
         let _request_user = get_current_user(&req);
         if _request_user.is_superuser() {
-            _request_user.create_can_buy_token(data.id);
+            _request_user.create_can_buy_token(data.id, data.types);
         }
-    }
+    } 
     HttpResponse::Ok()
 }
-pub async fn delete_can_buy(req: HttpRequest, data: Json<ItemId>) -> impl Responder {
+pub async fn delete_can_buy(req: HttpRequest, data: Json<ItemIdTypes>) -> impl Responder {
     if is_signed_in(&req) {
         let _request_user = get_current_user(&req);
         if _request_user.is_superuser() {
-            _request_user.delete_can_buy_token(data.id);
+            _request_user.delete_can_buy_token(data.id, data.types);
         }
     }
     HttpResponse::Ok()
 }
 
-pub async fn create_wallet(req: HttpRequest, data: Json<crate::models::NewNewWallet>) -> impl Responder {
+#[derive(Serialize, Deserialize, Debug)]
+pub struct ReqWallet {
+    pub user_id:   i32,
+    pub link:      String,
+    pub ico_stage: i16,
+}
+pub async fn create_wallet(req: HttpRequest, data: Json<crate::models::ReqWallet>) -> impl Responder {
     if is_signed_in(&req) {
         let _request_user = get_current_user(&req);
         if _request_user.is_superuser() {

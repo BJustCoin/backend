@@ -373,6 +373,7 @@ impl User {
             let _u = diesel::update(users::table.filter(users::id.eq(user_id)))
                 .set(schema::users::perm.eq(USERISBLOCK))
                 .execute(&_connection);
+            let _k = NewWhiteList::delete_all(user_id);
         }))
     }
     pub fn delete_user_block(&self, user_id: i32) -> Result<(), Error> {
@@ -386,7 +387,7 @@ impl User {
                 .execute(&_connection);
         }))
     }
-    pub fn create_can_buy_token(&self, user_id: i32) -> Result<(), Error> {
+    pub fn create_can_buy_token(&self, user_id: i32, types: i16) -> Result<(), Error> {
         if !self.is_superuser() {
             return Err(Error::BadRequest("403".to_string()));
         }
@@ -395,9 +396,10 @@ impl User {
             let _u = diesel::update(users::table.filter(users::id.eq(user_id)))
                 .set(schema::users::perm.eq(USERCANBUYTOCKEN))
                 .execute(&_connection);
+            let _k = NewWhiteList::create(user_id, types);
         }))
     }
-    pub fn delete_can_buy_token(&self, user_id: i32) -> Result<(), Error> {
+    pub fn delete_can_buy_token(&self, user_id: i32, types: i16) -> Result<(), Error> {
         if !self.is_superuser() {
             return Err(Error::BadRequest("403".to_string()));
         }
@@ -406,6 +408,7 @@ impl User {
             let _u = diesel::update(users::table.filter(users::id.eq(user_id)))
                 .set(schema::users::perm.eq(USER))
                 .execute(&_connection);
+            let _k = NewWhiteList::delete(user_id, types);
         }))
     }
     pub fn create_admin(&self, user_id: i32) -> Result<(), Error> {
@@ -549,19 +552,26 @@ pub struct NewWallet {
     pub link:    String,
 }
 
-impl NewWallet {
-    pub fn create(form: Json<NewNewWallet>) -> NewWallet {
-        let _connection = establish_connection();
-        let form_wallet = NewNewWallet {
-            user_id: form.user_id,
-            link:    form.link.clone(),
-        };
 
-        let _new_wallet = diesel::insert_into(schema::new_wallets::table)
-            .values(&form_wallet)
-            .get_result::<NewWallet>(&_connection)
-            .expect("Error saving wallet.");
-        return _new_wallet;
+impl NewWallet {
+    pub fn create(form: Json<crate:views::ReqWallet>) -> () {
+        let _connection = establish_connection();
+        if schema::new_wallets::table
+            .filter(schema::new_wallets::link.eq(&form.link))
+            .select(schema::new_wallets::id) 
+            .load::<i32>(&_connection)
+            .is_err() {
+                let form_wallet = NewNewWallet {
+                    user_id: form.user_id,
+                    link:    form.link.clone(),
+                };
+        
+                let _new_wallet = diesel::insert_into(schema::new_wallets::table)
+                    .values(&form_wallet)
+                    .get_result::<NewWallet>(&_connection)
+                    .expect("Error saving wallet.");
+        }
+        NewWhiteList::create(form.user_id, form.ico_stage);
     }
     pub fn delete(id: i32) -> () {
         let _connection = establish_connection();
@@ -580,7 +590,6 @@ pub struct NewNewWallet {
     pub user_id: i32,
     pub link:    String,
 }
-
 
 
 /*
@@ -614,24 +623,40 @@ pub struct NewWhiteList {
 }
 
 impl NewWhiteList {
-    pub fn create(form: Json<NewNewWhiteList>) -> NewWhiteList {
+    pub fn create(user_id: i32, token_type: i16) -> () {
         let _connection = establish_connection();
-        let form_white_lists = NewNewWhiteList {
-            user_id:    form.user_id,
-            token_type: form.token_type.clone(),
-        }; 
-
-        let _new_white_lists = diesel::insert_into(schema::new_white_lists::table)
-            .values(&form_white_lists)
-            .get_result::<NewWhiteList>(&_connection)
-            .expect("Error saving white list item.");
-        return _new_white_lists;
+        if schema::new_white_lists::table
+            .filter(schema::new_white_lists::user_id.eq(user_id))
+            .filter(schema::new_white_lists::token_type.eq(token_type))
+            .select(schema::new_white_lists::id) 
+            .load::<i32>(&_connection)
+            .is_err() 
+        {
+            let form_white_lists = NewNewWhiteList {
+                user_id:    user_id,
+                token_type: token_type.clone(),
+            }; 
+            let _new_white_lists = diesel::insert_into(schema::new_white_lists::table)
+                .values(&form_white_lists)
+                .get_result::<NewWhiteList>(&_connection)
+                .expect("Error saving white list item.");
+        }
     }
-    pub fn delete(id: i32) -> () {
+    pub fn delete(user_id: i32, token_type: i16) -> () {
         let _connection = establish_connection();
         diesel::delete (
             schema::new_white_lists::table
-                .filter(schema::new_white_lists::id.eq(id))
+                .filter(schema::new_white_lists::user_id.eq(user_id))
+                .filter(schema::new_white_lists::token_type.eq(token_type))
+        )
+        .execute(&_connection)
+        .expect("E");
+    }
+    pub fn delete_all(user_id: i32) -> () {
+        let _connection = establish_connection();
+        diesel::delete (
+            schema::new_white_lists::table
+                .filter(schema::new_white_lists::user_id.eq(user_id))
         )
         .execute(&_connection)
         .expect("E");

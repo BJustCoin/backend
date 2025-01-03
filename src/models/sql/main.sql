@@ -17,7 +17,7 @@ CREATE TABLE email_verification_token (
     email      TEXT UNIQUE NOT NULL,
     expires_at TIMESTAMP NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT current_timestamp
-);
+); 
 
 CREATE TABLE wallets (
     id       SERIAL PRIMARY KEY,
