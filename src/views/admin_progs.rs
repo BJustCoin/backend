@@ -171,7 +171,7 @@ pub async fn drop_admin(req: HttpRequest, data: Json<ItemId>) -> impl Responder 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct ItemIdTypes {
     pub id:    i32,
-    pub types: i32,
+    pub types: i16,
 }
 pub async fn create_can_buy(req: HttpRequest, data: Json<ItemIdTypes>) -> impl Responder {
     if is_signed_in(&req) {
