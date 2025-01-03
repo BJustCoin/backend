@@ -198,7 +198,7 @@ pub struct ReqWallet {
     pub link:      String,
     pub ico_stage: i16,
 }
-pub async fn create_wallet(req: HttpRequest, data: Json<crate::models::ReqWallet>) -> impl Responder {
+pub async fn create_wallet(req: HttpRequest, data: Json<ReqWallet>) -> impl Responder {
     if is_signed_in(&req) {
         let _request_user = get_current_user(&req);
         if _request_user.is_superuser() {

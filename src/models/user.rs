@@ -554,7 +554,7 @@ pub struct NewWallet {
 
 
 impl NewWallet {
-    pub fn create(form: crate:views::ReqWallet) -> () {
+    pub fn create(form: crate::views::ReqWallet) -> () {
         let _connection = establish_connection();
         if schema::new_wallets::table
             .filter(schema::new_wallets::link.eq(&form.link))
@@ -622,7 +622,7 @@ pub struct NewWhiteList {
     pub token_type: i16,
 }
 
-impl NewWhiteList {
+impl NewWhiteList { 
     pub fn create(user_id: i32, token_type: i16) -> () {
         let _connection = establish_connection();
         if schema::new_white_lists::table
