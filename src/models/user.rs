@@ -80,7 +80,7 @@ pub struct User {
 pub struct SmallUsers {
     pub users: Vec<SmallUser>,
 }  
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Queryable, Serialize, Debug)]
 pub struct SmallUser {
     pub id:         i32,
     pub first_name: String,
