@@ -91,7 +91,7 @@ pub struct SmallUser {
 impl User {
     pub fn get_small_users() -> Vec<SmallUser> {
         let _connection = establish_connection();
-        return _users = schema::users::table
+        return  schema::users::table
             .filter(schema::users::perm.eq_any(vec!(USER, USERCANBUYTOCKEN)))
             .order(schema::users::created.desc())
             .select((
