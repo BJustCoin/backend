@@ -71,7 +71,7 @@ pub async fn get_users(req: HttpRequest) -> Json<AuthRespData> {
         })
     }
 }
-pub async fn get_users(req: HttpRequest) -> Json<SmallUsers> {
+pub async fn get_small_users(req: HttpRequest) -> Json<SmallUsers> {
     if is_signed_in(&req) {
         let _request_user = get_current_user(&req);
         Json(SmallUsers {
