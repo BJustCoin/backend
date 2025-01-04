@@ -76,7 +76,33 @@ pub struct User {
     pub uuid:       String,
 }
 
+#[derive(Deserialize, Serialize, Debug)]
+pub struct SmallUsers {
+    pub users: Vec<SmallUser>,
+}  
+#[derive(Deserialize, Serialize, Debug)]
+pub struct SmallUser {
+    pub id:         i32,
+    pub first_name: String,
+    pub last_name:  String,
+    pub email:      String,
+}
+
 impl User {
+    pub fn get_small_users() -> Vec<SmallUser> {
+        let _connection = establish_connection();
+        return _users = schema::users::table
+            .filter(schema::users::perm.eq_any(vec!(USER, USERCANBUYTOCKEN)))
+            .order(schema::users::created.desc())
+            .select((
+                schema::users::id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::email,
+            )) 
+            .load::<SmallUser>(&_connection)
+            .expect("E.");
+    }
     pub fn get_users(limit: i64, offset: i64) -> Vec<AuthResp> {
         let _connection = establish_connection();
         let _users = schema::users::table

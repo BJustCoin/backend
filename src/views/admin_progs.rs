@@ -6,7 +6,7 @@ use actix_web::{
     web::Json,
 };
 use crate::models::{
-    User,
+    User, SmallUsers, SmallUser,
 };
 use serde::{Deserialize, Serialize};
 
@@ -21,7 +21,8 @@ use crate::errors::Error;
 use crate::views::AuthResp;
 
 
-pub fn admin_routes(config: &mut web::ServiceConfig) { 
+pub fn admin_routes(config: &mut web::ServiceConfig) {
+    config.route("/get_small_users/", web::get().to(get_small_users));
     config.route("/get_users/", web::get().to(get_users)); 
     config.route("/get_admins/", web::get().to(get_admins));
     config.route("/get_banned_users/", web::get().to(get_banned_users));
@@ -70,6 +71,20 @@ pub async fn get_users(req: HttpRequest) -> Json<AuthRespData> {
         })
     }
 }
+pub async fn get_users(req: HttpRequest) -> Json<SmallUsers> {
+    if is_signed_in(&req) {
+        let _request_user = get_current_user(&req);
+        Json(SmallUsers {
+            users: User::get_small_users(),
+        })
+    }
+    else {
+        Json(SmallUsers {
+            users: Vec::new(),
+        })
+    }
+}
+
 pub async fn get_admins(req: HttpRequest) -> Json<AuthRespData> {
     if is_signed_in(&req) {
         let page = crate::utils::get_page(&req);
