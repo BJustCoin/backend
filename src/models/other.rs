@@ -18,11 +18,11 @@ use crate::errors::Error;
 use actix_web::web::Json;
 
 
-#[derive(Debug, Queryable, Serialize, Identifiable)]
+#[derive(Debug, Queryable, Deserialize, Serialize, Identifiable)]
 pub struct SuggestItem {
     pub id:          i32,
     pub first_name:  String,
-    pub middle_name: Option<String>,
+    pub middle_name: String,
     pub last_name:   String,
     pub email:       String,
     pub phone:       String,
@@ -30,7 +30,7 @@ pub struct SuggestItem {
     pub is_agree:    bool,
     pub address:     String,
     pub created:     chrono::NaiveDateTime,
-}
+} 
 
 #[derive(Deserialize, Serialize)]
 pub struct SuggestRespData {
@@ -41,7 +41,7 @@ pub struct SuggestRespData {
 #[derive(Debug, Deserialize, Serialize)]
 pub struct NewSuggestJson {
     pub first_name:  String,
-    pub middle_name: Option<String>,
+    pub middle_name: String,
     pub last_name:   String,
     pub email:       String,
     pub phone:       String,
@@ -109,7 +109,7 @@ impl SuggestItem {
 #[table_name="suggest_items"]
 pub struct NewSuggestItem {
     pub first_name:  String,
-    pub middle_name: Option<String>,
+    pub middle_name: String,
     pub last_name:   String,
     pub email:       String,
     pub phone:       String,
@@ -120,7 +120,7 @@ pub struct NewSuggestItem {
 }
 
 
-#[derive(Debug, Queryable, Serialize, Identifiable)]
+#[derive(Debug, Queryable, Deserialize, Serialize, Identifiable)]
 pub struct Log {
     pub id:      i32,
     pub user_id: i32,
