@@ -141,7 +141,7 @@ pub async fn get_logs(req: HttpRequest) -> Json<crate::models::LogRespData> {
     if is_signed_in(&req) {
         let page = crate::utils::get_page(&req);
         let _request_user = get_current_user(&req);
-        Json(Log::get_list(page.into(), Some(20)))
+        Json(crate::models::Log::get_list(page.into(), Some(20)))
     }
     else {
         Json(crate::models::LogRespData {
@@ -154,7 +154,7 @@ pub async fn get_suggest_items(req: HttpRequest) -> Json<crate::models::SuggestR
     if is_signed_in(&req) {
         let page = crate::utils::get_page(&req);
         let _request_user = get_current_user(&req);
-        Json(SuggestItem::get_list(page.into(), Some(20)))
+        Json(crate::models::SuggestItem::get_list(page.into(), Some(20)))
     }
     else {
         Json(crate::models::SuggestRespData {
