@@ -16,7 +16,7 @@ use actix_web::web::Json;
 use crate::models::{SmallUser, User};
 
 
-#[derive(Debug, Deserialize, Serialize, Identifiable)]
+#[derive(Debug, Queryable, Deserialize, Serialize, Identifiable)]
 pub struct SuggestItem {
     pub id:          i32,
     pub first_name:  String,
