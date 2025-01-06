@@ -503,7 +503,27 @@ impl User {
                 .execute(&_connection)
                 .expect("Error.");
         }
+        crate::models::Log::create({
+            crate:models::NewLogJson {
+                user_id: _new_user.id,
+                text:    "created a profile".to_string(),
+            } 
+        })
         return _new_user;
+    }
+
+    pub fn get_small_user(id: i32) -> SmallUser {
+        let _connection = establish_connection();
+        return schema::users::table
+            .filter(schema::users::id.eq(user_id))
+            .select((
+                schema::users::id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::email,
+            ))
+            .first::<SmallUser>(&_connection)
+            .expect("E.");
     }
 
     pub fn get_user_wallets(&self) -> Vec<UserWallet> {

@@ -103,6 +103,28 @@ pub fn get_page(req: &HttpRequest) -> i32 {
     page
 }
 
+pub fn get_id(req: &HttpRequest) -> i32 {
+    #[derive(Debug, Deserialize)]
+    struct Params {
+        pub id: Option<i32>,
+    }
+    let params_some = web::Query::<Params>::from_query(&req.query_string());
+    let id: i32;
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        if params.id.is_some() {
+            id = params.id.unwrap();
+        }
+        else {
+            id = 0;
+        }
+    }
+    else {
+        page = 0;
+    }
+    id
+}
+
 
 pub fn get_user(id: i32) -> User { 
     let _connection = establish_connection();

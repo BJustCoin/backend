@@ -32,11 +32,13 @@ CREATE TABLE white_lists (
 );
 
 CREATE TABLE logs (
-    id       SERIAL PRIMARY KEY,
-    user_id  INT NOT NULL,
-    text     VARCHAR(100) NOT NULL,
-    created  TIMESTAMP NOT NULL DEFAULT current_timestamp
-); 
+    id        SERIAL PRIMARY KEY,
+    user_id   INT NOT NULL,
+    text      VARCHAR(100) NOT NULL,
+    created   TIMESTAMP NOT NULL DEFAULT current_timestamp,
+    target_id INT
+);
+
 
 CREATE TABLE suggest_items (
     id          SERIAL PRIMARY KEY,

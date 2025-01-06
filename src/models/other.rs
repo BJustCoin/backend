@@ -16,6 +16,7 @@ use serde::{Serialize, Deserialize};
 use crate::utils::{establish_connection, get_limit, NewUserForm};
 use crate::errors::Error;
 use actix_web::web::Json;
+use crate::models::{SmallUser, User};
 
 
 #[derive(Debug, Queryable, Deserialize, Serialize, Identifiable)]
@@ -130,25 +131,39 @@ pub struct Log {
 
 #[derive(Deserialize, Serialize)]
 pub struct LogRespData {
-    pub data: Vec<Log>,
+    pub data: Vec<LogData>,
     pub next: i64,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct NewLogJson {
-    pub user_id: i32,
-    pub text:    String,
+    pub user_id:   i32,
+    pub text:      String,
+    pub target_id: Option<i32>,
 }
 
+#[derive(Debug, Deserialize, Serialize)]
+pub struct LogData {
+    pub user:    SmallUser,
+    pub text:    String,
+    pub target:  Option<SmallUser>,
+    pub created: chrono::NaiveDateTime,
+} 
+
 impl Log {
-    pub fn get(limit: i64, offset: i64) -> Vec<Log> {
+    pub fn get(limit: i64, offset: i64) -> Vec<LogData> {
         let _connection = establish_connection();
-        return schema::logs::table
+        let list = schema::logs::table
             .order(schema::logs::created.desc())
             .limit(limit)
             .offset(offset) 
             .load::<Log>(&_connection)
             .expect("E.");
+        let mut stack = Vec::new();
+        for i in list.iter() {
+            stack.push(i.get_data());
+        }
+        return stack;
     }
     pub fn get_list(page: i64, limit: Option<i64>) -> LogRespData {
         let _limit = get_limit(limit, 20);
@@ -174,12 +189,70 @@ impl Log {
         }
     }
 
+    pub fn get_data(&self) -> LogData {
+        let _connection = establish_connection();
+        let _user = User::get_small_user(self.user_id);
+        let target_user: Option<SmallUser>;
+        if self.target_id.is_some() {
+            target_user = Some(User::get_small_user(self.target_id.unwrap()));
+        }
+        else {
+            target_user = None;
+        }
+        return LogJson {
+            user:    _user,
+            text:    self.text,
+            target:  target_user,
+            created: self.created,
+        };
+    }
+
+    pub fn get_for_user(user_id: i32, limit: i64, offset: i64) -> Vec<LogData> {
+        let _connection = establish_connection();
+        let list = schema::logs::table
+            .filter(schema::logs::user_id.eq(user_id))
+            .order(schema::logs::created.desc())
+            .limit(limit)
+            .offset(offset) 
+            .load::<Log>(&_connection)
+            .expect("E.");
+        let mut stack = Vec::new();
+        for i in list.iter() {
+            stack.push(i.get_data());
+        }
+        return stack;
+    }
+    pub fn get_list_for_user(user_id: i32, page: i64, limit: Option<i64>) -> LogRespData {
+        let _limit = get_limit(limit, 20);
+        let mut next_page_number = 0;
+        let have_next: i64;
+        let object_list: Vec<Log>;
+
+        if page > 1 {
+            let step = (page - 1) * _limit;
+            have_next = page * _limit + 1;
+            object_list = Log::get(user_id, _limit.into(), step.into());
+        }
+        else {
+            have_next = _limit + 1;
+            object_list = Log::get(user_id, _limit.into(), 0);
+        }
+        if Log::get(user_id, 1, have_next.into()).len() > 0 {
+            next_page_number = page + 1;
+        }
+        LogRespData {
+            data: object_list,
+            next: next_page_number,
+        }
+    }
+
     pub fn create(form: Json<NewLogJson>) -> () {
         let _connection = establish_connection();
         let form = NewLog {
-            user_id: form.user_id,
-            text:    form.text.clone(),
-            created: chrono::Utc::now().naive_utc(),
+            user_id:   form.user_id,
+            text:      form.text.clone(),
+            created:   chrono::Utc::now().naive_utc(),
+            target_id: form.target_id,
         };
 
         let _new_suggest_item = diesel::insert_into(schema::logs::table)
@@ -192,7 +265,8 @@ impl Log {
 #[derive(Debug, Deserialize, Insertable)]
 #[table_name="logs"]
 pub struct NewLog {
-    pub user_id: i32,
-    pub text:    String,
-    pub created: chrono::NaiveDateTime,
+    pub user_id:   i32,
+    pub text:      String,
+    pub created:   chrono::NaiveDateTime,
+    pub target_id: Option<i32>,
 }

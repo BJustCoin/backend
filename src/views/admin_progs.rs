@@ -29,6 +29,7 @@ pub fn admin_routes(config: &mut web::ServiceConfig) {
     config.route("/get_banned_admins/", web::get().to(get_banned_admins));
 
     config.route("/get_logs/", web::get().to(get_logs));
+    config.route("/get_user_logs/", web::get().to(get_user_logs));
     config.route("/get_suggest_items/", web::get().to(get_suggest_items));
 
     config.route("/block_user/", web::post().to(block_user));
@@ -44,6 +45,7 @@ pub fn admin_routes(config: &mut web::ServiceConfig) {
     config.route("/create_white_list/", web::post().to(create_white_list));
     config.route("/delete_white_list/", web::post().to(delete_white_list));
     config.route("/create_suggest_item/", web::post().to(create_suggest_item));
+    config.route("/create_log/", web::post().to(create_log));
 }
 
 #[derive(Deserialize, Serialize)]
@@ -142,6 +144,20 @@ pub async fn get_logs(req: HttpRequest) -> Json<crate::models::LogRespData> {
         let page = crate::utils::get_page(&req);
         let _request_user = get_current_user(&req);
         Json(crate::models::Log::get_list(page.into(), Some(20)))
+    }
+    else {
+        Json(crate::models::LogRespData {
+            data: Vec::new(),
+            next: 0,
+        })
+    }
+}
+pub async fn get_user_logs(req: HttpRequest) -> Json<crate::models::LogRespData> {
+    if is_signed_in(&req) {
+        let page = crate::utils::get_page(&req);
+        let id = crate::utils::get_id(&req);
+        let _request_user = get_current_user(&req);
+        Json(crate::models::Log::get_list_for_user(id, page.into(), Some(20)))
     }
     else {
         Json(crate::models::LogRespData {
@@ -285,6 +301,13 @@ pub async fn create_suggest_item(req: HttpRequest, data: Json<crate::models::New
     if is_signed_in(&req) {
         let _request_user = get_current_user(&req);
         crate::models::SuggestItem::create(data);
+    }
+    HttpResponse::Ok()
+}
+pub async fn create_log(req: HttpRequest, data: Json<crate::models::NewLogJson>) -> impl Responder {
+    if is_signed_in(&req) {
+        let _request_user = get_current_user(&req);
+        crate::models::Log::create(data);
     }
     HttpResponse::Ok()
 }
