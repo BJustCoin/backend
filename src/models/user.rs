@@ -456,10 +456,11 @@ impl User {
             10 => "Liquidity".to_string(),
             11 => "Ecosystem".to_string(),
             12 => "Loyalty".to_string(),
+            _ => "Uncnown stage".to_string(),
         }
     }
     pub fn get_full_name(&self) -> String {
-        return self.first_name + &" ".to_string() + &self.last_name;
+        return self.first_name.clone() + &" ".to_string() + &self.last_name;
     }
 
     pub fn create_can_buy_token(&self, user_id: i32, types: i16) -> Result<(), Error> {
