@@ -28,6 +28,7 @@ pub struct SuggestItem {
     pub is_agree:    bool,
     pub address:     String,
     pub created:     chrono::NaiveDateTime,
+    pub tokens:      String,
 } 
 
 #[derive(Deserialize, Serialize)]
@@ -46,6 +47,7 @@ pub struct NewSuggestJson {
     pub mobile:      String,
     pub is_agree:    bool,
     pub address:     String,
+    pub tokens:      String,
 }
 
 impl SuggestItem {
@@ -94,6 +96,7 @@ impl SuggestItem {
             is_agree:    form.is_agree,
             address:     form.address.clone(),
             created:     chrono::Utc::now().naive_utc(),
+            tokens:      form.tokens.clone(),
         };
 
         let _new_suggest_item = diesel::insert_into(schema::suggest_items::table)
@@ -128,6 +131,7 @@ pub struct NewSuggestItem {
     pub is_agree:    bool,
     pub address:     String,
     pub created:     chrono::NaiveDateTime,
+    pub tokens:      String,
 }
 
 

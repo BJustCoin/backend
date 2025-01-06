@@ -22,7 +22,7 @@ pub fn admin_routes(config: &mut web::ServiceConfig) {
     config.route("/get_users/", web::get().to(get_users)); 
     config.route("/get_admins/", web::get().to(get_admins));
     config.route("/get_banned_users/", web::get().to(get_banned_users));
-    config.route("/get_banned_admins/", web::get().to(get_banned_admins));
+    config.route("/get_banned_admins/", web::get().to(get_banned_admins)); 
 
     config.route("/get_logs/", web::get().to(get_logs));
     config.route("/get_user_logs/", web::get().to(get_user_logs));

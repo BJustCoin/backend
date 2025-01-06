@@ -50,5 +50,6 @@ CREATE TABLE suggest_items (
     mobile      VARCHAR(20) NOT NULL,
     is_agree    BOOLEAN NOT NULL DEFAULT TRUE,
     address     VARCHAR(100) NOT NULL,
-    created     TIMESTAMP NOT NULL
+    created     TIMESTAMP NOT NULL,
+    tokens      VARCHAR(100) NOT NULL,
 );
