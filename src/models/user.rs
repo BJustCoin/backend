@@ -503,12 +503,12 @@ impl User {
                 .execute(&_connection)
                 .expect("Error.");
         }
-        crate::models::Log::create({
+        Json(crate::models::Log::create({
             crate::models::NewLogJson {
                 user_id: _new_user.id,
                 text:    "created a profile".to_string(),
             } 
-        });
+        }));
         return _new_user;
     }
 

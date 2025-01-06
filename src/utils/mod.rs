@@ -120,7 +120,7 @@ pub fn get_id(req: &HttpRequest) -> i32 {
         }
     }
     else {
-        page = 0;
+        id = 0;
     }
     id
 }
