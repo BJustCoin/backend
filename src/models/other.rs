@@ -116,33 +116,6 @@ impl SuggestItem {
                 target_id: None,
             })
         });
-
-        dotenv::dotenv().ok();
-        let api_key = std::env::var("EMAIL_KEY")
-            .expect("EMAIL_KEY must be set");
-        let sg = sendgrid::SGClient::new(api_key); 
-        let mut x_smtpapi = String::new();
-        x_smtpapi.push_str(r#"{"unique_args":{"test":7}}"#);
-
-        let text = "A new Application for Token purchase has created up for BJustcoin. Link to the list - ".to_string()
-            + &"https://dashboard.bjustcoin.com/suggest_items/".to_string();
-        let mail_info = sendgrid::Mail::new()
-            .add_to(sendgrid::Destination {
-                address: "Beatrice.OBrien@justlaw.com",
-                name: "Beatrice OBrien",
-            })
-            .add_from("no-reply@bjustcoin.com")
-            .add_subject("New Application for Token purchase")
-            .add_html(&text)
-            .add_from_name("BJustcoin Team")
-            .add_header("x-cool".to_string(), "indeed")
-            .add_x_smtpapi(&x_smtpapi);
-
-        match sg.send(mail_info).await {
-            Err(err) => println!("Error: {}", err),
-            Ok(body) => println!("Response: {:?}", body),
-        };
-        println!("mail send!");
     }
 }
 
