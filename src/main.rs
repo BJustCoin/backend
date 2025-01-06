@@ -13,7 +13,6 @@ use actix_web::{
     HttpServer,
     App,
     middleware::Compress,
-    web,
     cookie::Key,
 };
 use actix_session::{storage::CookieSessionStore, SessionMiddleware};

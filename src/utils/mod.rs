@@ -3,29 +3,21 @@ mod reqwest;
 
 pub use self::{
     auth::*,
-    reqwest::*,
 };
 use actix_web::{
     HttpRequest,
-    HttpResponse,
     web,
-    error::InternalError,
-    http::StatusCode,
-    dev::ConnectionInfo,
 };
 use crate::schema;
 use serde::{Deserialize, Serialize};
-use crate::errors::AuthError;
 use crate::diesel::{
-    Queryable,
-    Insertable,
     QueryDsl,
     ExpressionMethods,
     RunQueryDsl,
     Connection,
     PgConnection,
 };
-use crate::models::{SessionUser, User};
+use crate::models::User;
 
 
 #[derive(Deserialize, Serialize)]

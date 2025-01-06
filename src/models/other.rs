@@ -9,7 +9,6 @@ use crate::diesel::{
     QueryDsl,
     ExpressionMethods,
     RunQueryDsl,
-    NullableExpressionMethods,
 };
 use serde::{Serialize, Deserialize};
 use crate::utils::{establish_connection, get_limit, NewUserForm};
