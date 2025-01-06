@@ -1,17 +1,12 @@
 use actix_web::{
     HttpRequest,
     HttpResponse,
-    Responder,
     web,
-    error::InternalError,
-    http::StatusCode,
-    dev::ConnectionInfo,
     web::Json,
 };
 use crate::api_error::ApiError;
 use serde::{Deserialize, Serialize};
 use crate::utils::{
-    is_signed_in,
     verify,
 };
 use crate::models::{
@@ -22,10 +17,8 @@ use crate::models::{
     EmailVerificationToken, 
     EmailVerificationTokenMessage
 };
-use actix_session::Session;
 use crate::errors::AuthError;
 use chrono::Utc; 
-use uuid::Uuid;
 
 
 pub fn auth_routes(config: &mut web::ServiceConfig) {
@@ -48,9 +41,6 @@ struct EmailUserReq {
     name: String,
     email: String,
 } 
-use reqwest::Client;
-use reqwest::header;
-use serde_json::json;
 
 #[derive(Debug)]
 struct EmailResp {
@@ -236,7 +226,7 @@ pub async fn login(req: HttpRequest, data: Json<LoginUser2>) -> Json<AuthResp2> 
         }
 }
 
-pub async fn process_signup(req: HttpRequest, data: Json<NewUserJson>) -> Json<AuthResp2> {
+pub async fn process_signup(data: Json<NewUserJson>) -> Json<AuthResp2> {
     let token_id_res = hex::decode(data.token.clone());
     if token_id_res.is_err() {
         println!("token decode not!");
@@ -343,7 +333,7 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserJson>) -> Json<A
         })
 }
 
-pub async fn process_reset(req: HttpRequest, data: Json<NewPasswordJson>) -> Json<AuthResp2> {
+pub async fn process_reset(data: Json<NewPasswordJson>) -> Json<AuthResp2> {
         let token_id_res = hex::decode(data.token.clone());
         if token_id_res.is_err() {
             return Json(AuthResp2 {

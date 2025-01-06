@@ -9,7 +9,6 @@ use crate::diesel::{
     QueryDsl,
     ExpressionMethods,
     RunQueryDsl,
-    Connection,
     NullableExpressionMethods,
 };
 use serde::{Serialize, Deserialize};

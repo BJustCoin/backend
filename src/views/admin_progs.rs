@@ -6,7 +6,7 @@ use actix_web::{
     web::Json,
 };
 use crate::models::{
-    User, SmallUsers, SmallUser,
+    User, SmallUsers,
 };
 use serde::{Deserialize, Serialize};
 
@@ -14,10 +14,6 @@ use crate::utils::{
     is_signed_in,
     get_current_user,
 }; 
-use crate::views::EmailF;
-use actix_session::Session;
-use actix_web::dev::ConnectionInfo;
-use crate::errors::Error;
 use crate::views::AuthResp;
 
 
