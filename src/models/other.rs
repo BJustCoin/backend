@@ -199,7 +199,7 @@ impl Log {
         else {
             target_user = None;
         }
-        return LogJson {
+        return LogData {
             user:    _user,
             text:    self.text,
             target:  target_user,
@@ -231,13 +231,13 @@ impl Log {
         if page > 1 {
             let step = (page - 1) * _limit;
             have_next = page * _limit + 1;
-            object_list = Log::get(user_id, _limit.into(), step.into());
+            object_list = Log::get_for_user(user_id, _limit.into(), step.into());
         }
         else {
             have_next = _limit + 1;
-            object_list = Log::get(user_id, _limit.into(), 0);
+            object_list = Log::get_for_user(user_id, _limit.into(), 0);
         }
-        if Log::get(user_id, 1, have_next.into()).len() > 0 {
+        if Log::get_for_user(user_id, 1, have_next.into()).len() > 0 {
             next_page_number = page + 1;
         }
         LogRespData {

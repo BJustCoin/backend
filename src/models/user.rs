@@ -504,15 +504,15 @@ impl User {
                 .expect("Error.");
         }
         crate::models::Log::create({
-            crate:models::NewLogJson {
+            crate::models::NewLogJson {
                 user_id: _new_user.id,
                 text:    "created a profile".to_string(),
             } 
-        })
+        });
         return _new_user;
     }
 
-    pub fn get_small_user(id: i32) -> SmallUser {
+    pub fn get_small_user(user_id: i32) -> SmallUser {
         let _connection = establish_connection();
         return schema::users::table
             .filter(schema::users::id.eq(user_id))
