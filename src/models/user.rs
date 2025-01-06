@@ -443,7 +443,7 @@ impl User {
         }))
     }
 
-    pub fn get_tokenomic_type(types) -> String {
+    pub fn get_tokenomic_type(types: i16) -> String {
         return match types {
             1 => "Strategic".to_string(),
             2 => "Seed".to_string(),
