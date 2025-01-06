@@ -169,7 +169,7 @@ impl Log {
         let _limit = get_limit(limit, 20);
         let mut next_page_number = 0;
         let have_next: i64;
-        let object_list: Vec<Log>;
+        let object_list: Vec<LogData>;
 
         if page > 1 {
             let step = (page - 1) * _limit;
@@ -226,7 +226,7 @@ impl Log {
         let _limit = get_limit(limit, 20);
         let mut next_page_number = 0;
         let have_next: i64;
-        let object_list: Vec<Log>;
+        let object_list: Vec<LogData>;
 
         if page > 1 {
             let step = (page - 1) * _limit;
