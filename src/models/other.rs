@@ -102,7 +102,20 @@ impl SuggestItem {
         let _new_suggest_item = diesel::insert_into(schema::suggest_items::table)
             .values(&form)
             .execute(&_connection)
-            .expect("Error saving suggest form.");
+        .expect("Error saving suggest form.");
+
+        let _user = schema::users::table
+            .filter(schema::users::email.eq(email))
+            .first::<User>(&_connection)
+            .expect("E.");
+
+        crate::models::Log::create({
+            Json(crate::models::NewLogJson {
+                user_id:   _user.id,
+                text:      "submitted an application for the purchase of tokens".to_string(),
+                target_id: None,
+            })
+        });
     }
 }
 

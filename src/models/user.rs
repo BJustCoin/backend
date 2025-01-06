@@ -377,6 +377,14 @@ impl User {
             let _u = diesel::update(users::table.filter(users::id.eq(user_id)))
                 .set(schema::users::perm.eq(ADMINISBLOCK))
                 .execute(&_connection);
+
+            crate::models::Log::create({
+                Json(crate::models::NewLogJson {
+                    user_id:   self.id,
+                    text:      "blocked the admin".to_string(),
+                    target_id: Some(user_id),
+                })
+            });
         }))
     }
     pub fn delete_admin_block(&self, user_id: i32) -> Result<(), Error> {
@@ -388,6 +396,13 @@ impl User {
             let _u = diesel::update(users::table.filter(users::id.eq(user_id)))
                 .set(schema::users::perm.eq(ADMIN))
                 .execute(&_connection);
+            crate::models::Log::create({
+                Json(crate::models::NewLogJson {
+                    user_id:   self.id,
+                    text:      "unblocked the admin".to_string(),
+                    target_id: Some(user_id),
+                })
+            });
         }))
     } 
     pub fn create_user_block(&self, user_id: i32) -> Result<(), Error> {
@@ -400,6 +415,13 @@ impl User {
                 .set(schema::users::perm.eq(USERISBLOCK))
                 .execute(&_connection);
             let _k = NewWhiteList::delete_all(user_id);
+            crate::models::Log::create({
+                Json(crate::models::NewLogJson {
+                    user_id:   self.id,
+                    text:      "blocked the user".to_string(),
+                    target_id: Some(user_id),
+                })
+            });
         }))
     }
     pub fn delete_user_block(&self, user_id: i32) -> Result<(), Error> {
@@ -410,19 +432,61 @@ impl User {
         _connection.transaction(|| Ok({
             let _u = diesel::update(users::table.filter(users::id.eq(user_id)))
                 .set(schema::users::perm.eq(USER))
-                .execute(&_connection);
+            .execute(&_connection);
+            crate::models::Log::create({
+                Json(crate::models::NewLogJson {
+                    user_id:   self.id,
+                    text:      "unblocked the user".to_string(),
+                    target_id: Some(user_id),
+                })
+            });
         }))
     }
+
+    pub fn get_tokenomic_type(types) -> String {
+        return match types {
+            1 => "Strategic".to_string(),
+            2 => "Seed".to_string(),
+            3 => "Private Sale".to_string(),
+            4 => "IDO".to_string(),
+            5 => "Public Sale".to_string(),
+            6 => "Advisors".to_string(),
+            7 => "Team".to_string(),
+            8 => "Future Team".to_string(),
+            9 => "Incetives".to_string(),
+            10 => "Liquidity".to_string(),
+            11 => "Ecosystem".to_string(),
+            12 => "Loyalty".to_string(),
+        }
+    }
+    pub fn get_full_name(&self) -> String {
+        return self.first_name + &" ".to_string() + &self.last_name;
+    }
+
     pub fn create_can_buy_token(&self, user_id: i32, types: i16) -> Result<(), Error> {
         if !self.is_superuser() {
             return Err(Error::BadRequest("403".to_string()));
         }
         let _connection = establish_connection();
+        let target_user = schema::users::table
+            .filter(schema::users::id.eq(user_id))
+            .first::<User>(&_connection)
+            .expect("E.");
         _connection.transaction(|| Ok({
             let _u = diesel::update(users::table.filter(users::id.eq(user_id)))
                 .set(schema::users::perm.eq(USERCANBUYTOCKEN))
                 .execute(&_connection);
             let _k = NewWhiteList::create(user_id, types);
+            crate::models::Log::create({
+                Json(crate::models::NewLogJson {
+                    user_id:   self.id,
+                    text:      "allowed the user ".to_string()
+                                + &target_user.get_full_name()
+                                + &" to buy tokens ".to_string() 
+                                + &User::get_tokenomic_type(types),
+                    target_id: Some(user_id),
+                })
+            });
         }))
     }
     pub fn delete_can_buy_token(&self, user_id: i32, types: i16) -> Result<(), Error> {
@@ -430,11 +494,25 @@ impl User {
             return Err(Error::BadRequest("403".to_string()));
         }
         let _connection = establish_connection();
+        let target_user = schema::users::table
+            .filter(schema::users::id.eq(user_id))
+            .first::<User>(&_connection)
+            .expect("E.");
         _connection.transaction(|| Ok({
             let _u = diesel::update(users::table.filter(users::id.eq(user_id)))
                 .set(schema::users::perm.eq(USER))
                 .execute(&_connection);
             let _k = NewWhiteList::delete(user_id, types);
+            crate::models::Log::create({
+                Json(crate::models::NewLogJson {
+                    user_id:   self.id,
+                    text:      "prohibited the user ".to_string()
+                                + &target_user.get_full_name()
+                                + &" from buying tokens ".to_string() 
+                                + &User::get_tokenomic_type(types),
+                    target_id: Some(user_id),
+                })
+            });
         }))
     }
     pub fn create_admin(&self, user_id: i32) -> Result<(), Error> {
