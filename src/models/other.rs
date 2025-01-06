@@ -202,7 +202,7 @@ impl Log {
         }
         return LogData {
             user:    _user,
-            text:    self.text,
+            text:    self.text.clone(),
             target:  target_user,
             created: self.created,
         };
