@@ -45,7 +45,7 @@ pub struct NewSuggestJson {
     pub email:       String,
     pub phone:       String,
     pub mobile:      String,
-    pub is_agree:    bool,
+    pub is_agree:    String,
     pub address:     String,
     pub tokens:      String,
 }
@@ -86,6 +86,13 @@ impl SuggestItem {
 
     pub fn create(form: Json<NewSuggestJson>) -> () {
         let _connection = establish_connection();
+        let is_agree: bool;
+        if &form.is_agree == "on" {
+            is_agree = true;
+        }
+        else {
+            is_agree = false;
+        }
         let form = NewSuggestItem {
             first_name:  form.first_name.clone(),
             middle_name: form.middle_name.clone(),
@@ -93,7 +100,7 @@ impl SuggestItem {
             email:       form.email.clone(),
             phone:       form.phone.clone(),
             mobile:      form.mobile.clone(),
-            is_agree:    form.is_agree,
+            is_agree:    is_agree,
             address:     form.address.clone(),
             created:     chrono::Utc::now().naive_utc(),
             tokens:      form.tokens.clone(),
