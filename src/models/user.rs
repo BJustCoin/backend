@@ -11,10 +11,9 @@ use crate::diesel::{
     ExpressionMethods,
     RunQueryDsl,
     Connection,
-    NullableExpressionMethods,
 };
 use serde::{Serialize, Deserialize};
-use crate::utils::{establish_connection, get_limit, NewUserForm};
+use crate::utils::{establish_connection, get_limit};
 use crate::errors::Error;
 use actix_web::web::Json;
 use crate::views::{NewUserJson, AuthResp, AuthRespData};

@@ -11,8 +11,7 @@ use crate::diesel::{
     RunQueryDsl,
 };
 use serde::{Serialize, Deserialize};
-use crate::utils::{establish_connection, get_limit, NewUserForm};
-use crate::errors::Error;
+use crate::utils::{establish_connection, get_limit};
 use actix_web::web::Json;
 use crate::models::{SmallUser, User};
 
@@ -103,7 +102,7 @@ impl SuggestItem {
         .expect("Error saving suggest form.");
 
         let _user = schema::users::table
-            .filter(schema::users::email.eq(email))
+            .filter(schema::users::email.eq(form.email.clone()))
             .first::<User>(&_connection)
             .expect("E.");
 
