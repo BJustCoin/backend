@@ -123,10 +123,11 @@ pub struct NewSuggestItem {
 
 #[derive(Debug, Queryable, Deserialize, Serialize, Identifiable)]
 pub struct Log {
-    pub id:      i32,
-    pub user_id: i32,
-    pub text:    String,
-    pub created: chrono::NaiveDateTime,
+    pub id:        i32,
+    pub user_id:   i32,
+    pub text:      String,
+    pub created:   chrono::NaiveDateTime,
+    pub target_id: Option<i32>,
 }
 
 #[derive(Deserialize, Serialize)]
