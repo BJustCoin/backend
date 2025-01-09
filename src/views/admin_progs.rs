@@ -326,7 +326,7 @@ pub async fn create_suggest_item(req: HttpRequest, data: Json<crate::models::New
         println!("mail send!");
 
         // mail for request user
-        let text = "Your application for token purchase was submitted! Thank you."to_string();
+        let text = "Your application for token purchase was submitted! Thank you.".to_string();
         let mail_info = sendgrid::Mail::new() 
             .add_to(sendgrid::Destination {
                 address: "Beatrice.OBrien@justlaw.com",
