@@ -304,9 +304,30 @@ pub async fn create_suggest_item(req: HttpRequest, data: Json<crate::models::New
         let mut x_smtpapi = String::new();
         x_smtpapi.push_str(r#"{"unique_args":{"test":7}}"#);
 
-        let text = "A new Application for Token purchase has created up for BJustcoin. Link to the list - ".to_string()
+        // mail for Beatrice
+        let text = "A new BJustCoin purchase interest has triggered. Link to the list - ".to_string()
             + &"https://dashboard.bjustcoin.com/suggest_items/".to_string();
-        let mail_info = sendgrid::Mail::new()
+        let mail_info = sendgrid::Mail::new() 
+            .add_to(sendgrid::Destination {
+                address: "Beatrice.OBrien@justlaw.com",
+                name: "Beatrice OBrien",
+            })
+            .add_from("no-reply@bjustcoin.com")
+            .add_subject("New Application for Token purchase")
+            .add_html(&text)
+            .add_from_name("BJustcoin Team")
+            .add_header("x-cool".to_string(), "indeed")
+            .add_x_smtpapi(&x_smtpapi);
+
+        match sg.send(mail_info).await {
+            Err(err) => println!("Error: {}", err),
+            Ok(body) => println!("Response: {:?}", body),
+        };
+        println!("mail send!");
+
+        // mail for request user
+        let text = "Your application for token purchase was submitted! Thank you."to_string();
+        let mail_info = sendgrid::Mail::new() 
             .add_to(sendgrid::Destination {
                 address: "Beatrice.OBrien@justlaw.com",
                 name: "Beatrice OBrien",
