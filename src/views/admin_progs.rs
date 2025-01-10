@@ -333,7 +333,7 @@ pub async fn create_suggest_item(req: HttpRequest, data: Json<crate::models::New
         let text = first_name + &" ".to_string() + &last_name;
         let mail_info = sendgrid::Mail::new() 
             .add_to(sendgrid::Destination {
-                address: &data.email.clone(),
+                address: &email,
                 name: &text,
             })
             .add_from("no-reply@bjustcoin.com")
