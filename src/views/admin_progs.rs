@@ -296,7 +296,7 @@ pub async fn delete_white_list(req: HttpRequest, data: Json<ItemId>) -> impl Res
 pub async fn create_suggest_item(req: HttpRequest, data: Json<crate::models::NewSuggestJson>) -> impl Responder {
     if is_signed_in(&req) {
         let _request_user = get_current_user(&req);
-        crate::models::SuggestItem::create(data);
+        crate::models::SuggestItem::create(data.clone());
         dotenv::dotenv().ok();
         let api_key = std::env::var("EMAIL_KEY")
             .expect("EMAIL_KEY must be set");
@@ -329,11 +329,11 @@ pub async fn create_suggest_item(req: HttpRequest, data: Json<crate::models::New
         let text = "Your application for token purchase was submitted! Thank you.".to_string();
         let mail_info = sendgrid::Mail::new() 
             .add_to(sendgrid::Destination {
-                address: "Beatrice.OBrien@justlaw.com",
-                name: "Beatrice OBrien",
+                address: data.email.clone(),
+                name: data.first_name.clone() + &" ".to_string() + &data.last_name.clone(),
             })
             .add_from("no-reply@bjustcoin.com")
-            .add_subject("New Application for Token purchase")
+            .add_subject("Your application was submitted!")
             .add_html(&text)
             .add_from_name("BJustcoin Team")
             .add_header("x-cool".to_string(), "indeed")
