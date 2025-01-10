@@ -329,10 +329,12 @@ pub async fn create_suggest_item(req: HttpRequest, data: Json<crate::models::New
         let text = "Your application for token purchase was submitted! Thank you.".to_string();
         let first_name = data.first_name.clone();
         let last_name = data.last_name.clone();
+        let email = data.email.clone();
+        let text = first_name + &" ".to_string() + &last_name;
         let mail_info = sendgrid::Mail::new() 
             .add_to(sendgrid::Destination {
                 address: &data.email.clone(),
-                name: &(first_name + &" ".to_string() + &last_name),
+                name: &text,
             })
             .add_from("no-reply@bjustcoin.com")
             .add_subject("Your application was submitted!")
