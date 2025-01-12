@@ -15,6 +15,15 @@ use crate::utils::{
     get_current_user,
 }; 
 use crate::views::AuthResp;
+use crate::schema;
+use crate::diesel::{
+    Queryable,
+    Insertable,
+    QueryDsl,
+    ExpressionMethods,
+    RunQueryDsl,
+    Connection,
+};
 
 
 pub fn admin_routes(config: &mut web::ServiceConfig) {
