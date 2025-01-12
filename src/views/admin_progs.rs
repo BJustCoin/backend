@@ -24,6 +24,7 @@ use crate::diesel::{
     RunQueryDsl,
     Connection,
 };
+use crate::utils::establish_connection;
 
 
 pub fn admin_routes(config: &mut web::ServiceConfig) {
@@ -398,7 +399,7 @@ pub async fn send_mail(req: HttpRequest, data: Json<SendMailJson>) -> impl Respo
                 let _user = schema::users::table
                 .filter(schema::users::id.eq(id_some.expect("E.")))
                 .first::<User>(&_connection)
-                .expect("E.")
+                .expect("E.");
                 first_name = _user.first_name.clone();
                 last_name = _user.last_name.clone();
                 email = _user.email.clone();
