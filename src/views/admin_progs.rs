@@ -371,7 +371,7 @@ pub struct SendMailJson {
     pub id:         i32,
     pub ico_stage:  i16,
 } 
-pub async fn send_mail(req: HttpRequest, data: Json<crate::models::SendMailJson>) -> impl Responder {
+pub async fn send_mail(req: HttpRequest, data: Json<SendMailJson>) -> impl Responder {
     if is_signed_in(&req) {
         let _request_user = get_current_user(&req);
     
