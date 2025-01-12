@@ -368,12 +368,38 @@ pub struct SendMailJson {
     pub first_name: String,
     pub last_name:  String,
     pub email:      String,
-    pub id:         i32,
     pub ico_stage:  i16,
-} 
+    pub wallet:     String,
+}  
 pub async fn send_mail(req: HttpRequest, data: Json<SendMailJson>) -> impl Responder {
     if is_signed_in(&req) {
         let _request_user = get_current_user(&req);
+
+        let first_name: String;
+        let last_name: String;
+        let email: String;
+        let _text: String;
+
+        if !&data.wallet.is_empty() {
+            let id_some = schema::new_wallets::table
+            .filter(schema::new_wallets::link.eq(&data.wallet))
+            .select(schema::new_wallets::user_id) 
+            .first::<i32>(&_connection);
+            if id_some.is_ok() {
+                let _user = schema::users::table
+                .filter(schema::users::id.eq(id_some.expect("E.")))
+                .first::<User>(&_connection)
+                .expect("E.")
+                first_name = _user.first_name.clone();
+                last_name = _user.last_name.clone();
+                email = _user.email.clone();
+            }
+            else {
+                first_name = data.first_name.clone();
+                last_name = data.last_name.clone();
+                email = data.email.clone();
+            }
+        }
     
         dotenv::dotenv().ok();
         let api_key = std::env::var("EMAIL_KEY")
