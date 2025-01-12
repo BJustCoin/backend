@@ -382,22 +382,22 @@ pub async fn send_mail(req: HttpRequest, data: Json<crate::models::SendMailJson>
         let mut x_smtpapi = String::new();
         x_smtpapi.push_str(r#"{"unique_args":{"test":7}}"#);
 
-        let name = first_name + &" ".to_string() + &last_name;
+        let name = data.first_name.clone() + &" ".to_string() + &data.last_name;
         let _text: String;
-        if ico_stage > 0 {
-            let _type = get_tokenomic_type(ico_stage);
-            _text = text + &". Tokenomic_type:" + &_type;
+        if data.ico_stage > 0 {
+            let _type = crate::models::User::get_tokenomic_type(data.ico_stage);
+            _text = data.text.clone() + &". Tokenomic_type:" + &_type;
         }
         else {
-            _text = text;
+            _text = data.text.clone();
         }
         let mail_info = sendgrid::Mail::new() 
             .add_to(sendgrid::Destination {
-                address: &email,
+                address: &data.email,
                 name:    &name,
             })
             .add_from("no-reply@bjustcoin.com")
-            .add_subject(&subtitle)
+            .add_subject(&data.subtitle)
             .add_html(&_text)
             .add_from_name("BJustcoin Team")
             .add_header("x-cool".to_string(), "indeed")
