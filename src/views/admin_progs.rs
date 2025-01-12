@@ -42,6 +42,7 @@ pub fn admin_routes(config: &mut web::ServiceConfig) {
     config.route("/delete_white_list/", web::post().to(delete_white_list));
     config.route("/create_suggest_item/", web::post().to(create_suggest_item));
     config.route("/create_log/", web::post().to(create_log));
+    config.route("/send_mail/", web::post().to(send_mail));
 }
 
 #[derive(Deserialize, Serialize)]
@@ -356,6 +357,57 @@ pub async fn create_log(req: HttpRequest, data: Json<crate::models::NewLogJson>)
     if is_signed_in(&req) {
         let _request_user = get_current_user(&req);
         crate::models::Log::create(data);
+    }
+    HttpResponse::Ok()
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+pub struct SendMailJson {
+    pub subtitle:   String,
+    pub text:       String,
+    pub first_name: String,
+    pub last_name:  String,
+    pub email:      String,
+    pub id:         i32,
+    pub ico_stage:  i16,
+} 
+pub async fn send_mail(req: HttpRequest, data: Json<crate::models::SendMailJson>) -> impl Responder {
+    if is_signed_in(&req) {
+        let _request_user = get_current_user(&req);
+    
+        dotenv::dotenv().ok();
+        let api_key = std::env::var("EMAIL_KEY")
+            .expect("EMAIL_KEY must be set");
+        let sg = sendgrid::SGClient::new(api_key); 
+        let mut x_smtpapi = String::new();
+        x_smtpapi.push_str(r#"{"unique_args":{"test":7}}"#);
+
+        let name = first_name + &" ".to_string() + &last_name;
+        let _text: String;
+        if ico_stage > 0 {
+            let _type = get_tokenomic_type(ico_stage);
+            _text = text + &". Tokenomic_type:" + &_type;
+        }
+        else {
+            _text = text;
+        }
+        let mail_info = sendgrid::Mail::new() 
+            .add_to(sendgrid::Destination {
+                address: &email,
+                name:    &name,
+            })
+            .add_from("no-reply@bjustcoin.com")
+            .add_subject(&subtitle)
+            .add_html(&_text)
+            .add_from_name("BJustcoin Team")
+            .add_header("x-cool".to_string(), "indeed")
+            .add_x_smtpapi(&x_smtpapi);
+
+        match sg.send(mail_info).await {
+            Err(err) => println!("Error: {}", err),
+            Ok(body) => println!("Response: {:?}", body),
+        };
+        println!("mail send!");
     }
     HttpResponse::Ok()
 }
