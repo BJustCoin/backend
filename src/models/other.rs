@@ -103,7 +103,7 @@ impl SuggestItem {
             crate::models::NewWhiteList::create(i.id, token_type);
             crate::models::NewWallet::create(i.id, i.address.clone(), token_type);
             let item_some = schema::suggest_items::table
-                .filter(schema::suggest_items::email.eq(&form.email))
+                .filter(schema::suggest_items::email.eq(&i.email))
                 .first::<SuggestItem>(&_connection);
             if item_some.is_ok() {
                 let item = item_some.expect("E.");
