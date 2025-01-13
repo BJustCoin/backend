@@ -83,7 +83,7 @@ impl SuggestItem {
             if item_some.is_ok() {
                 let item = item_some.expect("E.");
                 diesel::update(&item)
-                    .set(schema::categories::status.eq(2))
+                    .set(schema::suggest_items::status.eq(2))
                     .execute(&_connection)
                     .expect("E");
             }
@@ -103,12 +103,12 @@ impl SuggestItem {
             crate::models::NewWhiteList::create(i.id, token_type);
             crate::models::NewWallet::create(i.id, i.address.clone(), token_type);
             let item_some = schema::suggest_items::table
-                .filter(schema::suggest_items::email.eq(email))
+                .filter(schema::suggest_items::email.eq(&form.email))
                 .first::<SuggestItem>(&_connection);
             if item_some.is_ok() {
                 let item = item_some.expect("E.");
                 diesel::update(&item)
-                    .set(schema::categories::status.eq(1))
+                    .set(schema::suggest_items::status.eq(1))
                     .execute(&_connection)
                     .expect("E");
             }
