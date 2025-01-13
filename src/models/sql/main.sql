@@ -52,4 +52,7 @@ CREATE TABLE suggest_items (
     address     VARCHAR(100) NOT NULL,
     created     TIMESTAMP NOT NULL,
     tokens      VARCHAR(100) NOT NULL,
-);
+    
+    token_type  SMALLINT NOT NULL,
+    status      SMALLINT NOT NULL
+); 

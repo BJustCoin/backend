@@ -29,6 +29,8 @@ pub struct SuggestItem {
     pub address:     String,
     pub created:     chrono::NaiveDateTime,
     pub tokens:      String,
+    pub token_type:  i16,
+    pub status:      i16,
 } 
 
 #[derive(Deserialize, Serialize)]
@@ -50,17 +52,88 @@ pub struct NewSuggestJson {
     pub tokens:      String,
 }
 
+
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct ApplicationsJson {
+    pub users:       Vec<ApplicationJson>,
+    pub token_type:  i16,
+}
+#[derive(Debug, Deserialize, Serialize)]
+pub struct ApplicationJson {
+    pub id:          i32,
+    pub first_name:  String,
+    pub middle_name: String,
+    pub last_name:   String,
+    pub email:       String,
+    pub address:     String,
+}
+#[derive(Debug, Deserialize, Serialize)]
+pub struct ApplicationIdsJson {
+    pub ids: Vec<i32>,
+} 
+
 impl SuggestItem {
-    pub fn get(limit: i64, offset: i64) -> Vec<SuggestItem> {
+    pub fn reject_white_lists(form: Json<ApplicationIdsJson>) -> () {
+        let _connection = establish_connection();
+        let token_type = form.token_type;
+        for i in form.ids.iter() {
+            let item_some = schema::suggest_items::table
+                .filter(schema::suggest_items::id.eq(i.id))
+                .first::<SuggestItem>(&_connection);
+            if item_some.is_ok() {
+                let item = item_some.expect("E.");
+                diesel::update(&cat)
+                    .set(schema::categories::status.eq(2))
+                    .execute(&_connection)
+                    .expect("E");
+            }
+            crate::models::Log::create({
+                Json(crate::models::NewLogJson {
+                    user_id:   i.id,
+                    text:      "was added to the whitelist".to_string(),
+                    target_id: None,
+                })
+            });
+        }
+    }
+    pub fn approve_white_lists(form: Json<ApplicationsJson>) -> () {
+        let _connection = establish_connection();
+        let token_type = form.token_type;
+        for i in form.users.iter() {
+            crate::models::NewWhiteList::create(i.id, token_type);
+            crate::models::NewWallet::create(i.id, i.address.clone(), token_type);
+            let item_some = schema::suggest_items::table
+                .filter(schema::suggest_items::email.eq(email))
+                .first::<SuggestItem>(&_connection);
+            if item_some.is_ok() {
+                let item = item_some.expect("E.");
+                diesel::update(&cat)
+                    .set(schema::categories::status.eq(1))
+                    .execute(&_connection)
+                    .expect("E");
+            }
+            crate::models::Log::create({
+                Json(crate::models::NewLogJson {
+                    user_id:   i.id,
+                    text:      "was added to the whitelist".to_string(),
+                    target_id: None,
+                })
+            });
+        }
+    }
+
+    pub fn get_new(limit: i64, offset: i64) -> Vec<SuggestItem> {
         let _connection = establish_connection();
         return schema::suggest_items::table
+            .filter(schema::suggest_items::status.eq(0))
             .order(schema::suggest_items::created.desc())
             .limit(limit)
             .offset(offset) 
             .load::<SuggestItem>(&_connection)
             .expect("E.");
     }
-    pub fn get_list(page: i64, limit: Option<i64>) -> SuggestRespData {
+    pub fn get_new_list(page: i64, limit: Option<i64>) -> SuggestRespData {
         let _limit = get_limit(limit, 20);
         let mut next_page_number = 0;
         let have_next: i64;
@@ -69,13 +142,81 @@ impl SuggestItem {
         if page > 1 {
             let step = (page - 1) * _limit;
             have_next = page * _limit + 1;
-            object_list = SuggestItem::get(_limit.into(), step.into());
+            object_list = SuggestItem::get_new(_limit.into(), step.into());
         }
         else {
             have_next = _limit + 1;
-            object_list = SuggestItem::get(_limit.into(), 0);
+            object_list = SuggestItem::get_new(_limit.into(), 0);
         }
-        if SuggestItem::get(1, have_next.into()).len() > 0 {
+        if SuggestItem::get_new(1, have_next.into()).len() > 0 {
+            next_page_number = page + 1;
+        }
+        SuggestRespData {
+            data: object_list,
+            next: next_page_number,
+        }
+    }
+
+    pub fn get_rejected(limit: i64, offset: i64) -> Vec<SuggestItem> {
+        let _connection = establish_connection();
+        return schema::suggest_items::table
+            .filter(schema::suggest_items::status.eq(2))
+            .order(schema::suggest_items::created.desc())
+            .limit(limit)
+            .offset(offset) 
+            .load::<SuggestItem>(&_connection)
+            .expect("E.");
+    }
+    pub fn get_rejected_list(page: i64, limit: Option<i64>) -> SuggestRespData {
+        let _limit = get_limit(limit, 20);
+        let mut next_page_number = 0;
+        let have_next: i64;
+        let object_list: Vec<SuggestItem>;
+
+        if page > 1 {
+            let step = (page - 1) * _limit;
+            have_next = page * _limit + 1;
+            object_list = SuggestItem::get_rejected(_limit.into(), step.into());
+        }
+        else {
+            have_next = _limit + 1;
+            object_list = SuggestItem::get_rejected(_limit.into(), 0);
+        }
+        if SuggestItem::get_rejected(1, have_next.into()).len() > 0 {
+            next_page_number = page + 1;
+        }
+        SuggestRespData {
+            data: object_list,
+            next: next_page_number,
+        }
+    }
+
+    pub fn get_approved(limit: i64, offset: i64) -> Vec<SuggestItem> {
+        let _connection = establish_connection();
+        return schema::suggest_items::table
+            .filter(schema::suggest_items::status.eq(1))
+            .order(schema::suggest_items::created.desc())
+            .limit(limit)
+            .offset(offset) 
+            .load::<SuggestItem>(&_connection)
+            .expect("E.");
+    }
+    pub fn get_approved_list(page: i64, limit: Option<i64>) -> SuggestRespData {
+        let _limit = get_limit(limit, 20);
+        let mut next_page_number = 0;
+        let have_next: i64;
+        let object_list: Vec<SuggestItem>;
+
+        if page > 1 {
+            let step = (page - 1) * _limit;
+            have_next = page * _limit + 1;
+            object_list = SuggestItem::get_approved(_limit.into(), step.into());
+        }
+        else {
+            have_next = _limit + 1;
+            object_list = SuggestItem::get_approved(_limit.into(), 0);
+        }
+        if SuggestItem::get_approved(1, have_next.into()).len() > 0 {
             next_page_number = page + 1;
         }
         SuggestRespData {
@@ -109,7 +250,7 @@ impl SuggestItem {
         let _new_suggest_item = diesel::insert_into(schema::suggest_items::table)
             .values(&form)
             .execute(&_connection)
-        .expect("Error saving suggest form.");
+            .expect("Error saving suggest form.");
 
         let _user = schema::users::table
             .filter(schema::users::email.eq(form.email.clone()))
@@ -139,6 +280,8 @@ pub struct NewSuggestItem {
     pub address:     String,
     pub created:     chrono::NaiveDateTime,
     pub tokens:      String,
+    pub token_type:  i16,
+    pub status:      i16,
 }
 
 

@@ -35,8 +35,13 @@ pub fn admin_routes(config: &mut web::ServiceConfig) {
     config.route("/get_banned_admins/", web::get().to(get_banned_admins)); 
 
     config.route("/get_logs/", web::get().to(get_logs));
-    config.route("/get_user_logs/", web::get().to(get_user_logs));
-    config.route("/get_suggest_items/", web::get().to(get_suggest_items));
+    config.route("/get_user_logs/", web::get().to(get_user_logs)); 
+
+    config.route("/get_new_applications/", web::get().to(get_new_applications));
+    config.route("/get_approved_applications/", web::get().to(get_approved_applications));
+    config.route("/get_rejected_applications/", web::get().to(get_rejected_applications));
+    config.route("/reject_white_lists/", web::post().to(reject_white_lists));
+    config.route("/approve_white_lists/", web::post().to(approve_white_lists));
 
     config.route("/block_user/", web::post().to(block_user));
     config.route("/unblock_user/", web::post().to(unblock_user));
@@ -53,6 +58,62 @@ pub fn admin_routes(config: &mut web::ServiceConfig) {
     config.route("/create_suggest_item/", web::post().to(create_suggest_item));
     config.route("/create_log/", web::post().to(create_log));
     config.route("/send_mail/", web::post().to(send_mail));
+}
+
+
+pub async fn reject_white_lists(req: HttpRequest, data: Json<crate::models::ApplicationIdsJson>) -> impl Responder {
+    if is_signed_in(&req) {
+        let _request_user = get_current_user(&req);
+        _request_user.reject_white_lists(data);
+    }
+    HttpResponse::Ok()
+}
+pub async fn approve_white_lists(req: HttpRequest, data: Json<crate::models::ApplicationsJson>) -> impl Responder {
+    if is_signed_in(&req) {
+        let _request_user = get_current_user(&req);
+        _request_user.approve_white_lists(data);
+    }
+    HttpResponse::Ok()
+}
+
+pub async fn get_new_applications(req: HttpRequest) -> Json<crate::models::SuggestRespData> {
+    if is_signed_in(&req) {
+        let page = crate::utils::get_page(&req);
+        let _request_user = get_current_user(&req);
+        Json(crate::models::SuggestItem::get_new_list(page.into(), Some(20)))
+    }
+    else {
+        Json(crate::models::SuggestRespData {
+            data: Vec::new(),
+            next: 0,
+        })
+    }
+}
+pub async fn get_approved_applications(req: HttpRequest) -> Json<crate::models::SuggestRespData> {
+    if is_signed_in(&req) {
+        let page = crate::utils::get_page(&req);
+        let _request_user = get_current_user(&req);
+        Json(crate::models::SuggestItem::get_approved_list(page.into(), Some(20)))
+    }
+    else {
+        Json(crate::models::SuggestRespData {
+            data: Vec::new(),
+            next: 0,
+        })
+    }
+}
+pub async fn get_rejected_applications(req: HttpRequest) -> Json<crate::models::SuggestRespData> {
+    if is_signed_in(&req) {
+        let page = crate::utils::get_page(&req);
+        let _request_user = get_current_user(&req);
+        Json(crate::models::SuggestItem::get_rejected_list(page.into(), Some(20)))
+    }
+    else {
+        Json(crate::models::SuggestRespData {
+            data: Vec::new(),
+            next: 0,
+        })
+    }
 }
 
 #[derive(Deserialize, Serialize)]
@@ -168,19 +229,6 @@ pub async fn get_user_logs(req: HttpRequest) -> Json<crate::models::LogRespData>
     }
     else {
         Json(crate::models::LogRespData {
-            data: Vec::new(),
-            next: 0,
-        })
-    }
-}
-pub async fn get_suggest_items(req: HttpRequest) -> Json<crate::models::SuggestRespData> {
-    if is_signed_in(&req) {
-        let page = crate::utils::get_page(&req);
-        let _request_user = get_current_user(&req);
-        Json(crate::models::SuggestItem::get_list(page.into(), Some(20)))
-    }
-    else {
-        Json(crate::models::SuggestRespData {
             data: Vec::new(),
             next: 0,
         })
@@ -304,6 +352,7 @@ pub async fn delete_white_list(req: HttpRequest, data: Json<ItemId>) -> impl Res
     }
     HttpResponse::Ok()
 }
+
 pub async fn create_suggest_item(req: HttpRequest, data: Json<crate::models::NewSuggestJson>) -> impl Responder {
     if is_signed_in(&req) {
         let _request_user = get_current_user(&req);
@@ -372,15 +421,13 @@ pub async fn create_log(req: HttpRequest, data: Json<crate::models::NewLogJson>)
 }
 
 #[derive(Deserialize, Serialize, Debug)]
-pub struct SendMailJson {
+pub struct SendMailJson { 
     pub subtitle:   String,
     pub text:       String,
     pub first_name: String,
     pub last_name:  String,
     pub email:      String,
-    pub ico_stage:  i16,
-    pub wallet:     String,
-}  
+}   
 pub async fn send_mail(req: HttpRequest, data: Json<SendMailJson>) -> impl Responder {
     if is_signed_in(&req) {
         let _connection = establish_connection();
@@ -389,28 +436,6 @@ pub async fn send_mail(req: HttpRequest, data: Json<SendMailJson>) -> impl Respo
         let first_name: String;
         let last_name: String;
         let email: String;
-        let _text: String;
-
-        if !&data.wallet.is_empty() {
-            let id_some = schema::new_wallets::table
-            .filter(schema::new_wallets::link.eq(&data.wallet))
-            .select(schema::new_wallets::user_id) 
-            .first::<i32>(&_connection);
-            if id_some.is_ok() {
-                let _user = schema::users::table
-                .filter(schema::users::id.eq(id_some.expect("E.")))
-                .first::<User>(&_connection)
-                .expect("E.");
-                first_name = _user.first_name.clone();
-                last_name = _user.last_name.clone();
-                email = _user.email.clone();
-            }
-            else {
-                first_name = data.first_name.clone();
-                last_name = data.last_name.clone();
-                email = data.email.clone();
-            }
-        }
     
         dotenv::dotenv().ok();
         let api_key = std::env::var("EMAIL_KEY")
@@ -420,14 +445,6 @@ pub async fn send_mail(req: HttpRequest, data: Json<SendMailJson>) -> impl Respo
         x_smtpapi.push_str(r#"{"unique_args":{"test":7}}"#);
 
         let name = data.first_name.clone() + &" ".to_string() + &data.last_name;
-        let _text: String;
-        if data.ico_stage > 0 {
-            let _type = crate::models::User::get_tokenomic_type(data.ico_stage);
-            _text = data.text.clone() + &". Tokenomic_type:" + &_type;
-        }
-        else {
-            _text = data.text.clone();
-        }
         let mail_info = sendgrid::Mail::new() 
             .add_to(sendgrid::Destination {
                 address: &data.email,
@@ -435,7 +452,7 @@ pub async fn send_mail(req: HttpRequest, data: Json<SendMailJson>) -> impl Respo
             })
             .add_from("no-reply@bjustcoin.com")
             .add_subject(&data.subtitle)
-            .add_html(&_text)
+            .add_html(&data.text.clone())
             .add_from_name("BJustcoin Team")
             .add_header("x-cool".to_string(), "indeed")
             .add_x_smtpapi(&x_smtpapi);
