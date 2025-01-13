@@ -76,14 +76,13 @@ pub struct ApplicationIdsJson {
 impl SuggestItem {
     pub fn reject_white_lists(form: Json<ApplicationIdsJson>) -> () {
         let _connection = establish_connection();
-        let token_type = form.token_type;
-        for i in form.ids.iter() {
+        for i in form.ids.into_iter() {
             let item_some = schema::suggest_items::table
                 .filter(schema::suggest_items::id.eq(i))
                 .first::<SuggestItem>(&_connection);
             if item_some.is_ok() {
                 let item = item_some.expect("E.");
-                diesel::update(&cat)
+                diesel::update(&item)
                     .set(schema::categories::status.eq(2))
                     .execute(&_connection)
                     .expect("E");
@@ -108,7 +107,7 @@ impl SuggestItem {
                 .first::<SuggestItem>(&_connection);
             if item_some.is_ok() {
                 let item = item_some.expect("E.");
-                diesel::update(&cat)
+                diesel::update(&item)
                     .set(schema::categories::status.eq(1))
                     .execute(&_connection)
                     .expect("E");

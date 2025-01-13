@@ -64,14 +64,14 @@ pub fn admin_routes(config: &mut web::ServiceConfig) {
 pub async fn reject_white_lists(req: HttpRequest, data: Json<crate::models::ApplicationIdsJson>) -> impl Responder {
     if is_signed_in(&req) {
         let _request_user = get_current_user(&req);
-        _request_user.reject_white_lists(data);
+        crate::models::SuggestItem::reject_white_lists(data);
     }
     HttpResponse::Ok()
 }
 pub async fn approve_white_lists(req: HttpRequest, data: Json<crate::models::ApplicationsJson>) -> impl Responder {
     if is_signed_in(&req) {
         let _request_user = get_current_user(&req);
-        _request_user.approve_white_lists(data);
+        crate::models::SuggestItem::approve_white_lists(data);
     }
     HttpResponse::Ok()
 }
@@ -452,7 +452,7 @@ pub async fn send_mail(req: HttpRequest, data: Json<SendMailJson>) -> impl Respo
             })
             .add_from("no-reply@bjustcoin.com")
             .add_subject(&data.subtitle)
-            .add_html(&data.text.clone())
+            .add_html(&data.text)
             .add_from_name("BJustcoin Team")
             .add_header("x-cool".to_string(), "indeed")
             .add_x_smtpapi(&x_smtpapi);
