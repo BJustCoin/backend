@@ -76,9 +76,9 @@ pub struct ApplicationIdsJson {
 impl SuggestItem {
     pub fn reject_white_lists(form: Json<ApplicationIdsJson>) -> () {
         let _connection = establish_connection();
-        for i in form.ids.into_iter() {
+        for i in form.ids.iter() {
             let item_some = schema::suggest_items::table
-                .filter(schema::suggest_items::id.eq(i))
+                .filter(schema::suggest_items::id.eq(*i))
                 .first::<SuggestItem>(&_connection);
             if item_some.is_ok() {
                 let item = item_some.expect("E.");
@@ -89,7 +89,7 @@ impl SuggestItem {
             }
             crate::models::Log::create({
                 Json(crate::models::NewLogJson {
-                    user_id:   i,
+                    user_id:   *i,
                     text:      "was added to the whitelist".to_string(),
                     target_id: None,
                 })
