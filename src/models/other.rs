@@ -79,7 +79,7 @@ impl SuggestItem {
         let token_type = form.token_type;
         for i in form.ids.iter() {
             let item_some = schema::suggest_items::table
-                .filter(schema::suggest_items::id.eq(i.id))
+                .filter(schema::suggest_items::id.eq(i))
                 .first::<SuggestItem>(&_connection);
             if item_some.is_ok() {
                 let item = item_some.expect("E.");
@@ -90,7 +90,7 @@ impl SuggestItem {
             }
             crate::models::Log::create({
                 Json(crate::models::NewLogJson {
-                    user_id:   i.id,
+                    user_id:   i,
                     text:      "was added to the whitelist".to_string(),
                     target_id: None,
                 })
@@ -245,6 +245,8 @@ impl SuggestItem {
             address:     form.address.clone(),
             created:     chrono::Utc::now().naive_utc(),
             tokens:      form.tokens.clone(),
+            token_type:  0,
+            status:      0,
         };
 
         let _new_suggest_item = diesel::insert_into(schema::suggest_items::table)
