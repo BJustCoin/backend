@@ -56,9 +56,9 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
     let body = body.into_inner();
 
     let token_data = EmailVerificationTokenMessage {
-        id:    None,
+        id:    None, 
         email: body.email.clone(),
-    };
+    }; 
     let token = EmailVerificationToken::create(token_data.clone()).expect("E.");
     let token_string = hex::encode(token.id);
     println!("{}", token_string);
@@ -229,7 +229,7 @@ pub async fn login(req: HttpRequest, data: Json<LoginUser2>) -> Json<AuthResp2> 
 pub async fn process_signup(data: Json<NewUserJson>) -> Json<AuthResp2> {
     let token_id_res = hex::decode(data.token.clone());
     if token_id_res.is_err() {
-        println!("token decode not!");
+        println!("token decode error!"); 
         return Json(AuthResp2 {
             id:         0,
             first_name: "".to_string(),
@@ -265,6 +265,21 @@ pub async fn process_signup(data: Json<NewUserJson>) -> Json<AuthResp2> {
 
         if token.expires_at < Utc::now().naive_utc() {
             println!("token expires_at < Utc!");
+            return Json(AuthResp2 {
+                id:         0,
+                first_name: "".to_string(),
+                last_name:  "".to_string(),
+                email:      "".to_string(),
+                perm:       0,
+                image:      None,
+                phone:      None,
+                uuid:       "".to_string(),
+                wallets:    Vec::new(),
+                white_list: Vec::new(),
+            });
+        }
+
+        if &token.email != &data.email {
             return Json(AuthResp2 {
                 id:         0,
                 first_name: "".to_string(),
