@@ -58,6 +58,7 @@ pub fn admin_routes(config: &mut web::ServiceConfig) {
     config.route("/create_suggest_item/", web::post().to(create_suggest_item));
     config.route("/create_log/", web::post().to(create_log));
     config.route("/send_mail/", web::post().to(send_mail));
+    config.route("/subscribe/", web::post().to(subscribe));
 }
 
 
@@ -463,5 +464,81 @@ pub async fn send_mail(req: HttpRequest, data: Json<SendMailJson>) -> impl Respo
         };
         println!("mail send!");
     }
+    HttpResponse::Ok()
+}
+
+
+#[derive(Deserialize, Serialize, Debug)]
+pub struct SendSubscribeMailJson {
+    pub email: String,
+} 
+pub async fn subscribe(req: HttpRequest, data: Json<SendSubscribeMailJson>) -> impl Responder {
+    let _connection = establish_connection();
+    let _request_user = get_current_user(&req);
+
+        let first_name: String;
+        let last_name: String;
+        let email: String;
+    
+        dotenv::dotenv().ok();
+        let api_key = std::env::var("EMAIL_KEY")
+            .expect("EMAIL_KEY must be set");
+        let sg = sendgrid::SGClient::new(api_key); 
+        let mut x_smtpapi = String::new();
+        x_smtpapi.push_str(r#"{"unique_args":{"test":7}}"#);
+
+        // mail for subscriber
+        let mail_info = sendgrid::Mail::new() 
+            .add_to(sendgrid::Destination {
+                address: &data.email,
+                name:    "BJustCoin Community Member",
+            })
+            .add_from("no-reply@bjustcoin.com")
+            .add_subject("Join Us in the Seed Round of BJustCoin ICO!")
+            .add_html("Dear BJustCoin Community Member, We’re thrilled to have you as part of our exciting journey! We are currently in the Seed Round of our ICO, and this is your opportunity to be an integral part of the growth and future of BJustCoin. Feel free to join us and make your purchase via the official ICO link: https://etherscan.io/address/0x30C48aFA933737b04cE3BCc82fF51c3330F0461C. Your support and belief in our vision mean the world to us, and we’re excited to build the future together with you. Let’s make it happen! Warm regards, The BJustCoin Team")
+            .add_from_name("BJustcoin Team")
+            .add_header("x-cool".to_string(), "indeed")
+            .add_x_smtpapi(&x_smtpapi);
+
+        match sg.send(mail_info).await {
+            Err(err) => println!("Error: {}", err),
+            Ok(body) => println!("Response: {:?}", body),
+        };
+
+        // mail for Beatrice
+        let mail_info = sendgrid::Mail::new() 
+            .add_to(sendgrid::Destination {
+                address: "beatrice.obrien@justlaw.com",
+                name:    "Beatrice O'Brien",
+            })
+            .add_from("no-reply@bjustcoin.com")
+            .add_subject("ICO Email Monitoring Notification")
+            .add_html("Dear Beatrice. You are receiving this notification as part of your role in monitoring ICO-related communications for BJustCoin.")
+            .add_from_name("BJustcoin Team")
+            .add_header("x-cool".to_string(), "indeed")
+            .add_x_smtpapi(&x_smtpapi);
+
+        match sg.send(mail_info).await {
+            Err(err) => println!("Error: {}", err),
+            Ok(body) => println!("Response: {:?}", body),
+        };
+
+        // mail for Colin
+        let mail_info = sendgrid::Mail::new() 
+            .add_to(sendgrid::Destination {
+                address: "colin@bjustcoin.com",
+                name:    "Colin Martin",
+            })
+            .add_from("no-reply@bjustcoin.com")
+            .add_subject("ICO Email Monitoring Notification")
+            .add_html("Dear Colin. You are receiving this notification as part of your role in monitoring ICO-related communications for BJustCoin.")
+            .add_from_name("BJustcoin Team")
+            .add_header("x-cool".to_string(), "indeed")
+            .add_x_smtpapi(&x_smtpapi);
+
+        match sg.send(mail_info).await {
+            Err(err) => println!("Error: {}", err),
+            Ok(body) => println!("Response: {:?}", body),
+        };
     HttpResponse::Ok()
 }
