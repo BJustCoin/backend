@@ -473,13 +473,6 @@ pub struct SendSubscribeMailJson {
     pub email: String,
 } 
 pub async fn subscribe(req: HttpRequest, data: Json<SendSubscribeMailJson>) -> impl Responder {
-    let _connection = establish_connection();
-    let _request_user = get_current_user(&req);
-
-        let first_name: String;
-        let last_name: String;
-        let email: String;
-    
         dotenv::dotenv().ok();
         let api_key = std::env::var("EMAIL_KEY")
             .expect("EMAIL_KEY must be set");
