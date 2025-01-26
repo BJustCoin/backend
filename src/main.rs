@@ -27,7 +27,6 @@ mod views;
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
-    //let server = websocket::Server::new().start();
     let secret_key = Key::generate();
 
     HttpServer::new(move || {
@@ -46,7 +45,6 @@ async fn main() -> std::io::Result<()> {
                     .cookie_secure(false)
                     .build(),
             )
-            //.data(server.clone())
             .configure(routes)
     })
     .bind("69.167.186.207:9330")?

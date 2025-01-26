@@ -387,7 +387,7 @@ pub async fn create_suggest_item(req: HttpRequest, data: Json<crate::models::New
         println!("mail send!");
 
         // mail for request user
-        let text = "Your application for token purchase was submitted! Thank you.".to_string();
+        let text = "Your application for token purchase was submitted! Thank you for your overwhelming interest! We’re thrilled by the incredible response and appreciate your enthusiasm. Due to the high volume of demand, we are currently experiencing a slight delay in processing orders. Rest assured, our team is working tirelessly to get your purchases to you as quickly as possible. Thank you for your patience and support — it means the world to us. Stay tuned for updates, and we can’t wait for you to complete your purchase of BJustCoin.".to_string();
         let first_name = data.first_name.clone();
         let last_name = data.last_name.clone();
         let email = data.email.clone();

@@ -13,14 +13,8 @@ pub enum AuthError {
     #[display(fmt = "DuplicateValue: {}", _0)]
     DuplicateValue(String),
 
-    //#[display(fmt = "BadId")]
-    //BadId,
-
     #[display(fmt = "NotFound: {}", _0)]
     NotFound(String),
-
-    //#[display(fmt = "ProcessError: {}", _0)]
-    //ProcessError(String),
 
     #[display(fmt = "AuthenticationError: {}", _0)]
     AuthenticationError(String),
@@ -33,11 +27,8 @@ pub enum AuthError {
 impl ResponseError for AuthError {
     fn error_response(&self) -> HttpResponse {
         match self {
-            //AuthError::BadId => HttpResponse::BadRequest().json("Invalid ID"),
 
             AuthError::NotFound(ref message) => HttpResponse::NotFound().json(message),
-
-            //AuthError::ProcessError(ref message) => HttpResponse::InternalServerError().json(message),
 
             AuthError::AuthenticationError(ref message) => HttpResponse::Unauthorized().json(message),
 
@@ -50,7 +41,6 @@ impl ResponseError for AuthError {
 
 impl From<DBError> for AuthError {
     fn from(error: DBError) -> AuthError {
-        // We only care about UniqueViolations
         match error {
             DBError::DatabaseError(kind, info) => {
                 let message = info.details().unwrap_or_else(|| info.message()).to_string();
@@ -92,14 +82,12 @@ impl ResponseError for Error {
                 HttpResponse::Forbidden().json(error)
             }
             _ => {
-                //error!("Internal server error: {:?}", self);
                 let error: ErrorResponse = "Internal Server Error".into();
                 HttpResponse::InternalServerError().json(error)
             }
         }
     }
 }
-// User-friendly error messages
 #[derive(Debug, Deserialize, Serialize)]
 pub struct ErrorResponse {
     pub errors: Vec<String>,
@@ -127,11 +115,8 @@ impl From<Vec<String>> for ErrorResponse {
     }
 }
 
-// Convert DBErrors to our Error type
 impl From<DBError> for Error {
     fn from(error: DBError) -> Error {
-        // Right now we just care about UniqueViolation from diesel
-        // But this would be helpful to easily map errors as our app grows
         match error {
             DBError::DatabaseError(kind, info) => {
                 if let DatabaseErrorKind::UniqueViolation = kind {
@@ -148,7 +133,6 @@ impl From<DBError> for Error {
 
 impl From<BlockingError> for Error {
     fn from(error: BlockingError) -> Error {
-        //error!("Thread blocking error {:?}", error);
         Error::BlockingError("Thread blocking error".into())
     }
 }

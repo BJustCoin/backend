@@ -42,16 +42,12 @@ impl Server {
             Ok(data) => {
                 for recipient in self.sessions.values() {
                     match recipient.try_send(Message(data.clone())) {
-                        Err(err) => {
-                            //error!("Error sending client message: {:?}", err);
-                        }
+                        Err(err) => {}
                         _ => {}
                     }
                 }
             }
-            Err(err) => {
-                //error!("Data did not convert to string {:?}", err);
-            }
+            Err(err) => {}
         }
     }
 }
