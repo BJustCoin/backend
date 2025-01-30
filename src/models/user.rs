@@ -43,7 +43,7 @@ impl UserData {
             .filter(schema::suggest_items::email.eq(self.email))
             .filter(schema::suggest_items::status.eq(1))
             .select((
-                schema::suggest_items::wallet,
+                schema::suggest_items::address,
                 schema::suggest_items::tokens,
                 schema::suggest_items::token_type
             ))
@@ -85,8 +85,8 @@ impl User {
         return schema::suggest_items::table 
             .filter(schema::suggest_items::email.eq(self.email))
             .filter(schema::suggest_items::status.eq(1))
-            .select((
-                schema::suggest_items::wallet,
+            .select(( 
+                schema::suggest_items::address,
                 schema::suggest_items::tokens,
                 schema::suggest_items::token_type
             ))
