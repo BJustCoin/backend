@@ -123,7 +123,7 @@ impl User {
                     perm:       u.perm,
                     image:      u.image.clone(),
                     phone:      u.phone.clone(),
-                    white_list: u.get_user_white_list(),
+                    white_list: u.get_user_wallets(),
                 }
             )
         };
@@ -189,7 +189,7 @@ impl User {
                     perm:       u.perm,
                     image:      u.image.clone(),
                     phone:      u.phone.clone(),
-                    white_list: u.get_user_white_list(),
+                    white_list: u.get_user_wallets(),
                 }
             )
         };
@@ -249,7 +249,7 @@ impl User {
                     perm:       u.perm,
                     image:      u.image.clone(),
                     phone:      u.phone.clone(),
-                    white_list: u.get_user_white_list(),
+                    white_list: u.get_user_wallets(),
                 }
             )
         };
@@ -309,7 +309,7 @@ impl User {
                     perm:       u.perm,
                     image:      u.image.clone(),
                     phone:      u.phone.clone(),
-                    white_list: u.get_user_white_list(),
+                    white_list: u.get_user_wallets(),
                 }
             )
         };

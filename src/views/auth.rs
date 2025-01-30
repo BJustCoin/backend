@@ -203,7 +203,7 @@ pub async fn login(req: HttpRequest, data: Json<LoginUser2>) -> Json<AuthResp2> 
                 image:      _new_user.image.clone(),
                 phone:      _new_user.phone.clone(),
                 uuid:       _new_user.uuid.clone(),
-                white_list: _new_user.get_user_white_list(),
+                white_list: _new_user.get_user_wallets(),
             });
         }
         else {
@@ -335,7 +335,7 @@ pub async fn process_signup(data: Json<NewUserJson>) -> Json<AuthResp2> {
             image:      _new_user.image.clone(),
             phone:      None,
             uuid:       _new_user.uuid.clone(),
-            white_list: _new_user.get_user_white_list(),
+            white_list: _new_user.get_user_wallets(),
         })
 }
 
@@ -417,7 +417,7 @@ pub async fn process_reset(data: Json<NewPasswordJson>) -> Json<AuthResp2> {
                 image:      _user.image.clone(),
                 phone:      _user.phone.clone(),
                 uuid:       _user.uuid.clone(),
-                white_list: _user.get_user_white_list(),
+                white_list: _user.get_user_wallets(),
             }) 
         }
         else {

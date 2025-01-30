@@ -40,8 +40,6 @@ pub fn admin_routes(config: &mut web::ServiceConfig) {
     config.route("/get_new_applications/", web::get().to(get_new_applications));
     config.route("/get_approved_applications/", web::get().to(get_approved_applications));
     config.route("/get_rejected_applications/", web::get().to(get_rejected_applications));
-    config.route("/reject_white_lists/", web::post().to(reject_white_lists));
-    config.route("/approve_white_lists/", web::post().to(approve_white_lists));
 
     config.route("/block_user/", web::post().to(block_user));
     config.route("/unblock_user/", web::post().to(unblock_user));
