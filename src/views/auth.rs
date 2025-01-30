@@ -13,7 +13,6 @@ use crate::models::{
     User, 
     SessionUser, 
     UserWallet,
-    UserWhiteList,
     EmailVerificationToken, 
     EmailVerificationTokenMessage
 };
@@ -124,7 +123,7 @@ pub struct AuthResp {
     pub perm:       i16,
     pub image:      Option<String>,
     pub phone:      Option<String>,
-    pub white_list: Vec<UserWhiteList>,
+    pub white_list: Vec<UserWallet>,
 }
 
 #[derive(Deserialize, Serialize, Debug, Queryable)]
@@ -137,7 +136,7 @@ pub struct AuthResp2 {
     pub image:      Option<String>,
     pub phone:      Option<String>,
     pub uuid:       String,
-    pub white_list: Vec<UserWhiteList>,
+    pub white_list: Vec<UserWallet>,
 } 
 
 fn find_user(data: Json<LoginUser2>) -> Result<SessionUser, AuthError> {

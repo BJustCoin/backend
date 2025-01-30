@@ -588,8 +588,9 @@ pub struct SessionUser {
 
 #[derive(Debug, Queryable, Serialize, Deserialize)]
 pub struct UserWallet {
-    pub id:   i32,
-    pub link: String,
+    pub wallet:     String,
+    pub tokens:     String,
+    pub token_type: i16,
 } 
 
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
@@ -656,12 +657,6 @@ token_type
 12.	Loyalty
 */
 
-#[derive(Debug, Serialize, Queryable, Deserialize)]
-pub struct UserWhiteList {
-    pub wallet:     String,
-    pub tokens:     String,
-    pub token_type: i16,
-}
 
 #[derive(Debug, Queryable, Deserialize, Serialize, Identifiable)]
 pub struct NewWhiteList {
