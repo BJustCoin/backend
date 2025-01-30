@@ -81,7 +81,7 @@ impl SuggestItem {
             if item_some.is_ok() {
                 let item = item_some.expect("E.");
                 diesel::update(&item)
-                    .set((token_type
+                    .set((
                         schema::suggest_items::status.eq(1),
                         schema::suggest_items::tokens.eq(tokens),
                         schema::suggest_items::token_type.eq(ico_stage),
@@ -89,31 +89,6 @@ impl SuggestItem {
                     .execute(&_connection)
                     .expect("E");
             }
-    }
-    pub fn approve_white_lists(form: Json<ApplicationsJson>) -> () {
-        let _connection = establish_connection();
-        let token_type = form.token_type;
-        for i in form.users.iter() {
-            crate::models::NewWhiteList::create(i.id, token_type);
-            crate::models::NewWallet::create(i.id, i.address.clone(), token_type);
-            let item_some = schema::suggest_items::table
-                .filter(schema::suggest_items::email.eq(&i.email))
-                .first::<SuggestItem>(&_connection);
-            if item_some.is_ok() {
-                let item = item_some.expect("E.");
-                diesel::update(&item)
-                    .set(schema::suggest_items::status.eq(1))
-                    .execute(&_connection)
-                    .expect("E");
-            }
-            crate::models::Log::create({
-                Json(crate::models::NewLogJson {
-                    user_id:   i.id,
-                    text:      "was added to the whitelist".to_string(),
-                    target_id: None,
-                })
-            });
-        }
     }
 
     pub fn get_new(limit: i64, offset: i64) -> Vec<SuggestItem> {

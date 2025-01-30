@@ -47,7 +47,7 @@ impl UserData {
                 schema::suggest_items::tokens,
                 schema::suggest_items::token_type
             ))
-            .load::<SuggestItem>(&_connection)
+            .load::<crate::models::SuggestItem>(&_connection)
             .expect("E.");
     } 
 }
