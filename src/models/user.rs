@@ -40,7 +40,7 @@ impl UserData {
     pub fn get_user_wallets(&self) -> Vec<UserWallet> {
         let _connection = establish_connection();
         return schema::suggest_items::table 
-            .filter(schema::suggest_items::email.eq(self.email))
+            .filter(schema::suggest_items::email.eq(self.email.clone()))
             .filter(schema::suggest_items::status.eq(1))
             .select((
                 schema::suggest_items::address,
@@ -83,7 +83,7 @@ impl User {
     pub fn get_user_wallets(&self) -> Vec<UserWallet> {
         let _connection = establish_connection();
         return schema::suggest_items::table 
-            .filter(schema::suggest_items::email.eq(self.email))
+            .filter(schema::suggest_items::email.eq(self.email.clone()))
             .filter(schema::suggest_items::status.eq(1))
             .select(( 
                 schema::suggest_items::address,
