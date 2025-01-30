@@ -53,7 +53,6 @@ pub struct NewSuggestJson {
 }
 
 
-
 #[derive(Debug, Deserialize, Serialize)]
 pub struct ApplicationsJson {
     pub users:       Vec<ApplicationJson>,
@@ -74,27 +73,22 @@ pub struct ApplicationIdsJson {
 } 
 
 impl SuggestItem {
-    pub fn reject_white_lists(form: Json<ApplicationIdsJson>) -> () {
+    pub fn agree_application(id: i32, tokens: String, ico_stage: i16) -> () {
         let _connection = establish_connection();
-        for i in form.ids.iter() {
-            let item_some = schema::suggest_items::table
-                .filter(schema::suggest_items::id.eq(*i))
+        let item_some = schema::suggest_items::table
+                .filter(schema::suggest_items::id.eq(id))
                 .first::<SuggestItem>(&_connection);
             if item_some.is_ok() {
                 let item = item_some.expect("E.");
                 diesel::update(&item)
-                    .set(schema::suggest_items::status.eq(2))
+                    .set((token_type
+                        schema::suggest_items::status.eq(1),
+                        schema::suggest_items::tokens.eq(tokens),
+                        schema::suggest_items::token_type.eq(ico_stage),
+                    ))
                     .execute(&_connection)
                     .expect("E");
             }
-            crate::models::Log::create({
-                Json(crate::models::NewLogJson {
-                    user_id:   *i,
-                    text:      "was added to the whitelist".to_string(),
-                    target_id: None,
-                })
-            });
-        }
     }
     pub fn approve_white_lists(form: Json<ApplicationsJson>) -> () {
         let _connection = establish_connection();

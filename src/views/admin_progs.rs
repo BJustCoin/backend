@@ -49,12 +49,7 @@ pub fn admin_routes(config: &mut web::ServiceConfig) {
     config.route("/unblock_admin/", web::post().to(unblock_admin));
     config.route("/create_admin/", web::post().to(create_admin));
     config.route("/drop_admin/", web::post().to(drop_admin));
-    config.route("/create_can_buy/", web::post().to(create_can_buy));
-    config.route("/delete_can_buy/", web::post().to(delete_can_buy));
-    config.route("/create_wallet/", web::post().to(create_wallet));
-    config.route("/delete_wallet/", web::post().to(delete_wallet));
-    config.route("/create_white_list/", web::post().to(create_white_list));
-    config.route("/delete_white_list/", web::post().to(delete_white_list));
+    config.route("/agree_application/", web::post().to(agree_application));
     config.route("/create_suggest_item/", web::post().to(create_suggest_item));
     config.route("/create_log/", web::post().to(create_log));
     config.route("/send_mail/", web::post().to(send_mail));
@@ -291,65 +286,19 @@ pub struct ItemIdTypes {
     pub id:    i32,
     pub types: i16,
 }
-pub async fn create_can_buy(req: HttpRequest, data: Json<ItemIdTypes>) -> impl Responder {
-    if is_signed_in(&req) {
-        let _request_user = get_current_user(&req);
-        if _request_user.is_superuser() {
-            _request_user.create_can_buy_token(data.id, data.types);
-        }
-    } 
-    HttpResponse::Ok()
-}
-pub async fn delete_can_buy(req: HttpRequest, data: Json<ItemIdTypes>) -> impl Responder {
-    if is_signed_in(&req) {
-        let _request_user = get_current_user(&req);
-        if _request_user.is_superuser() {
-            _request_user.delete_can_buy_token(data.id, data.types);
-        }
-    }
-    HttpResponse::Ok()
-}
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ReqWallet {
-    pub user_id:   i32,
-    pub link:      String,
+    pub id:        i32,
+    pub tokens:    String,
     pub ico_stage: i16,
 }
-pub async fn create_wallet(req: HttpRequest, data: Json<ReqWallet>) -> impl Responder {
+pub async fn agree_application(req: HttpRequest, data: Json<ReqWallet>) -> impl Responder {
     if is_signed_in(&req) {
         let _request_user = get_current_user(&req);
         if _request_user.is_superuser() {
-            crate::models::NewWallet::create(data.user_id, data.link.clone(), data.ico_stage);
+            crate::models::SuggestItem::agree_application(data.id, data.tokens.clone(), data.ico_stage);
         }
-    }
-    HttpResponse::Ok()
-}
-pub async fn delete_wallet(req: HttpRequest, data: Json<ItemId>) -> impl Responder {
-    if is_signed_in(&req) {
-        let _request_user = get_current_user(&req);
-        if _request_user.is_superuser() {
-            crate::models::NewWallet::delete(data.id);
-        }
-    }
-    HttpResponse::Ok()
-}
-
-pub async fn create_white_list(req: HttpRequest, data: Json<crate::models::NewNewWhiteList>) -> impl Responder {
-    if is_signed_in(&req) {
-        let _request_user = get_current_user(&req);
-        if _request_user.is_superuser() {
-            crate::models::NewWhiteList::create(data.user_id, data.token_type);
-        }
-    }
-    HttpResponse::Ok()
-}
-pub async fn delete_white_list(req: HttpRequest, data: Json<ItemId>) -> impl Responder {
-    if is_signed_in(&req) {
-        let _request_user = get_current_user(&req);
-        if _request_user.is_superuser() {
-            crate::models::NewWallet::delete(data.id);
-        } 
     }
     HttpResponse::Ok()
 }

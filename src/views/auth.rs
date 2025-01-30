@@ -124,7 +124,6 @@ pub struct AuthResp {
     pub perm:       i16,
     pub image:      Option<String>,
     pub phone:      Option<String>,
-    pub wallets:    Vec<UserWallet>,
     pub white_list: Vec<UserWhiteList>,
 }
 
@@ -138,7 +137,6 @@ pub struct AuthResp2 {
     pub image:      Option<String>,
     pub phone:      Option<String>,
     pub uuid:       String,
-    pub wallets:    Vec<UserWallet>,
     pub white_list: Vec<UserWhiteList>,
 } 
 
@@ -205,7 +203,6 @@ pub async fn login(req: HttpRequest, data: Json<LoginUser2>) -> Json<AuthResp2> 
                 image:      _new_user.image.clone(),
                 phone:      _new_user.phone.clone(),
                 uuid:       _new_user.uuid.clone(),
-                wallets:    _new_user.get_user_wallets(),
                 white_list: _new_user.get_user_white_list(),
             });
         }
@@ -220,7 +217,6 @@ pub async fn login(req: HttpRequest, data: Json<LoginUser2>) -> Json<AuthResp2> 
                 image:      None,
                 phone:      None,
                 uuid:       "".to_string(),
-                wallets:    Vec::new(),
                 white_list: Vec::new(),
             });
         }
@@ -239,7 +235,6 @@ pub async fn process_signup(data: Json<NewUserJson>) -> Json<AuthResp2> {
             image:      None,
             phone:      None,
             uuid:       "".to_string(),
-            wallets:    Vec::new(),
             white_list: Vec::new(),
         });
     }
@@ -257,7 +252,6 @@ pub async fn process_signup(data: Json<NewUserJson>) -> Json<AuthResp2> {
                 image:      None,
                 phone:      None,
                 uuid:       "".to_string(),
-                wallets:    Vec::new(),
                 white_list: Vec::new(),
             });
         }
@@ -274,7 +268,6 @@ pub async fn process_signup(data: Json<NewUserJson>) -> Json<AuthResp2> {
                 image:      None,
                 phone:      None,
                 uuid:       "".to_string(),
-                wallets:    Vec::new(),
                 white_list: Vec::new(),
             });
         }
@@ -289,7 +282,6 @@ pub async fn process_signup(data: Json<NewUserJson>) -> Json<AuthResp2> {
                 image:      None,
                 phone:      None,
                 uuid:       "".to_string(),
-                wallets:    Vec::new(),
                 white_list: Vec::new(),
             });
         }
@@ -343,7 +335,6 @@ pub async fn process_signup(data: Json<NewUserJson>) -> Json<AuthResp2> {
             image:      _new_user.image.clone(),
             phone:      None,
             uuid:       _new_user.uuid.clone(),
-            wallets:    _new_user.get_user_wallets(),
             white_list: _new_user.get_user_white_list(),
         })
 }
@@ -360,7 +351,6 @@ pub async fn process_reset(data: Json<NewPasswordJson>) -> Json<AuthResp2> {
                 image:      None,
                 phone:      None,
                 uuid:       "".to_string(),
-                wallets:    Vec::new(),
                 white_list: Vec::new(),
             });
         }
@@ -377,7 +367,6 @@ pub async fn process_reset(data: Json<NewPasswordJson>) -> Json<AuthResp2> {
                 image:      None,
                 phone:      None,
                 uuid:       "".to_string(),
-                wallets:    Vec::new(),
                 white_list: Vec::new(),
             });
         }
@@ -393,7 +382,6 @@ pub async fn process_reset(data: Json<NewPasswordJson>) -> Json<AuthResp2> {
                 image:      None,
                 phone:      None,
                 uuid:       "".to_string(),
-                wallets:    Vec::new(),
                 white_list: Vec::new(),
             });
         }
@@ -408,7 +396,6 @@ pub async fn process_reset(data: Json<NewPasswordJson>) -> Json<AuthResp2> {
                 image:      None,
                 phone:      None,
                 uuid:       "".to_string(),
-                wallets:    Vec::new(),
                 white_list: Vec::new(),
             });
         }
@@ -430,7 +417,6 @@ pub async fn process_reset(data: Json<NewPasswordJson>) -> Json<AuthResp2> {
                 image:      _user.image.clone(),
                 phone:      _user.phone.clone(),
                 uuid:       _user.uuid.clone(),
-                wallets:    _user.get_user_wallets(),
                 white_list: _user.get_user_white_list(),
             }) 
         }
@@ -444,7 +430,6 @@ pub async fn process_reset(data: Json<NewPasswordJson>) -> Json<AuthResp2> {
                 image:      None,
                 phone:      None,
                 uuid:       "".to_string(),
-                wallets:    Vec::new(),
                 white_list: Vec::new(),
             });
         }

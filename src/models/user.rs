@@ -35,29 +35,21 @@ pub struct UserData {
     pub image:      Option<String>,
     pub phone:      Option<String>,
 }
+
 impl UserData {
-    pub fn get_user_wallets(&self) -> Vec<UserWallet> {
-        let _connection = establish_connection();
-        return schema::new_wallets::table
-            .filter(schema::new_wallets::user_id.eq(self.id))
-            .select((
-                schema::new_wallets::id,
-                schema::new_wallets::link
-            )) 
-            .load::<UserWallet>(&_connection)
-            .expect("E.");
-    }
     pub fn get_user_white_list(&self) -> Vec<UserWhiteList> {
         let _connection = establish_connection();
-        return schema::new_white_lists::table
-            .filter(schema::new_white_lists::user_id.eq(self.id))
+        return schema::suggest_items::table
+            .filter(schema::suggest_items::email.eq(self.email))
+            .filter(schema::suggest_items::status.eq(1))
             .select((
-                schema::new_white_lists::id,
-                schema::new_white_lists::token_type
-            )) 
-            .load::<UserWhiteList>(&_connection)
+                schema::suggest_items::wallet,
+                schema::suggest_items::tokens,
+                schema::suggest_items::token_type
+            ))
+            .load::<SuggestItem>(&_connection)
             .expect("E.");
-    }
+    } 
 }
 
 
@@ -131,7 +123,6 @@ impl User {
                     perm:       u.perm,
                     image:      u.image.clone(),
                     phone:      u.phone.clone(),
-                    wallets:    u.get_user_wallets(),
                     white_list: u.get_user_white_list(),
                 }
             )
@@ -198,7 +189,6 @@ impl User {
                     perm:       u.perm,
                     image:      u.image.clone(),
                     phone:      u.phone.clone(),
-                    wallets:    u.get_user_wallets(),
                     white_list: u.get_user_white_list(),
                 }
             )
@@ -259,7 +249,6 @@ impl User {
                     perm:       u.perm,
                     image:      u.image.clone(),
                     phone:      u.phone.clone(),
-                    wallets:    u.get_user_wallets(),
                     white_list: u.get_user_white_list(),
                 }
             )
@@ -320,7 +309,6 @@ impl User {
                     perm:       u.perm,
                     image:      u.image.clone(),
                     phone:      u.phone.clone(),
-                    wallets:    u.get_user_wallets(),
                     white_list: u.get_user_white_list(),
                 }
             )
@@ -362,9 +350,6 @@ impl User {
     }
     pub fn is_admin_in_block(&self) -> bool {
         return self.perm == ADMINISBLOCK;
-    }
-    pub fn is_user_can_buy_tockens(&self) -> bool {
-        return self.perm == USERCANBUYTOCKEN;
     }
 
     pub fn create_admin_block(&self, user_id: i32) -> Result<(), Error> {
@@ -444,77 +429,25 @@ impl User {
 
     pub fn get_tokenomic_type(types: i16) -> String {
         return match types {
-            1 => "Strategic".to_string(),
-            2 => "Seed".to_string(),
-            3 => "Private Sale".to_string(),
-            4 => "IDO".to_string(),
-            5 => "Public Sale".to_string(),
-            6 => "Advisors".to_string(),
-            7 => "Team".to_string(),
-            8 => "Future Team".to_string(),
-            9 => "Incetives".to_string(),
-            10 => "Liquidity".to_string(),
-            11 => "Ecosystem".to_string(),
-            12 => "Loyalty".to_string(),
-            _ => "Uncnown stage".to_string(),
+            0 =>  "Strategic".to_string(),
+            1 =>  "Seed".to_string(),
+            2 =>  "Private Sale".to_string(),
+            3 =>  "IDO".to_string(),
+            4 =>  "Public Sale".to_string(),
+            5 =>  "Advisors".to_string(),
+            6 =>  "Team".to_string(),
+            7 =>  "Future Team".to_string(),
+            8 =>  "Incetives".to_string(),
+            9 =>  "Liquidity".to_string(),
+            10 => "Ecosystem".to_string(),
+            11 => "Loyalty".to_string(),
+            _ =>  "Uncnown stage".to_string(),
         }
     }
     pub fn get_full_name(&self) -> String {
         return self.first_name.clone() + &" ".to_string() + &self.last_name;
     }
 
-    pub fn create_can_buy_token(&self, user_id: i32, types: i16) -> Result<(), Error> {
-        if !self.is_superuser() {
-            return Err(Error::BadRequest("403".to_string()));
-        }
-        let _connection = establish_connection();
-        let target_user = schema::users::table
-            .filter(schema::users::id.eq(user_id))
-            .first::<User>(&_connection)
-            .expect("E.");
-        _connection.transaction(|| Ok({
-            let _u = diesel::update(users::table.filter(users::id.eq(user_id)))
-                .set(schema::users::perm.eq(USERCANBUYTOCKEN))
-                .execute(&_connection);
-            let _k = NewWhiteList::create(user_id, types);
-            crate::models::Log::create({
-                Json(crate::models::NewLogJson {
-                    user_id:   self.id,
-                    text:      "allowed the user ".to_string()
-                                + &target_user.get_full_name()
-                                + &" to buy tokens ".to_string() 
-                                + &User::get_tokenomic_type(types),
-                    target_id: Some(user_id),
-                })
-            });
-        }))
-    }
-    pub fn delete_can_buy_token(&self, user_id: i32, types: i16) -> Result<(), Error> {
-        if !self.is_superuser() {
-            return Err(Error::BadRequest("403".to_string()));
-        }
-        let _connection = establish_connection();
-        let target_user = schema::users::table
-            .filter(schema::users::id.eq(user_id))
-            .first::<User>(&_connection)
-            .expect("E.");
-        _connection.transaction(|| Ok({
-            let _u = diesel::update(users::table.filter(users::id.eq(user_id)))
-                .set(schema::users::perm.eq(USER))
-                .execute(&_connection);
-            let _k = NewWhiteList::delete(user_id, types);
-            crate::models::Log::create({
-                Json(crate::models::NewLogJson {
-                    user_id:   self.id,
-                    text:      "prohibited the user ".to_string()
-                                + &target_user.get_full_name()
-                                + &" from buying tokens ".to_string() 
-                                + &User::get_tokenomic_type(types),
-                    target_id: Some(user_id),
-                })
-            });
-        }))
-    }
     pub fn create_admin(&self, user_id: i32) -> Result<(), Error> {
         if !self.is_superuser() {
             return Err(Error::BadRequest("403".to_string()));
@@ -614,17 +547,6 @@ impl User {
                 schema::new_wallets::link
             )) 
             .load::<UserWallet>(&_connection)
-            .expect("E.");
-    }
-    pub fn get_user_white_list(&self) -> Vec<UserWhiteList> {
-        let _connection = establish_connection();
-        return schema::new_white_lists::table
-            .filter(schema::new_white_lists::user_id.eq(self.id))
-            .select((
-                schema::new_white_lists::id,
-                schema::new_white_lists::token_type
-            )) 
-            .load::<UserWhiteList>(&_connection)
             .expect("E.");
     }
 }
@@ -736,9 +658,10 @@ token_type
 
 #[derive(Debug, Serialize, Queryable, Deserialize)]
 pub struct UserWhiteList {
-    pub id:         i32,
+    pub wallet:     String,
+    pub tokens:     String,
     pub token_type: i16,
-} 
+}
 
 #[derive(Debug, Queryable, Deserialize, Serialize, Identifiable)]
 pub struct NewWhiteList {
