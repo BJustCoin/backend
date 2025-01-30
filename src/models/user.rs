@@ -47,7 +47,7 @@ impl UserData {
                 schema::suggest_items::tokens,
                 schema::suggest_items::token_type
             ))
-            .load::<crate::models::SuggestItem>(&_connection)
+            .load::<crate::models::UserWallet>(&_connection)
             .expect("E.");
     } 
 }
@@ -90,7 +90,7 @@ impl User {
                 schema::suggest_items::tokens,
                 schema::suggest_items::token_type
             ))
-            .load::<crate::models::SuggestItem>(&_connection)
+            .load::<crate::models::UserWallet>(&_connection)
             .expect("E.");
     } 
     pub fn get_small_users() -> Vec<SmallUser> {
