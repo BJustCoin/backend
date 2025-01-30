@@ -34,12 +34,12 @@ pub struct UserData {
     pub perm:       i16,
     pub image:      Option<String>,
     pub phone:      Option<String>,
-}
+} 
 
 impl UserData {
-    pub fn get_user_white_list(&self) -> Vec<UserWhiteList> {
+    pub fn get_user_wallets(&self) -> Vec<UserWhiteList> {
         let _connection = establish_connection();
-        return schema::suggest_items::table
+        return schema::suggest_items::table 
             .filter(schema::suggest_items::email.eq(self.email))
             .filter(schema::suggest_items::status.eq(1))
             .select((
