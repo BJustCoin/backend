@@ -37,7 +37,7 @@ pub struct UserData {
 } 
 
 impl UserData {
-    pub fn get_user_wallets(&self) -> Vec<UserWhiteList> {
+    pub fn get_user_wallets(&self) -> Vec<UserWallet> {
         let _connection = establish_connection();
         return schema::suggest_items::table 
             .filter(schema::suggest_items::email.eq(self.email))

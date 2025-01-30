@@ -55,21 +55,6 @@ pub fn admin_routes(config: &mut web::ServiceConfig) {
 }
 
 
-pub async fn reject_white_lists(req: HttpRequest, data: Json<crate::models::ApplicationIdsJson>) -> impl Responder {
-    if is_signed_in(&req) {
-        let _request_user = get_current_user(&req);
-        crate::models::SuggestItem::reject_white_lists(data);
-    }
-    HttpResponse::Ok()
-}
-pub async fn approve_white_lists(req: HttpRequest, data: Json<crate::models::ApplicationsJson>) -> impl Responder {
-    if is_signed_in(&req) {
-        let _request_user = get_current_user(&req);
-        crate::models::SuggestItem::approve_white_lists(data);
-    }
-    HttpResponse::Ok()
-}
-
 pub async fn get_new_applications(req: HttpRequest) -> Json<crate::models::SuggestRespData> {
     if is_signed_in(&req) {
         let page = crate::utils::get_page(&req);
