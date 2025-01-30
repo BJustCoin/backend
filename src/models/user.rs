@@ -537,18 +537,6 @@ impl User {
             .first::<SmallUser>(&_connection)
             .expect("E.");
     }
-
-    pub fn get_user_wallets(&self) -> Vec<UserWallet> {
-        let _connection = establish_connection();
-        return schema::new_wallets::table
-            .filter(schema::new_wallets::user_id.eq(self.id))
-            .select((
-                schema::new_wallets::id,
-                schema::new_wallets::link
-            )) 
-            .load::<UserWallet>(&_connection)
-            .expect("E.");
-    }
 }
 
 #[derive(Debug, Deserialize, Insertable)]
