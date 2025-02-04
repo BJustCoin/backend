@@ -420,7 +420,7 @@ pub async fn subscribe(req: HttpRequest, data: Json<SendSubscribeMailJson>) -> i
             })
             .add_from("no-reply@bjustcoin.com")
             .add_subject("Join Us in the Seed Round of BJustCoin ICO!")
-            .add_html("Dear BJustCoin Community Member, We’re thrilled to have you as part of our exciting journey! We are currently in the Seed Round of our ICO, and this is your opportunity to be an integral part of the growth and future of BJustCoin. Feel free to join us and make your purchase via the official ICO link: https://etherscan.io/address/0x30C48aFA933737b04cE3BCc82fF51c3330F0461C. Your support and belief in our vision mean the world to us, and we’re excited to build the future together with you. Let’s make it happen! Warm regards, The BJustCoin Team")
+            .add_html("Dear BJustCoin Community Member, We’re thrilled to have you as part of our exciting journey! We are currently in the Seed Round of our ICO, and this is your opportunity to be an integral part of the growth and future of BJustCoin. Feel free to join us and make your purchase via the official ICO link: https://etherscan.io/address/0xf86082F6bf8BD9FFC02755f65FC3d7eC7d1A0ffc. Your support and belief in our vision mean the world to us, and we’re excited to build the future together with you. Let’s make it happen! Warm regards, The BJustCoin Team")
             .add_from_name("BJustcoin Team")
             .add_header("x-cool".to_string(), "indeed")
             .add_x_smtpapi(&x_smtpapi);
