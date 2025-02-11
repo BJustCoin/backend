@@ -143,7 +143,7 @@ fn find_user(email: String, password: String) -> Result<User, AuthError> {
     let user_some = User::get_user_with_email(&email); 
     if user_some.is_ok() { 
         let _user = user_some.expect("Error.");
-        if let Ok(matching) = verify(&user.password, &password) {
+        if let Ok(matching) = verify(&_user.password, &password) {
             if matching {
                 return Ok(_user);
             }
