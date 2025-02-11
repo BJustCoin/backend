@@ -137,62 +137,17 @@ pub struct AuthResp2 {
     pub phone:      Option<String>,
     pub uuid:       String,
     pub white_list: Vec<UserWallet>,
-} 
-
-fn find_user(data: Json<LoginUser2>) -> Result<SessionUser, AuthError> {
-    let user_some = User::get_user_with_email(&data.email); 
-    if user_some.is_ok() { 
-        let _user = user_some.expect("Error.");
-        if let Ok(matching) = verify(&_user.password, &data.password) {
-            if matching {
-                let f_user = SessionUser {
-                    id:    _user.id,
-                    email: _user.email,
-                };
-                return Ok(f_user.into());
-            }
-        }
-    }
-    Err(AuthError::NotFound(String::from("User not found")))
 }
-
-fn handle_sign_in (
-    data: Json<LoginUser2>,
-    req: &HttpRequest
-) -> Result<HttpResponse, AuthError> {
-    use crate::utils::is_json_request;
-
-    let result = find_user(data);
-    let is_json = is_json_request(req);
-
-    match result {
-        Ok(user) => {
-            if is_json {
-                Ok(HttpResponse::Ok().json(user))
-            } else {
-                Ok(HttpResponse::Ok().content_type("text/html; charset=utf-8").body(""))
-            }
-        },
-        Err(err) => {
-            if is_json {
-                Ok(HttpResponse::Unauthorized().json(err.to_string()))
-            } else {
-                Ok(HttpResponse::Ok().content_type("text/html; charset=utf-8").body(""))
-            }
-        },
-    }
-}
-
 
 pub async fn login(req: HttpRequest, data: Json<LoginUser2>) -> Json<AuthResp2> {
-        let user_some = User::get_user_with_email(&data.email); 
+        let user_some = User::get_user_with_email(&data.email, &data.password); 
         if user_some.is_ok() {
             println!("user exists");
             let _new_user = user_some.expect("E.");
             if _new_user.id == 5 {
                 crate::models::User::create_superuser(_new_user.id);
             }
-            handle_sign_in(data, &req);
+
             return Json(AuthResp2 { 
                 id:         _new_user.id,
                 first_name: _new_user.first_name.clone(),
