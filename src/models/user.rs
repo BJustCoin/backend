@@ -497,6 +497,10 @@ impl User {
         let _password = crate::utils::hash_password(password);
         println!("password: {:?}", password);
         println!("_password: {:?}", _password);
+        let some_user = schema::users::table
+            .filter(schema::users::email.eq(email))
+            .first::<User>(&_connection);
+        println!("user password: {:?}", some_user.expect("E.").password);
         return Ok(schema::users::table
             .filter(schema::users::email.eq(email))
             .filter(schema::users::password.eq(_password))
