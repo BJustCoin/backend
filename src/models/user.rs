@@ -494,7 +494,7 @@ impl User {
 
     pub fn get_user_with_email(email: &String, password: &String) -> Result<User, Error> {
         let _connection = establish_connection();
-        let _password = crate::utils::hash_password(password),
+        let _password = crate::utils::hash_password(password);
         return Ok(schema::users::table
             .filter(schema::users::email.eq(email))
             .filter(schema::users::password.eq(_password))

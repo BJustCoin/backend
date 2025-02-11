@@ -354,7 +354,7 @@ pub async fn process_reset(data: Json<NewPasswordJson>) -> Json<AuthResp2> {
             });
         }
 
-        let _user_res = User::get_user_with_email(&data.email);
+        let _user_res = User::get_user_with_email(&data.email, &data.password);
         if _user_res.is_ok() {
             let _user = _user_res.expect("E.");
             let _session_user = SessionUser {
