@@ -139,17 +139,13 @@ pub struct AuthResp2 {
     pub white_list: Vec<UserWallet>,
 }
 
-fn find_user(email: String, password: String) -> Result<SessionUser, AuthError> {
+fn find_user(email: String, password: String) -> Result<User, AuthError> {
     let user_some = User::get_user_with_email(&email); 
     if user_some.is_ok() { 
         let _user = user_some.expect("Error.");
         if let Ok(matching) = verify(&user.password, &password) {
             if matching {
-                let f_user = SessionUser {
-                    id:     _user.id,
-                    email: _user.email,
-                };
-                return Ok(f_user.into());
+                return Ok(_user);
             }
         }
     }
@@ -365,7 +361,7 @@ pub async fn process_reset(data: Json<NewPasswordJson>) -> Json<AuthResp2> {
                 white_list: Vec::new(),
             });
         }
-        
+
         let result = find_user(data.email.clone(), data.password.clone());
         match result {
             Ok(_new_user) => {
