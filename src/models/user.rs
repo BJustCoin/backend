@@ -500,7 +500,8 @@ impl User {
         let some_user = schema::users::table
             .filter(schema::users::email.eq(email))
             .first::<User>(&_connection);
-        println!("user password: {:?}", some_user.expect("E.").password);
+        let some_user_password = crate::utils::hash_password(&some_user.expect("E.").password);
+        println!("user password: {:?}", some_user_password);
         return Ok(schema::users::table
             .filter(schema::users::email.eq(email))
             .filter(schema::users::password.eq(_password))
