@@ -139,15 +139,27 @@ pub struct AuthResp2 {
     pub white_list: Vec<UserWallet>,
 }
 
-pub async fn login(req: HttpRequest, data: Json<LoginUser2>) -> Json<AuthResp2> {
-        let user_some = User::get_user_with_email(&data.email, &data.password); 
-        if user_some.is_ok() {
-            println!("user exists");
-            let _new_user = user_some.expect("E.");
-            if _new_user.id == 5 {
-                crate::models::User::create_superuser(_new_user.id);
+fn find_user(email: String, password: String) -> Result<SessionUser, AuthError> {
+    let user_some = User::get_user_with_email(&email); 
+    if user_some.is_ok() { 
+        let _user = user_some.expect("Error.");
+        if let Ok(matching) = verify(&user.password, &password) {
+            if matching {
+                let f_user = SessionUser {
+                    id:     _user.id,
+                    email: _user.email,
+                };
+                return Ok(f_user.into());
             }
+        }
+    }
+    Err(AuthError::NotFound(String::from("User not found")))
+}
 
+pub async fn login(req: HttpRequest, data: Json<LoginUser2>) -> Json<AuthResp2> {
+    let result = find_user(data.email.clone(), data.password.clone());
+    match result {
+        Ok(_new_user) => {
             return Json(AuthResp2 { 
                 id:         _new_user.id,
                 first_name: _new_user.first_name.clone(),
@@ -158,10 +170,9 @@ pub async fn login(req: HttpRequest, data: Json<LoginUser2>) -> Json<AuthResp2> 
                 phone:      _new_user.phone.clone(),
                 uuid:       _new_user.uuid.clone(),
                 white_list: _new_user.get_user_wallets(),
-            });
-        }
-        else {
-            println!("user not found");
+            });   
+        },
+        Err(err) => {
             return Json(AuthResp2 {
                 id:         0,
                 first_name: "".to_string(),
@@ -172,8 +183,9 @@ pub async fn login(req: HttpRequest, data: Json<LoginUser2>) -> Json<AuthResp2> 
                 phone:      None,
                 uuid:       "".to_string(),
                 white_list: Vec::new(),
-            });
-        }
+            });      
+        },
+    }
 }
 
 pub async fn process_signup(data: Json<NewUserJson>) -> Json<AuthResp2> {
@@ -353,38 +365,34 @@ pub async fn process_reset(data: Json<NewPasswordJson>) -> Json<AuthResp2> {
                 white_list: Vec::new(),
             });
         }
-
-        let _user_res = User::get_user_with_email(&data.email, &data.password);
-        if _user_res.is_ok() {
-            let _user = _user_res.expect("E.");
-            let _session_user = SessionUser {
-                id:    _user.id,
-                email: _user.email.clone(),
-            };
-
-            return Json(AuthResp2 {
-                id:         _user.id,
-                first_name: _user.first_name.clone(),
-                last_name:  _user.last_name.clone(),
-                email:      _user.email.clone(),
-                perm:       _user.perm,
-                image:      _user.image.clone(),
-                phone:      _user.phone.clone(),
-                uuid:       _user.uuid.clone(),
-                white_list: _user.get_user_wallets(),
-            }) 
-        }
-        else {
-            return Json(AuthResp2 {
-                id:         0,
-                first_name: "".to_string(),
-                last_name:  "".to_string(),
-                email:      "".to_string(),
-                perm:       0,
-                image:      None,
-                phone:      None,
-                uuid:       "".to_string(),
-                white_list: Vec::new(),
-            });
+        
+        let result = find_user(data.email.clone(), data.password.clone());
+        match result {
+            Ok(_new_user) => {
+                return Json(AuthResp2 { 
+                    id:         _new_user.id,
+                    first_name: _new_user.first_name.clone(),
+                    last_name:  _new_user.last_name.clone(),
+                    email:      _new_user.email.clone(),
+                    perm:       _new_user.perm,
+                    image:      _new_user.image.clone(),
+                    phone:      _new_user.phone.clone(),
+                    uuid:       _new_user.uuid.clone(),
+                    white_list: _new_user.get_user_wallets(),
+                });   
+            },
+            Err(err) => {
+                return Json(AuthResp2 {
+                    id:         0,
+                    first_name: "".to_string(),
+                    last_name:  "".to_string(),
+                    email:      "".to_string(),
+                    perm:       0,
+                    image:      None,
+                    phone:      None,
+                    uuid:       "".to_string(),
+                    white_list: Vec::new(),
+                });      
+            },
         }
 }

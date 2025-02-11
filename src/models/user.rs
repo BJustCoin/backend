@@ -492,19 +492,11 @@ impl User {
         }))
     }
 
-    pub fn get_user_with_email(email: &String, password: &String) -> Result<User, Error> { 
+    pub fn get_user_with_email(email: &String) -> Result<User, Error> { 
         let _connection = establish_connection();
-        let _password = crate::utils::hash_password(password);
-        println!("password: {:?}", password);
-        println!("_password: {:?}", _password);
-        let some_user = schema::users::table
-            .filter(schema::users::email.eq(email))
-            .first::<User>(&_connection);
-        let some_user_password = crate::utils::hash_password(&some_user.expect("E.").password);
-        println!("user password: {:?}", some_user_password);
+        
         return Ok(schema::users::table
             .filter(schema::users::email.eq(email))
-            .filter(schema::users::password.eq(_password))
             .first::<User>(&_connection)?);
     }
     pub fn create(form: Json<NewUserJson>) -> User {
