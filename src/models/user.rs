@@ -492,7 +492,7 @@ impl User {
         }))
     }
 
-    pub fn get_user_with_email(email: &String) -> Result<User, Error> { 
+    pub fn get_user_with_email(email: String) -> Result<User, Error> { 
         let _connection = establish_connection();
         
         return Ok(schema::users::table
