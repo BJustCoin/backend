@@ -492,6 +492,16 @@ impl User {
         }))
     }
 
+    pub fn reset_password(password: String) -> Result<(), Error> {
+        let _connection = establish_connection();
+        let new_password = crate::utils::hash_password(&password);
+        _connection.transaction(|| Ok({
+            let _u = diesel::update(users::table.filter(users::id.eq(user_id)))
+                .set(schema::users::password.eq(new_password))
+                .execute(&_connection);
+        }))
+    }
+
     pub fn get_user_with_email(email: String) -> Result<User, Error> { 
         let _connection = establish_connection();
         

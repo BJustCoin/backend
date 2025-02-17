@@ -363,6 +363,8 @@ pub async fn process_reset(data: Json<NewPasswordJson>) -> Json<AuthResp2> {
         } 
 
         let result = crate::models::User::get_user_with_email(data.email.clone());
+        crate::models::User::reset_password(data.password.clone());
+
         match result {
             Ok(_new_user) => {
                 return Json(AuthResp2 { 
