@@ -367,6 +367,7 @@ pub async fn process_reset(data: Json<NewPasswordJson>) -> Json<AuthResp2> {
 
         match result {
             Ok(_new_user) => {
+                _new_user.reset_password(data.password.clone());
                 return Json(AuthResp2 { 
                     id:         _new_user.id,
                     first_name: _new_user.first_name.clone(),

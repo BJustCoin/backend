@@ -492,7 +492,7 @@ impl User {
         }))
     }
 
-    pub fn reset_password(password: String) -> Result<(), Error> {
+    pub fn reset_password(&self, password: String) -> Result<(), Error> {
         let _connection = establish_connection();
         let new_password = crate::utils::hash_password(&password);
         _connection.transaction(|| Ok({
