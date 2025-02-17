@@ -496,7 +496,7 @@ impl User {
         let _connection = establish_connection();
         let new_password = crate::utils::hash_password(&password);
         _connection.transaction(|| Ok({
-            let _u = diesel::update(users::table.filter(users::id.eq(user_id)))
+            let _u = diesel::update(users::table.filter(users::id.eq(self.id)))
                 .set(schema::users::password.eq(new_password))
                 .execute(&_connection);
         }))
