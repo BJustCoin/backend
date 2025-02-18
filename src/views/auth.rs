@@ -107,12 +107,6 @@ pub struct NewUserJson {
     pub password:   String,
     pub token:      String,
 }
-#[derive(Deserialize, Serialize, Debug)]
-pub struct NewPasswordJson {
-    pub email:    String,
-    pub password: String,
-    pub token:    String,
-} 
 
 #[derive(Deserialize, Serialize, Debug, Queryable)]
 pub struct AuthResp {
@@ -301,9 +295,16 @@ pub async fn process_signup(data: Json<NewUserJson>) -> Json<AuthResp2> {
         })
 }
 
+#[derive(Deserialize, Serialize, Debug)]
+pub struct NewPasswordJson {
+    pub email:    String,
+    pub password: String,
+    pub token:    String,
+} 
 pub async fn process_reset(data: Json<NewPasswordJson>) -> Json<AuthResp2> {
         let token_id_res = hex::decode(data.token.clone());
         if token_id_res.is_err() {
+            println!("hex decode token error");
             return Json(AuthResp2 {
                 id:         0,
                 first_name: "".to_string(),
@@ -320,6 +321,7 @@ pub async fn process_reset(data: Json<NewPasswordJson>) -> Json<AuthResp2> {
         
         let token_res = EmailVerificationToken::find(&token_id);
         if token_res.is_err() {
+            println!("EmailVerificationToken not found");
             return Json(AuthResp2 {
                 id:         0,
                 first_name: "".to_string(),
@@ -335,6 +337,7 @@ pub async fn process_reset(data: Json<NewPasswordJson>) -> Json<AuthResp2> {
         let token = token_res.expect("E.");
 
         if token.email != data.email {
+            println!("token.email != data.email");
             return Json(AuthResp2 {
                 id:         0,
                 first_name: "".to_string(),
@@ -349,6 +352,7 @@ pub async fn process_reset(data: Json<NewPasswordJson>) -> Json<AuthResp2> {
         }
 
         if token.expires_at < Utc::now().naive_utc() {
+            println!("token.expires_at < Utc::now().naive_utc()");
             return Json(AuthResp2 {
                 id:         0,
                 first_name: "".to_string(),
@@ -366,7 +370,9 @@ pub async fn process_reset(data: Json<NewPasswordJson>) -> Json<AuthResp2> {
 
         match result {
             Ok(_new_user) => {
+                println!("result ok!");
                 _new_user.reset_password(data.password.clone());
+                println!("reset_password!");
                 return Json(AuthResp2 { 
                     id:         _new_user.id,
                     first_name: _new_user.first_name.clone(),
@@ -380,6 +386,7 @@ pub async fn process_reset(data: Json<NewPasswordJson>) -> Json<AuthResp2> {
                 });   
             },
             Err(err) => {
+                println!("user not found!");
                 return Json(AuthResp2 {
                     id:         0,
                     first_name: "".to_string(),
