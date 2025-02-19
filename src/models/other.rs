@@ -74,12 +74,9 @@ pub struct ApplicationIdsJson {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct ApplicationUser {
-    pub id:          i32,
     pub first_name:  String,
-    pub middle_name: String,
     pub last_name:   String,
     pub email:       String,
-    pub address:     String,
 }
 
 impl SuggestItem {
