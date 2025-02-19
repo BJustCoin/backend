@@ -84,15 +84,16 @@ pub struct ApplicationUser {
 
 impl SuggestItem {
     pub fn get_user_data(id: i32) -> ApplicationUser {
-        let user_id = schema::suggest_items::table
+        let _connection = establish_connection();
+        return schema::suggest_items::table
             .filter(schema::suggest_items::id.eq(id))
             .select((
-                schema::suggest_items::first_name.eq(first_name),
-                schema::suggest_items::last_name.eq(last_name),
-                schema::suggest_items::email.eq(email),
+                schema::suggest_items::first_name,
+                schema::suggest_items::last_name,
+                schema::suggest_items::email,
             ))
             .first::<SuggestItem>(&_connection)
-        crate::utils::get_user()
+            .expect("E");
     }
     pub fn agree_application(id: i32, tokens: String, ico_stage: i16) -> () {
         let _connection = establish_connection();
