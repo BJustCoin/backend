@@ -281,7 +281,7 @@ pub async fn agree_application(req: HttpRequest, data: Json<ReqWallet>) -> impl 
         let _request_user = get_current_user(&req);
         if _request_user.is_superuser() {
             crate::models::SuggestItem::agree_application(data.id, data.tokens.clone(), data.ico_stage);
-            let user_data = SuggestItem::get_user_data(data.id);
+            let user_data = crate::models::SuggestItem::get_user_data(data.id);
             
             dotenv::dotenv().ok(); 
             let api_key = std::env::var("EMAIL_KEY")

@@ -92,7 +92,7 @@ impl SuggestItem {
                 schema::suggest_items::last_name,
                 schema::suggest_items::email,
             ))
-            .first::<SuggestItem>(&_connection)
+            .first::<ApplicationUser>(&_connection)
             .expect("E");
     }
     pub fn agree_application(id: i32, tokens: String, ico_stage: i16) -> () {
