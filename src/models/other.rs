@@ -72,7 +72,28 @@ pub struct ApplicationIdsJson {
     pub ids: Vec<i32>,
 } 
 
+#[derive(Debug, Deserialize, Serialize)]
+pub struct ApplicationUser {
+    pub id:          i32,
+    pub first_name:  String,
+    pub middle_name: String,
+    pub last_name:   String,
+    pub email:       String,
+    pub address:     String,
+}
+
 impl SuggestItem {
+    pub fn get_user_data(id: i32) -> ApplicationUser {
+        let user_id = schema::suggest_items::table
+            .filter(schema::suggest_items::id.eq(id))
+            .select((
+                schema::suggest_items::first_name.eq(first_name),
+                schema::suggest_items::last_name.eq(last_name),
+                schema::suggest_items::email.eq(email),
+            ))
+            .first::<SuggestItem>(&_connection)
+        crate::utils::get_user()
+    }
     pub fn agree_application(id: i32, tokens: String, ico_stage: i16) -> () {
         let _connection = establish_connection();
         let item_some = schema::suggest_items::table
