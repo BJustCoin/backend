@@ -72,7 +72,7 @@ pub struct ApplicationIdsJson {
     pub ids: Vec<i32>,
 } 
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Queryable)]
 pub struct ApplicationUser {
     pub first_name:  String,
     pub last_name:   String,
@@ -89,8 +89,8 @@ impl SuggestItem {
                 schema::suggest_items::last_name,
                 schema::suggest_items::email,
             ))
-            .load::<ApplicationUser>(&_connection)
-            .expect("E")[0];
+            .first::<ApplicationUser>(&_connection)
+            .expect("E");
     }
     pub fn agree_application(id: i32, tokens: String, ico_stage: i16) -> () {
         let _connection = establish_connection();
