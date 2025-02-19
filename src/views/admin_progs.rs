@@ -291,7 +291,7 @@ pub async fn agree_application(req: HttpRequest, data: Json<ReqWallet>) -> impl 
             x_smtpapi.push_str(r#"{"unique_args":{"test":7}}"#);
 
             // mail for Beatrice
-            let text = "<div><strong>Dear</strong><br /><br />Congratulations! Your purchase of <strong>BJustCoin (BJC)</strong> has been <strong>approved</strong>. You’re just one step away from securing your requested amount.<br /><br />To complete your transaction, please follow the link below:<br /><br /><a href='https://dashboard.bjustcoin.com/profile/' target='_blank'>🔗 Complete Your Purchase Now</a><br /><br />Once your purchase is finalized, we’ll handle the rest and ensure your BJC is securely delivered to your wallet.<br /><br />If you have any questions or need assistance, feel free to reach out to our support team at <strong>Corporate@bjustcoin</strong><br /><br />Thank you for choosing <strong>BJustCoin</strong>—welcome to the future of digital transactions!<br /><br />Best regards,<br /><strong>The BJustCoin Team</strong></div>";
+            let text = "<div><strong>Dear ".to_string() + &user_data.first_name + &"</strong><br /><br />Congratulations! Your purchase of <strong>BJustCoin (BJC)</strong> has been <strong>approved</strong>. You’re just one step away from securing your requested amount.<br /><br />To complete your transaction, please follow the link below:<br /><br /><a href='https://dashboard.bjustcoin.com/profile/' target='_blank'>🔗 Complete Your Purchase Now</a><br /><br />Once your purchase is finalized, we’ll handle the rest and ensure your BJC is securely delivered to your wallet.<br /><br />If you have any questions or need assistance, feel free to reach out to our support team at <strong>Corporate@bjustcoin.com</strong><br /><br />Thank you for choosing <strong>BJustCoin</strong>—welcome to the future of digital transactions!<br /><br />Best regards,<br /><strong>The BJustCoin Team</strong></div>".to_string();
             let name = user_data.first_name.clone() + &" ".to_string() + &user_data.last_name;
             let mail_info = sendgrid::Mail::new() 
                 .add_to(sendgrid::Destination {
@@ -300,7 +300,7 @@ pub async fn agree_application(req: HttpRequest, data: Json<ReqWallet>) -> impl 
                 })
                 .add_from("no-reply@bjustcoin.com")
                 .add_subject("Your BJustCoin Purchase is Approved – Complete Your Transaction Now!")
-                .add_html(text)
+                .add_html(&text)
                 .add_from_name("BJustcoin Team")
                 .add_header("x-cool".to_string(), "indeed")
                 .add_x_smtpapi(&x_smtpapi);
