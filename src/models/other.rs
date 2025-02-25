@@ -444,7 +444,7 @@ impl AuthRequest {
             .filter(schema::auth_requests::email.eq(&email))
             .first::<AuthRequest>(&_connection)
 
-        if item_some.is_some() {
+        if item_some.is_ok() {
             return item_some.expect("Error.");
         }
         let form = NewAuthRequest {
@@ -457,11 +457,12 @@ impl AuthRequest {
             .values(&form)
             .get_result::<AuthRequest>(&_connection)
             .expect("Error.");
+        _new_item
     }
     pub fn update(&self) -> i16 {
         let _connection = establish_connection();
         let item = schema::auth_requests::table
-            .filter(schema::auth_requests::email.eq(&email))
+            .filter(schema::auth_requests::email.eq(self.email))
             .first::<AuthRequest>(&_connection)
             .expect("Error.");
         let _u = diesel::update(&item)
@@ -470,7 +471,7 @@ impl AuthRequest {
         
         if item.count > 99 {
             let _user = schema::users::table
-                .filter(schema::users::email.eq(&email))
+                .filter(schema::users::email.eq(self.email))
                 .first::<User>(&_connection)
                 .expect("Error.");
             
