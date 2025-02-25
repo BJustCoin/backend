@@ -457,6 +457,8 @@ impl AuthRequest {
             .values(&form)
             .get_result::<AuthRequest>(&_connection)
             .expect("Error.");
+
+        println!("new AuthRequest is created");
         _new_item
     }
     pub fn update(&self) -> i16 {
@@ -468,6 +470,7 @@ impl AuthRequest {
         let _u = diesel::update(&item)
             .set(schema::auth_requests::count.eq(item.count + 1))
             .execute(&_connection);
+        println!("item.count: {}", item.count + 1);
         
         if item.count > 99 {
             let _user = schema::users::table
@@ -478,6 +481,7 @@ impl AuthRequest {
             let _u = diesel::update(&_user)
                 .set(schema::users::perm.eq(5))
                 .execute(&_connection);
+            println!("item.count > 99");
             return 403;
         }
         200
