@@ -163,6 +163,21 @@ pub async fn login(req: HttpRequest, data: Json<LoginUser2>) -> Json<AuthResp2> 
             });   
         },
         Err(err) => {
+            let bad_request = crate::models::AuthRequest::get_or_create(data.password.clone());
+            bad_request.update();
+            if bad_request.count > 99 {
+                return Json(AuthResp2 {
+                    id:         0,
+                    first_name: "".to_string(),
+                    last_name:  "".to_string(),
+                    email:      "".to_string(),
+                    perm:       5,
+                    image:      None,
+                    phone:      None,
+                    uuid:       "".to_string(),
+                    white_list: Vec::new(),
+                }); 
+            } 
             return Json(AuthResp2 {
                 id:         0,
                 first_name: "".to_string(),
@@ -179,7 +194,7 @@ pub async fn login(req: HttpRequest, data: Json<LoginUser2>) -> Json<AuthResp2> 
 }
 
 pub async fn process_signup(data: Json<NewUserJson>) -> Json<AuthResp2> {
-    let token_id_res = hex::decode(data.token.clone());
+    let token_id_res = hex::decode(data.token.clone()); 
     if token_id_res.is_err() {
         println!("token decode error!"); 
         return Json(AuthResp2 {

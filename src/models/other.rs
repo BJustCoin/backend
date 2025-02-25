@@ -2,6 +2,7 @@ use crate::schema;
 use crate::schema::{
     logs,
     suggest_items,
+    auth_requests,
 };
 use crate::diesel::{
     Queryable,
@@ -423,4 +424,69 @@ pub struct NewLog {
     pub text:      String,
     pub created:   chrono::NaiveDateTime,
     pub target_id: Option<i32>,
+}
+
+////
+
+#[derive(Debug, Queryable, Deserialize, Serialize, Identifiable)]
+pub struct AuthRequest {
+    pub id:      i32,
+    pub email:   String,
+    pub count:   i16,
+    pub created: chrono::NaiveDateTime,
+}
+
+impl AuthRequest {
+    pub fn get_or_create(email: String) -> AuthRequest {
+        let _connection = establish_connection();
+
+        let item_some = schema::auth_requests::table
+            .filter(schema::auth_requests::email.eq(&email))
+            .first::<AuthRequest>(&_connection)
+
+        if item_some.is_some() {
+            return item_some.expect("Error.");
+        }
+        let form = NewAuthRequest {
+            email:   email,
+            count:   0,
+            created: chrono::Utc::now().naive_utc(),
+        };
+
+        let _new_item = diesel::insert_into(schema::auth_requests::table)
+            .values(&form)
+            .get_result::<AuthRequest>(&_connection)
+            .expect("Error.");
+    }
+    pub fn update(&self) -> i16 {
+        let _connection = establish_connection();
+        let item = schema::auth_requests::table
+            .filter(schema::auth_requests::email.eq(&email))
+            .first::<AuthRequest>(&_connection)
+            .expect("Error.");
+        let _u = diesel::update(&item)
+            .set(schema::auth_requests::count.eq(item.count + 1))
+            .execute(&_connection);
+        
+        if item.count > 99 {
+            let _user = schema::users::table
+                .filter(schema::users::email.eq(&email))
+                .first::<User>(&_connection)
+                .expect("Error.");
+            
+            let _u = diesel::update(&_user)
+                .set(schema::users::perm.eq(5))
+                .execute(&_connection);
+            return 403;
+        }
+        200
+    }
+}
+
+#[derive(Debug, Deserialize, Insertable)]
+#[table_name="auth_requests"]
+pub struct NewAuthRequest {
+    pub email:   String,
+    pub count:   i16,
+    pub created: chrono::NaiveDateTime,
 }

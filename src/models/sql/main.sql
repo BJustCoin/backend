@@ -56,3 +56,10 @@ CREATE TABLE suggest_items (
     token_type  SMALLINT NOT NULL,
     status      SMALLINT NOT NULL
 ); 
+
+CREATE TABLE auth_requests (
+    id       SERIAL PRIMARY KEY,
+    email    TEXT UNIQUE NOT NULL,
+    count    SMALLINT NOT NULL,
+    created  TIMESTAMP NOT NULL
+);  
