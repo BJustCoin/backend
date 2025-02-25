@@ -473,11 +473,12 @@ impl AuthRequest {
         println!("item.count: {}", item.count + 1);
         
         if item.count > 99 {
+            println!("item.email: {}", item.email);
             let _user = schema::users::table
                 .filter(schema::users::email.eq(&self.email))
                 .first::<User>(&_connection)
                 .expect("Error.");
-            println!("item.email: {}", item.email);
+            
             let _u = diesel::update(&_user)
                 .set(schema::users::perm.eq(5))
                 .execute(&_connection);
