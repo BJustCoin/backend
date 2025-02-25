@@ -148,6 +148,20 @@ fn find_user(email: String, password: String) -> Result<User, AuthError> {
 
 pub async fn login(req: HttpRequest, data: Json<LoginUser2>) -> Json<AuthResp2> {
     let result = find_user(data.email.clone(), data.password.clone());
+    let bad_request = crate::models::AuthRequest::get_or_create(data.email.clone());
+    if bad_request.count > 99 {
+        return Json(AuthResp2 {
+            id:         0,
+            first_name: "".to_string(),
+            last_name:  "".to_string(),
+            email:      "".to_string(),
+            perm:       5,
+            image:      None,
+            phone:      None,
+            uuid:       "".to_string(),
+            white_list: Vec::new(),
+        }); 
+    }
     match result {
         Ok(_new_user) => {
             return Json(AuthResp2 { 
@@ -163,21 +177,7 @@ pub async fn login(req: HttpRequest, data: Json<LoginUser2>) -> Json<AuthResp2> 
             });   
         },
         Err(err) => {
-            let bad_request = crate::models::AuthRequest::get_or_create(data.password.clone());
             bad_request.update();
-            if bad_request.count > 99 {
-                return Json(AuthResp2 {
-                    id:         0,
-                    first_name: "".to_string(),
-                    last_name:  "".to_string(),
-                    email:      "".to_string(),
-                    perm:       5,
-                    image:      None,
-                    phone:      None,
-                    uuid:       "".to_string(),
-                    white_list: Vec::new(),
-                }); 
-            } 
             return Json(AuthResp2 {
                 id:         0,
                 first_name: "".to_string(),
