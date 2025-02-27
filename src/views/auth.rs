@@ -93,9 +93,11 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
         Err(err) => println!("Error: {}", err),
         Ok(body) => println!("Response: {:?}", body),
     };
-    Ok(HttpResponse::Ok().json(serde_json::json!({
-        message: "Verification email sent".to_string(),
-    })))
+    Ok(HttpResponse::Ok().json(serde_json::json!(
+        EmailResp{
+            message: "Verification email sent".to_string(),
+        }
+    )));
 }
 
 
