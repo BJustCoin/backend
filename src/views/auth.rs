@@ -58,7 +58,7 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
     if user_some.is_ok() {
         return Ok(HttpResponse::Ok().json(serde_json::json!(
             EmailResp{
-                message: "The profile already exists by such mail.",
+                message: "The profile already exists by such mail.".to_string(),
             }
         )));
     }
@@ -93,14 +93,8 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
         Err(err) => println!("Error: {}", err),
         Ok(body) => println!("Response: {:?}", body),
     };
-
-    Ok(HttpResponse::Ok().json(serde_json::json!(
-        EmailResp{
-            message: "Verification email sent",
-        }
-    )));
     Ok(HttpResponse::Ok().json(serde_json::json!({
-        message: "Verification email sent",
+        message: "Verification email sent".to_string(),
     })))
 }
 
