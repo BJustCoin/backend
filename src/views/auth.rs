@@ -97,7 +97,7 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
         EmailResp{
             message: "Verification email sent".to_string(),
         }
-    )));
+    )))
 }
 
 
