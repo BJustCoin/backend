@@ -212,7 +212,6 @@ impl SuggestItem {
     pub fn create (
         form:        Json<NewSuggestJson>,
         first_name:  String,
-        middle_name: Option<String>,
         last_name:   String,
         email:       String,
     ) -> () {
@@ -226,7 +225,7 @@ impl SuggestItem {
         }
         let form = NewSuggestItem {
             first_name:  first_name,
-            middle_name: middle_name,
+            middle_name: "".to_string(),
             last_name:   last_name,
             email:       email,
             phone:       form.phone.clone(),

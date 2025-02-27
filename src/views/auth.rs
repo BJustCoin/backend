@@ -41,9 +41,9 @@ struct EmailUserReq {
     email: String,
 } 
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 struct EmailResp {
-    status:  String,
+    message:  String,
 }
 #[derive(Deserialize, Serialize)]
 struct EmailUser {
@@ -96,7 +96,7 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
 
     Ok(HttpResponse::Ok().json(serde_json::json!(
         EmailResp{
-            "Verification email sent": "Verification email sent",
+            message: "Verification email sent",
         }
     )));
     Ok(HttpResponse::Ok().json(serde_json::json!({

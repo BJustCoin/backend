@@ -373,7 +373,6 @@ pub async fn create_suggest_item(req: HttpRequest, data: Json<crate::models::New
         crate::models::SuggestItem::create (
             data, 
             _request_user.first_name.clone(),
-            _request_user.middle_name.clone(),
             _request_user.last_name.clone(),
             _request_user.email.clone()
         );
