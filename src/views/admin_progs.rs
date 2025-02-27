@@ -349,9 +349,9 @@ pub async fn create_suggest_item(req: HttpRequest, data: Json<crate::models::New
 
         // mail for request user
         let text = "Your application for token purchase was submitted! Thank you for your interest! We’re thrilled by the incredible response and appreciate your enthusiasm. Due to the high volume of demand, we are currently experiencing a slight delay in processing orders. Rest assured, our team is working tirelessly to get your purchases to you as quickly as possible. Thank you for your patience and support—it means the world to us. Stay tuned for updates, and we can’t wait for you to complete your purchase of BJustCoin.".to_string();
-        let first_name = data.first_name.clone();
-        let last_name = data.last_name.clone();
-        let email = data.email.clone();
+        let first_name = _request_user.first_name.clone();
+        let last_name = _request_user.last_name.clone();
+        let email = _request_user.email.clone();
         let name = first_name + &" ".to_string() + &last_name;
         let mail_info = sendgrid::Mail::new() 
             .add_to(sendgrid::Destination {
@@ -370,7 +370,13 @@ pub async fn create_suggest_item(req: HttpRequest, data: Json<crate::models::New
             Ok(body) => println!("Response: {:?}", body),
         };
         println!("mail send!");
-        crate::models::SuggestItem::create(data);
+        crate::models::SuggestItem::create (
+            data, 
+            _request_user.first_name.clone(),
+            _request_user.middle_name.clone(),
+            _request_user.last_name.clone(),
+            _request_user.email.clone()
+        );
     }
     HttpResponse::Ok()
 }

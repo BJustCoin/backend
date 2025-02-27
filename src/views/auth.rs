@@ -49,15 +49,23 @@ struct EmailResp {
 struct EmailUser {
     name: String,
     email: String,
-}
+} 
 
 async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError> {
     let body = body.into_inner();
 
+    let user_some = User::get_user_with_email(body.email.clone()); 
+    if user_some.is_ok() {
+        return Ok(HttpResponse::Ok().json(serde_json::json!(
+            EmailResp{
+                message: "The profile already exists by such mail.",
+            }
+        )));
+    }
     let token_data = EmailVerificationTokenMessage {
         id:    None, 
         email: body.email.clone(),
-    }; 
+    };
     let token = EmailVerificationToken::create(token_data.clone()).expect("E.");
     let token_string = hex::encode(token.id);
     println!("{}", token_string);
@@ -86,9 +94,13 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
         Ok(body) => println!("Response: {:?}", body),
     };
 
-
+    Ok(HttpResponse::Ok().json(serde_json::json!(
+        EmailResp{
+            "Verification email sent": "Verification email sent",
+        }
+    )));
     Ok(HttpResponse::Ok().json(serde_json::json!({
-        "message": "Verification email sent",
+        message: "Verification email sent",
     })))
 }
 

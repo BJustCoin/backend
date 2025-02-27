@@ -42,15 +42,11 @@ pub struct SuggestRespData {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct NewSuggestJson {
-    pub first_name:  String,
-    pub middle_name: String,
-    pub last_name:   String,
-    pub email:       String,
-    pub phone:       String,
-    pub mobile:      String,
-    pub is_agree:    String,
-    pub address:     String,
-    pub tokens:      String,
+    pub phone:    String,
+    pub mobile:   String,
+    pub is_agree: String,
+    pub address:  String,
+    pub tokens:   String,
 }
 
 
@@ -213,7 +209,13 @@ impl SuggestItem {
         }
     }
 
-    pub fn create(form: Json<NewSuggestJson>) -> () {
+    pub fn create (
+        form:        Json<NewSuggestJson>,
+        first_name:  String,
+        middle_name: Option<String>,
+        last_name:   String,
+        email:       String,
+    ) -> () {
         let _connection = establish_connection();
         let is_agree: bool;
         if &form.is_agree == "on" {
@@ -223,10 +225,10 @@ impl SuggestItem {
             is_agree = false;
         }
         let form = NewSuggestItem {
-            first_name:  form.first_name.clone(),
-            middle_name: form.middle_name.clone(),
-            last_name:   form.last_name.clone(),
-            email:       form.email.clone(),
+            first_name:  first_name,
+            middle_name: middle_name,
+            last_name:   last_name,
+            email:       email,
             phone:       form.phone.clone(),
             mobile:      form.mobile.clone(),
             is_agree:    is_agree,
