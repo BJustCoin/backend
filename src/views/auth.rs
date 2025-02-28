@@ -25,6 +25,7 @@ pub fn auth_routes(config: &mut web::ServiceConfig) {
     config.route("/reset/", web::post().to(process_reset));
     config.route("/login/", web::post().to(login));
     config.route("/invite/", web::post().to(invite));
+    config.route("/invite_reset/", web::post().to(invite_reset));
 }
 
 
@@ -62,6 +63,47 @@ async fn invite(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError>
             }
         )));
     }
+    let token_data = EmailVerificationTokenMessage {
+        id:    None, 
+        email: body.email.clone(),
+    };
+    let token = EmailVerificationToken::create(token_data.clone()).expect("E.");
+    let token_string = hex::encode(token.id);
+    println!("{}", token_string);
+    dotenv::dotenv().ok();
+    let api_key = std::env::var("EMAIL_KEY")
+        .expect("EMAIL_KEY must be set");
+    let sg = sendgrid::SGClient::new(api_key); 
+    let mut x_smtpapi = String::new();
+    x_smtpapi.push_str(r#"{"unique_args":{"test":7}}"#);
+
+    let text = "Our confirmation code - <strong>".to_owned() + &token_string.to_string() + &"</strong>".to_string();
+    let mail_info = sendgrid::Mail::new()
+        .add_to(sendgrid::Destination {
+            address: &body.email,
+            name: &body.name,
+        })
+        .add_from("no-reply@bjustcoin.com")
+        .add_subject("Email confirmation")
+        .add_html(&text)
+        .add_from_name("BJustcoin Team")
+        .add_header("x-cool".to_string(), "indeed")
+        .add_x_smtpapi(&x_smtpapi);
+
+    match sg.send(mail_info).await {
+        Err(err) => println!("Error: {}", err),
+        Ok(body) => println!("Response: {:?}", body),
+    };
+    Ok(HttpResponse::Ok().json(serde_json::json!(
+        EmailResp{
+            message: "Verification email sent".to_string(),
+        }
+    )))
+}
+
+async fn invite_reset(body: web::Json<EmailUserReq>) -> Result<HttpResponse, ApiError> {
+    let body = body.into_inner();
+
     let token_data = EmailVerificationTokenMessage {
         id:    None, 
         email: body.email.clone(),
