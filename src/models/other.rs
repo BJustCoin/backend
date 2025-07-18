@@ -530,7 +530,7 @@ impl Holder {
                 address: i.address.clone(),
                 count:   0,
                 stage:   i.stage.clone(),
-                count2:  i.count,
+                count2:  i.count2.clone(),
             };
     
             let _new = diesel::insert_into(schema::holders::table)
