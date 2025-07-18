@@ -567,7 +567,7 @@ impl Holder {
             .load::<Holder>(&_connection)
             .expect("E.");
     }
-    pub fn get_new_list(page: i64, limit: Option<i64>) -> HolderRespData {
+    pub fn get_list(page: i64, limit: Option<i64>) -> HolderRespData {
         let _limit = get_limit(limit, 20);
         let mut next_page_number = 0;
         let have_next: i64;
