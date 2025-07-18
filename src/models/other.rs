@@ -542,7 +542,7 @@ impl Holder {
         .execute(&_connection)
         .expect("E");
     }
-    pub fn edit(id: i32, count: String, stage: i16) -> () {
+    pub fn edit(id: i32, count: i16, stage: String) -> () {
         let _connection = establish_connection();
         let item_some = schema::holders::table
                 .filter(schema::holders::id.eq(id))
@@ -557,7 +557,7 @@ impl Holder {
                     .execute(&_connection)
                     .expect("E");
             }
-    }
+    }  
     pub fn get(limit: i64, offset: i64) -> Vec<Holder> {
         let _connection = establish_connection();
         return schema::holders::table
