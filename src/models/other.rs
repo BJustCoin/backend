@@ -504,7 +504,7 @@ pub struct NewAuthRequest {
 pub struct Holder {
     pub id:      i32,
     pub address: String,
-    pub count:   String,
+    pub count:   i16,
     pub stage:   String,
     pub count2:  String,
 }
