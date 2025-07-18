@@ -520,7 +520,7 @@ pub struct NewHolder {
     pub stage:   String,
 }
 impl Holder {
-    pub fn create(user_id: String, form: Json<Vec<NewHolder>>) -> i16 {
+    pub fn create(form: Json<Vec<NewHolder>>) -> i16 {
         let _connection = establish_connection();
 
         for i in form.iter() {

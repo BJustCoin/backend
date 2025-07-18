@@ -406,7 +406,7 @@ pub async fn create_holders(req: HttpRequest, data: Json<Vec<crate::models::NewH
 pub struct DataId { 
     pub id: i32,
 }  
-pub async fn delete_holder(req: HttpRequest, data: Json<crate::models::DataId>) -> impl Responder {
+pub async fn delete_holder(req: HttpRequest, data: Json<DataId>) -> impl Responder {
     if is_signed_in(&req) {
         let _request_user = get_current_user(&req);
         crate::models::Holder::delete(data.id);
