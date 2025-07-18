@@ -528,8 +528,9 @@ impl Holder {
         for i in form.iter() {
             let form = NewHolder {
                 address: i.address.clone(),
-                count2:  i.count,
+                count:   0,
                 stage:   i.stage.clone(),
+                count2:  i.count,
             };
     
             let _new = diesel::insert_into(schema::holders::table)
@@ -557,7 +558,7 @@ impl Holder {
                 let item = item_some.expect("E.");
                 diesel::update(&item)
                     .set((
-                        schema::holders::count.eq(count),
+                        schema::holders::count2.eq(count),
                         schema::holders::stage.eq(stage),
                     ))
                     .execute(&_connection)
