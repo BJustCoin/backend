@@ -520,18 +520,22 @@ pub struct NewHolder {
     pub stage:   String,
 }
 impl Holder {
-    pub fn create(form: Json<NewHolder>) -> () {
+    pub fn create(user_id: String, form: Json<Vec<NewHolder>>) -> i16 {
         let _connection = establish_connection();
-        let form = NewHolder {
-            address: form.address.clone(),
-            count:   form.count,
-            stage:   form.stage.clone(),
-        };
 
-        let _new = diesel::insert_into(schema::holders::table)
-            .values(&form)
-            .execute(&_connection)
-            .expect("Error saving holder item.");
+        for i in form.iter() {
+            let form = NewHolder {
+                address: i.address.clone(),
+                count:   i.count,
+                stage:   i.stage.clone(),
+            };
+    
+            let _new = diesel::insert_into(schema::holders::table)
+                .values(&form)
+                .execute(&_connection)
+                .expect("Error saving holder item.");
+        }
+        return 1;
     }
     pub fn delete(id: i32) -> () {
         let _connection = establish_connection();

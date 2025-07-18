@@ -51,6 +51,8 @@ pub fn admin_routes(config: &mut web::ServiceConfig) {
     config.route("/agree_application/", web::post().to(agree_application));
     config.route("/create_suggest_item/", web::post().to(create_suggest_item));
     config.route("/create_log/", web::post().to(create_log));
+    config.route("/create_holders/", web::post().to(create_holders));
+    config.route("/delete_holder/", web::post().to(delete_holder));
     config.route("/send_mail/", web::post().to(send_mail));
     config.route("/subscribe/", web::post().to(subscribe));
 }
@@ -390,6 +392,24 @@ pub async fn create_log(req: HttpRequest, data: Json<crate::models::NewLogJson>)
     if is_signed_in(&req) {
         let _request_user = get_current_user(&req);
         crate::models::Log::create(data);
+    }
+    HttpResponse::Ok()
+}
+pub async fn create_holders(req: HttpRequest, data: Json<Vec<crate::models::NewHolder>>) -> impl Responder {
+    if is_signed_in(&req) {
+        let _request_user = get_current_user(&req);
+        crate::models::Holder::create(data);
+    }
+    HttpResponse::Ok()
+}
+#[derive(Deserialize, Serialize, Debug)]
+pub struct DataId { 
+    pub id: i32,
+}  
+pub async fn delete_holder(req: HttpRequest, data: Json<crate::models::DataId>) -> impl Responder {
+    if is_signed_in(&req) {
+        let _request_user = get_current_user(&req);
+        crate::models::Holder::delete(data.id);
     }
     HttpResponse::Ok()
 }
