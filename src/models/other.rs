@@ -504,8 +504,9 @@ pub struct NewAuthRequest {
 pub struct Holder {
     pub id:      i32,
     pub address: String,
-    pub count:   i16,
+    pub count:   String,
     pub stage:   String,
+    pub count2:  String,
 }
 #[derive(Deserialize, Serialize)]
 pub struct HolderRespData {
@@ -518,6 +519,7 @@ pub struct NewHolder {
     pub address: String,
     pub count:   i16,
     pub stage:   String,
+    pub count2:  String,
 }
 impl Holder {
     pub fn create(form: Json<Vec<NewHolder>>) -> i16 {
@@ -526,7 +528,7 @@ impl Holder {
         for i in form.iter() {
             let form = NewHolder {
                 address: i.address.clone(),
-                count:   i.count,
+                count2:  i.count,
                 stage:   i.stage.clone(),
             };
     
@@ -546,7 +548,7 @@ impl Holder {
         .execute(&_connection)
         .expect("E");
     }
-    pub fn edit(id: i32, count: i16, stage: String) -> () {
+    pub fn edit(id: i32, count: String, stage: String) -> () {
         let _connection = establish_connection();
         let item_some = schema::holders::table
                 .filter(schema::holders::id.eq(id))

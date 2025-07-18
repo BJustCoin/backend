@@ -68,5 +68,6 @@ CREATE TABLE holders (
     id        SERIAL PRIMARY KEY,
     address   VARCHAR(100) NOT NULL,
     count     SMALLINT NOT NULL,
-    stage     VARCHAR(50) NOT NULL
+    stage     VARCHAR(50) NOT NULL,
+    count2    VARCHAR(50) NOT NULL
 );
