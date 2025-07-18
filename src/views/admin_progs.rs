@@ -28,6 +28,7 @@ use crate::utils::establish_connection;
 
 
 pub fn admin_routes(config: &mut web::ServiceConfig) {
+    config.route("/get_holders/", web::get().to(get_holders));
     config.route("/get_small_users/", web::get().to(get_small_users));
     config.route("/get_users/", web::get().to(get_users)); 
     config.route("/get_admins/", web::get().to(get_admins));
@@ -54,7 +55,10 @@ pub fn admin_routes(config: &mut web::ServiceConfig) {
     config.route("/subscribe/", web::post().to(subscribe));
 }
 
-
+pub async fn get_holders(req: HttpRequest) -> Json<crate::models::HolderRespData> {
+        let page = crate::utils::get_page(&req);
+        Json(crate::models::Holder::get_list(page.into(), Some(20)))
+}
 pub async fn get_new_applications(req: HttpRequest) -> Json<crate::models::SuggestRespData> {
     if is_signed_in(&req) {
         let page = crate::utils::get_page(&req);
@@ -127,6 +131,9 @@ pub async fn get_users(req: HttpRequest) -> Json<AuthRespData> {
 pub async fn get_small_users(req: HttpRequest) -> Json<SmallUsers> {
     if is_signed_in(&req) {
         let _request_user = get_current_user(&req);
+        //if _request_user.email.clone() == "".to_string() {
+//
+        //}
         Json(SmallUsers {
             users: User::get_small_users(),
         })
