@@ -568,7 +568,7 @@ impl Holder {
     pub fn get(limit: i64, offset: i64) -> Vec<Holder> {
         let _connection = establish_connection();
         return schema::holders::table
-            .order(schema::holders::count.desc())
+            .order(schema::holders::count2.desc())
             .limit(limit)
             .offset(offset) 
             .load::<Holder>(&_connection)
