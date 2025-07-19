@@ -528,9 +528,7 @@ impl Holder {
         for i in form.iter() {
             if schema::holders::table
                 .filter(schema::holders::address.eq(&i.address))
-                .select(schema::holders::id)
-                .limit(limit)
-                .offset(offset) 
+                .select(schema::holders::id) 
                 .load::<i32>(&_connection)
                 .is_ok() {
                     diesel::delete (
