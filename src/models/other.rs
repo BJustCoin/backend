@@ -526,6 +526,20 @@ impl Holder {
         let _connection = establish_connection();
 
         for i in form.iter() {
+            if schema::holders::table
+                .filter(schema::holders::address.eq(&i.address))
+                .select(schema::holders::id)
+                .limit(limit)
+                .offset(offset) 
+                .load::<i32>(&_connection)
+                .is_ok() {
+                    diesel::delete (
+                        schema::holders::table
+                            .filter(schema::holders::address.eq(&i.address))
+                    )
+                    .execute(&_connection)
+                    .expect("E");
+                }
             let form = NewHolder {
                 address: i.address.clone(),
                 count:   0,
@@ -568,7 +582,7 @@ impl Holder {
     pub fn get(limit: i64, offset: i64) -> Vec<Holder> {
         let _connection = establish_connection();
         return schema::holders::table
-            .order(schema::holders::count2.desc())
+            .order(schema::holders::id.asc())
             .limit(limit)
             .offset(offset) 
             .load::<Holder>(&_connection)
