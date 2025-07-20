@@ -526,7 +526,7 @@ impl Holder {
         let _connection = establish_connection();
         diesel::delete (
             schema::holders::table
-                .filter(schema::holders::address.eq(&i.address))
+                .filter(schema::holders::count.eq(0))
         )
         .execute(&_connection)
         .expect("E");
