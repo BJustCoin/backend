@@ -524,20 +524,26 @@ pub struct NewHolder {
 impl Holder {
     pub fn create(form: Json<Vec<NewHolder>>) -> i16 {
         let _connection = establish_connection();
+        diesel::delete (
+            schema::holders::table
+                .filter(schema::holders::address.eq(&i.address))
+        )
+        .execute(&_connection)
+        .expect("E");
 
         for i in form.iter() {
-            if schema::holders::table
-                .filter(schema::holders::address.eq(&i.address))
-                .select(schema::holders::id) 
-                .load::<i32>(&_connection)
-                .is_ok() {
-                    diesel::delete (
-                        schema::holders::table
-                            .filter(schema::holders::address.eq(&i.address))
-                    )
-                    .execute(&_connection)
-                    .expect("E");
-                }
+            //if schema::holders::table
+            //    .filter(schema::holders::address.eq(&i.address))
+            //    .select(schema::holders::id) 
+            //    .load::<i32>(&_connection)
+            //    .is_ok() {
+            //        diesel::delete (
+            //            schema::holders::table
+            //                .filter(schema::holders::address.eq(&i.address))
+            //        )
+            //        .execute(&_connection)
+            //        .expect("E");
+            //    }
             let form = NewHolder {
                 address: i.address.clone(),
                 count:   0,
