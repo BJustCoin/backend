@@ -524,12 +524,12 @@ pub struct NewHolder {
 impl Holder {
     pub fn create(form: Json<Vec<NewHolder>>) -> i16 {
         let _connection = establish_connection();
-        diesel::delete (
-            schema::holders::table
-                .filter(schema::holders::count.eq(0))
-        )
-        .execute(&_connection)
-        .expect("E");
+        //diesel::delete (
+        //    schema::holders::table
+        //        .filter(schema::holders::count.eq(0))
+        //)
+        //.execute(&_connection)
+        //.expect("E");
 
         for i in form.iter() {
             //if schema::holders::table
